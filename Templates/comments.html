@@ -1,0 +1,123 @@
+{% extends "layout/base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/variable.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+{% endblock css %}
+
+{% block content %}
+
+<div class="flex flex-col h-screen">
+    <header>
+        {% include "includes/navbar.html" %}
+    </header>
+
+    <div class="flex flex-1">
+        {% include "includes/sidebar.html" %}
+
+        <!-- Main Content Container -->
+        {% include "includes/container.html" %}
+
+        <div id="Comments" class="p-4">
+            <!-- Filter and Search Section -->
+            <div class="flex flex-col mb-3 gap-4">
+                <h1 class="text-2xl font-bold">Comments Credentials</h1>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Search Input -->
+                    <div class="flex items-center">
+                        <input type="text" placeholder="Search comments..." class="border rounded-md px-4 py-2 text-sm w-full" id="searchComments">
+                    </div>
+
+                    <!-- Filter Options -->
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <!-- Filter by Category -->
+                        <select id="filterCategory" class="border rounded-md px-4 py-2 text-sm w-full">
+                            <option value="">Filter by Category</option>
+                            <option value="Positive">Positive</option>
+                            <option value="Negative">Negative</option>
+                            <option value="Neutral">Neutral</option>
+                        </select>
+
+                        <!-- Filter by Faculty -->
+                        <select id="filterFaculty" class="border rounded-md px-4 py-2 text-sm w-full">
+                            <option value="">Filter by Faculty</option>
+                            <option value="Arram T. Pamisa">Arram T. Pamisa</option>
+                            <option value="Ferdinand Bascones">Ferdinand Bascones</option>
+                        </select>
+
+                        <!-- Filter by College -->
+                        <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full">
+                            <option value="">Filter by College</option>
+                            <option value="CISC">CISC</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Section -->
+            <div class="table-container">
+                <div class="overflow-x-auto">
+                    <div class="table-wrapper">
+                        <div class="table-border">
+                            <table class="data-table">
+                                <thead class="table-header">
+                                    <tr>
+                                        <th class="table-cell">No.</th>
+                                        <th class="table-cell">Comment</th>
+                                        <th class="table-cell">Category</th>
+                                        <th class="table-cell">Faculty Name</th>
+                                        <th class="table-cell hidden md:table-cell">Department</th>
+                                        <th class="table-cell hidden md:table-cell">College</th>
+                                        <th class="table-cell hidden md:table-cell">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-body" id="commentsTableBody">
+                                    <tr>
+                                        <td class="table-cell">1</td>
+                                        <td class="table-cell">Great course content!</td>
+                                        <td class="table-cell">Positive</td>
+                                        <td class="table-cell">Arram T. Pamisa</td>
+                                        <td class="table-cell hidden md:table-cell">Information Technology</td>
+                                        <td class="table-cell hidden md:table-cell">CISC</td>
+                                        <td class="px-4 py-4 text-sm whitespace-nowrap hidden md:table-cell">
+                                            <div class="flex space-x-2">
+                                                <a href="#" title="View" class="text-blue-500 hover:text-blue-700">View</a>
+                                                <a href="#" title="Update" class="text-yellow-500 hover:text-yellow-700">Update</a>
+                                                <a href="#" title="Delete" class="text-red-500 hover:text-red-700">Delete</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between mt-6">
+                <a href="#" class="flex items-center px-5 py-2 text-sm text-gray-700 bg-white border rounded-md gap-x-2 hover:bg-gray-100">
+                    <span>Previous</span>
+                </a>
+
+                <div class="items-center hidden md:flex gap-x-3">
+                    <a href="#" class="px-2 py-1 text-sm text-white bg-green-800 rounded-md">1</a>
+                    <a href="#" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">2</a>
+                    <a href="#" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">3</a>
+                    <a href="#" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">...</a>
+                    <a href="#" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">12</a>
+                </div>
+
+                <a href="#" class="flex items-center px-5 py-2 text-sm text-yellow-700 bg-white border rounded-md gap-x-2 hover:bg-yellow-400">
+                    <span>Next</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% include "includes/footer_container.html" %}
+</div>
+
+{% endblock content %}
+{% include "includes/public/footers.html" %}

@@ -1,0 +1,69 @@
+{% extends "layout/base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/variable.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+{% endblock css %}
+
+{% block content %}
+<!-- Include the sidebar here -->
+<div class="flex flex-col h-screen">
+    <header>
+        {% include "includes/public/headers.html" %}
+    </header>
+    
+    <div class="flex flex-1">
+        <div class="absolute top-[15%] left-[5%]">
+            <div id="home-section" class="mt-4 ">
+                <h2 class="font-bold mb-4  text-center"> <!-- Adjusted size -->
+                    Sentiment Analysis of CMU <br>
+                    <span class="pt-5">Faculty Evaluation System Feedback</span>
+                </h2>
+               
+                
+                <!-- Get Started Button -->
+                <div class="mt-8 flex justify-center"> <!-- Centering the button -->
+                    <a href="{{ url_for('evaluate') }}" class="btn">Get Started</a>
+                </div>
+            </div>
+            <div id="about-section" class="hidden mt-4 text-lg">
+                <h2 class="text-3xl font-bold">About Us</h2>
+                <p>We are a platform that offers fast sentiment analysis and Lorem Ipsum text generation.</p>
+            </div>
+        
+            <div id="contact-section" class="hidden mt-4 text-lg">
+                <h2 class="text-3xl font-bold">Contact Us</h2>
+                <p>We are a platform that offers fast sentiment analysis and Lorem Ipsum text generation.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- {% include "includes/footer_container.html" %} -->
+{% endblock content %}
+
+{% include "includes/public/footers.html" %}
+
+
+<div class="hidden bg-white shadow-lg absolute right-12 top-0 z-[10000]" id="mobile-menu"> <!-- Add position and z-index -->
+    <ul class="px-4 pt-4 pb-4 font-semibold font-heading space-y-4 text-gray">
+      <li><a class="hover:text-gray-200" href="#" onclick="showSection('home')">Home</a></li>
+      <li><a class="hover:text-gray-200" href="#" onclick="showSection('about')">Team</a></li>
+      <li><a class="hover:text-gray-200" href="#" onclick="showSection('contact')">Contact</a></li>
+    </ul>
+    <div class="flex space-x-4 mt-4 w-full h-auto p-6">
+      <a href="{{ url_for('login') }}" class="flex items-center justify-center border rounded-md px-4 py-4 bg-transparent text-black w-1/2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg>
+        Login
+      </a>
+      <a href="{{ url_for('register') }}" class="flex items-center justify-center border rounded-md px-4 py-4 bg-black text-white w-1/2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Sign up
+      </a>
+    </div>
+  </div>

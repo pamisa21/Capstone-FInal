@@ -1,0 +1,111 @@
+{% extends "layout/base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/variable.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+{% endblock css %}
+
+{% block content %}
+<!-- Include the sidebar here -->
+<div class="flex flex-col h-screen">
+    <header>
+        {% include "includes/navbar.html" %}
+    </header>
+    
+    <div class="flex flex-1">
+        <!-- Sidebar -->
+        {% include "includes/sidebar.html" %}
+
+        <!-- Main Content Container -->
+        {% include "includes/container.html" %}
+
+
+            <!-- {% include "includes/container.html" %}  -->
+
+            <div id="dashboard">
+                <h1 class="text-2xl font-bold mb-6">Dashboard</h1>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col">
+                        <h2 class="text-lg font-semibold">Student Number!</h2>
+                        <h4 class="text-3xl font-bold text-center">789 <span class="ml-2 text-sm">Students</span></h4>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col">
+                        <h2 class="text-lg font-semibold">Faculty Number!</h2>
+                        <h4 class="text-3xl font-bold text-center">789 <span class="ml-2 text-sm">Faculties</span></h4>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col relative">
+                        <h2 class="text-lg font-semibold">Total Comments!</h2>
+                        <h4 class="text-3xl font-bold text-center">789 <span class="ml-2 text-sm">Comments</span></h4>
+                        <a href="/comments" class="text-sm absolute top-0 right-0 mt-4 mr-2">
+                            <h3>view comments!</h3>
+                        </a>
+                    </div>
+                </div>
+                
+
+                <!-- Sentiment Analysis Card -->
+                <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col md:flex-row">
+                    <div class="flex-grow">
+                        <h2 class="text-lg font-semibold mb-4">Sentiment Analysis</h2>
+                        
+                        <!-- Positive Sentiment -->
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center">
+                                <span class="material-icons text-green-500">thumb_up</span>
+                                <span class="ml-2">Positive</span>
+                            </div>
+                            <p class="text-3xl font-bold">30%</p>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full mt-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: 30%;"></div>
+                        </div>
+
+                        <!-- Neutral Sentiment -->
+                        <div class="flex items-center justify-between mb-2 mt-4">
+                            <div class="flex items-center">
+                                <span class="material-icons text-gray-500">more_horiz</span>
+                                <span class="ml-2">Neutral</span>
+                            </div>
+                            <p class="text-3xl font-bold">50%</p>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full mt-2">
+                            <div class="bg-gray-500 h-2 rounded-full" style="width: 50%;"></div>
+                        </div>
+
+                        <!-- Negative Sentiment -->
+                        <div class="flex items-center justify-between mb-2 mt-4">
+                            <div class="flex items-center">
+                                <span class="material-icons text-red-500">thumb_down</span>
+                                <span class="ml-2">Negative</span>
+                            </div>
+                            <p class="text-3xl font-bold">20%</p>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full mt-2">
+                            <div class="bg-red-500 h-2 rounded-full" style="width: 20%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Pie Chart -->
+                    <div class="mt-4 md:mt-0 md:ml-6">
+                        <canvas id="sentimentPieChart" width="200" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+            
+        {% include "includes/footer_container.html" %}
+    </div>
+    
+</div>
+
+<!-- {% include "includes/footer_container.html" %} -->
+{% endblock content %}
+
+
+{% include "includes/public/footers.html" %}

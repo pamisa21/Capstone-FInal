@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico">
+    <title>Fes Sentiment</title>
+
+    {% block css %}
+
+  
+    {% endblock css %}
+</head>
+<body>
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+        <div class="fixed inset-0 flex items-center justify-center z-50" id="flash-modal">
+            <div class="modal-overlay absolute inset-0 bg-gray-600 opacity-50"></div>
+            <div class="modal-container bg-white w-full md:max-w-md rounded shadow-lg z-50 overflow-auto">
+                <div class="modal-content py-4 text-left px-6">
+                    <h2 class="text-lg font-semibold">Messages</h2>
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} my-2 p-4 rounded border">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                    <div class="flex justify-end pt-2">
+                        <button id="close-modal" class="px-4 py-2">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endwith %}
+
+    {% block content %}
+    <!-- Main content goes here -->
+    {% endblock content %}  
+
+
+<!-- Add your scripts here -->
+
+<script src="{{ url_for('static', filename='js/tailwindcss.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<script src="{{ url_for('static', filename='js/pospore.js') }}"></script>
+<script src="{{ url_for('static', filename='js/alpine.js') }}"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/account.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const flashModal = document.getElementById('flash-modal');
+        const closeModalButton = document.getElementById('close-modal');
+
+        if (flashModal) {
+            flashModal.classList.remove('hidden'); // Show modal when there are messages
+        }
+
+        closeModalButton.addEventListener('click', function() {
+            flashModal.classList.add('hidden'); // Hide modal on button click
+        });
+    });
+</script>
+{% block script %}
+<!-- Page-specific scripts go here -->  
+{% endblock script %}
+
+</body>
+</html>

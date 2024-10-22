@@ -1,0 +1,56 @@
+{% extends "layout/base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/variable.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+{% endblock css %}
+
+{% block content %}
+<div class="flex flex-col h-screen">
+    <header>
+        {% include "includes/navbar.html" %}
+    </header>
+
+    <div class="flex flex-1">
+        {% include "includes/sidebar.html" %}
+
+        <!-- Main Content Container -->
+        <main class="flex-1 p-5 mx-5 mt-[100px] ml-2 md:ml-60">
+            <div class="p-4">
+                <h1 class="text-2xl font-bold text-center">View Users Details</h1>
+                
+                <div class="mt-6 space-y-4">
+                    <div class="flex flex-col">
+                        <label class="text-lg font-semibold">Complete Name:</label>
+                        <p class="p-2 border border-gray-300 rounded bg-gray-100">{{ user.name }}</p>
+                    </div>
+
+                    <div class="flex flex-col">
+                        <label class="text-lg font-semibold">Email:</label>
+                        <p class="p-2 border border-gray-300 rounded bg-gray-100">{{ user.email }}</p>
+                    </div>
+
+                    <div class="flex flex-col">
+                        <label class="text-lg font-semibold">Password:</label>
+                        <p class="p-2 border border-gray-300 rounded bg-gray-100">
+                            {{ '*' * user.password | length }}
+                        </p>
+                    </div>
+                    
+                </div>
+
+                <div class="text-right mt-4">
+                    <a href="{{ url_for('account') }}" class="font-semibold text-green-600 hover:underline">Back to Users Account</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    {% include "includes/footer_container.html" %}
+</div>
+{% endblock content %}
+
+{% block script %}
+<!-- Add any custom scripts for this page here -->
+{% endblock script %}

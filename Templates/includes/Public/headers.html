@@ -1,0 +1,81 @@
+<div>
+  <section class="relative mx-auto">
+    <!-- Navbar -->
+    <nav class="flex justify-between text-b w-screen fixed top-0 left-0 z-50 bg-white">
+      <div class="px-5 xl:px-12 py-6 flex w-full items-center">
+        <!-- Logo -->
+        <a href="#" class="flex items-center">
+          <img src="static/img/feslogo.png" alt="Logo" class="h-9 w-auto">
+          <span class="ml-3 text-2xl font-bold font-heading">CMU FES</span>
+        </a>
+        
+        <!-- Nav Links (Hidden on small screens) -->
+        <ul class="hidden md:flex px-4 mx-auto font-semibold font-heading space-x-12">
+          <li><a id="home-link" class="active hover:text-green-600 cursor-pointer" onclick="showSection('home')">Home</a></li>
+          <li><a id="about-link" class="hover:text-green-600 cursor-pointer" onclick="showSection('about')">Team</a></li>
+          <li><a id="contact-link" class="hover:text-green-600 cursor-pointer" onclick="showSection('contact')">Contact</a></li>
+        </ul>
+
+        <div class="flex items-center space-x-3 border rounded-md px-3 py-2 hover:bg-[#F1BE48] login-register hidden md:flex hover:text-white mr-2" id="login-button">
+          <!-- Login button -->
+          <a href="{{ url_for('login') }}" class="flex items-center space-x-2">
+            <i class="ph ph-sign-in  text-current"></i>
+            <span>Login</span>
+          </a>
+        
+        </div>
+
+        <div class="flex items-center space-x-3 border rounded-md px-3 py-2 bg-[#083B0A] text-white hover:bg-[#F1BE48] login-register hidden md:flex hover:text-white" id="register-button">
+          <!-- Register button -->
+          <a href="{{ url_for('register') }}" class="flex items-center space-x-2">
+            <i class="ph ph-user-plus text-current"></i>
+            <span>Sign up</span>
+          </a>
+        
+        </div>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <a class="xl:hidden flex mr-6 items-center" href="#" id="mobile-menu-button">
+        <i class="ph ph-list h-6 w-6 hover:text-gray-200"></i>
+      </a>
+    
+    </nav>
+
+    <!-- Mobile Menu (Hidden by default) -->
+    <div class="hidden bg-white shadow-lg absolute right-0 top-0 z-[10000]" id="mobile-menu">
+      <!-- Exit button -->
+      <button onclick="toggleMobileMenu()" class="absolute top-4 right-4 p-2 text-gray-600 hover:text-gray-800">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    
+      <!-- Menu items -->
+      <ul class="px-4 pt-4 pb-4 font-semibold font-heading space-y-4 text-gray">
+        <li><a class="hover:text-gray-200" href="#" onclick="showSection('home')">Home</a></li>
+        <li><a class="hover:text-gray-200" href="#" onclick="showSection('about')">Team</a></li>
+        <li><a class="hover:text-gray-200" href="#" onclick="showSection('contact')">Contact</a></li>
+      </ul>
+    
+      <!-- Login and Signup buttons -->
+      <div class="flex space-x-4 mt-4 w-full h-auto p-6">
+        <a href="{{ url_for('login') }}" class="flex items-center justify-center border rounded-md px-4 py-4 bg-transparent text-black w-1/2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+          Login
+        </a>
+        <a href="{{ url_for('register') }}" class="flex items-center justify-center border rounded-md px-4 py-4 bg-black text-white w-1/2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Sign up
+        </a>
+      </div>
+    </div>
+    
+</div>
+
+  </section>
+</div>

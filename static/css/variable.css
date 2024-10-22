@@ -1,0 +1,26 @@
+:root {
+	--bg: #ffff;
+	--border: #E5F6EA;
+	--green1: #D1EDDD;
+	--green2: #B1E0C6;
+	--green3: #91D3AF;
+	--green4: #71C698;
+	--green5: #51BA80;
+	--green6: #083B0A;
+	--green7: #337F55;
+	--green8: #083B0A;
+	--green9: #19402B;
+	--green10: #0D2015;
+	--gs10: #191919;
+	--gs20: #5F6061;
+	--gs30: #5E5E5E;
+	--gs40: hsl(0, 0%, 55%);
+	--gs50: #BABABA;
+	--gs60: #D1D1D1;
+	--gs70: #E4E4E4;
+	--gs80: #EEEEEE;
+	--gs90: #FAFAFA;
+	--gs100: #FFFFFF;
+	--maze: #F1BE48;
+}
+

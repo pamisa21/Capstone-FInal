@@ -1,0 +1,61 @@
+{% extends "layout/base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/variable.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+{% endblock css %}
+
+{% block content %}
+
+<div class="flex flex-col h-screen">
+    <header>
+        {% include "includes/navbar.html" %}
+    </header>
+
+    <div class="flex flex-1">
+        {% include "includes/sidebar.html" %}
+
+        <!-- Main Content Container -->
+        {% include "includes/container.html" %}
+
+        <div class="p-4">
+            <h1 class="text-2xl font-bold">Edit Default Semester</h1>
+            <form action="{{ url_for('edit_semester') }}" method="POST" class="space-y-4 mt-4">
+                <div class="flex flex-col">
+                    <label for="school_year" class="text-lg font-semibold">School Year</label>
+                    <input type="text" id="school_year" name="school_year" required 
+                           class="p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-300" 
+                           value="{{ default_semester.school_year }}">
+                </div>
+        
+                <div class="flex flex-col">
+                    <label for="semester_number" class="text-lg font-semibold">Semester</label>
+                    <select id="semester_number" name="semester_number" 
+                            class="p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-300">
+                        <option value="1" {% if default_semester.semester_number == 1 %}selected{% endif %}>1st Semester</option>
+                        <option value="2" {% if default_semester.semester_number == 2 %}selected{% endif %}>2nd Semester</option>
+                        <option value="3" {% if default_semester.semester_number == 3 %}selected{% endif %}>Mid Year</option>
+                    </select>
+                </div>
+        
+                <div class="flex space-x-4">
+                    <button type="submit" 
+                            class=" mt-4 px-4 py-2 setdf font-semibold rounded">
+                        Save Changes
+                    </button>
+                    <a href="{{ url_for('semester') }}" 
+                       class=" cancel mt-4 px-4 py-2  font-semibold rounded">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+        
+    </div>
+
+    {% include "includes/footer_container.html" %}
+</div>
+
+{% endblock content %}
+{% include "includes/public/footers.html" %}

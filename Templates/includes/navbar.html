@@ -1,0 +1,101 @@
+<div>
+    <section class="relative left-5">
+        <!-- Navbar -->
+        <nav class="flex justify-between text-b w-screen fixed top-0 left-1 right-0 bg-white shadow-md z-50 rounded-lg" style="height: 70px;">
+            <div class="px-5 xl:px-12 py-6 flex w-full items-center">
+                <!-- Logo -->
+                <a href="#" class="flex items-center">
+                    <img src="static/img/feslogo.png" class="h-7 mr-1 w-auto">
+                    <span class="text-2xl font-bold font-heading">CMU FES</span>
+                </a>
+
+                <!-- Icon Section (left side) -->
+                <div class="flex items-center space-x-5 ml-auto">
+                    <h2 class="hidden sm:block">
+                        {% if default_semester.semester_number == 1 %}1st Semester
+                        {% elif default_semester.semester_number == 2 %}2nd Semester
+                        {% elif default_semester.semester_number == 3 %}Mid Semester
+                        {% else %}Unknown Semester
+                        {% endif %} {{ default_semester.school_year }}
+                    </h2>
+                    
+                    <!-- Notification dropdown -->
+                    <div class="relative">
+                       
+                        <input type="checkbox" id="notification-toggle" class="hidden peer" />
+                        <label for="notification-toggle" class="flex items-center cursor-pointer" title="notification">
+                            <i class="ph ph-bell mt-1 h-4 w-4 text-current"></i>
+                            <span class="flex absolute -mt-5 ml-4">
+                                <span class="animate-ping absolute inline-flex rounded-full bg-green-600 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-700"></span>
+                            </span>
+                        </label>
+                        
+                        <div class="absolute right-0 z-20 w-48 py-2 mt-2 origin-top-right bg-white rounded-md shadow-xl dark:bg-gray-800 opacity-0 pointer-events-none transition-opacity
+                         duration-200 ease-in-out transform scale-95 peer-checked:opacity-100 peer-checked:pointer-events-auto peer-checked:scale-100">
+                            <div class="block px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
+                                <p>No new notifications</p>
+                            </div>
+                            <div class="block px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
+                                <p>Notification 1</p>
+                            </div>
+                            <div class="block px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
+                                <p>Notification 2</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <input type="checkbox" id="profile-menu-toggle" class="hidden peer" />
+                        <label for="profile-menu-toggle" class="flex items-center hover:text-yellow-200 cursor-pointer" title="{{ username }}">
+                            <i class="ph ph-user-circle text-2xl"></i> <!-- Adjust the size here -->
+                        </label>
+                        
+                        
+                        <div class="absolute right-0 z-20 w-48 py-2 mt-2 origin-top-right bg-white rounded-md shadow-xl dark:bg-gray-800 opacity-0 pointer-events-none transition-opacity duration-200 ease-in-out transform scale-95 peer-checked:opacity-100 peer-checked:pointer-events-auto peer-checked:scale-100">
+                            <a class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
+                                Hi! &nbsp;{{ username }}</a>
+                            <a href="/profile" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
+                                Your profile</a>
+                            <a href="/FQS" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
+                                FAQ's</a>
+                            <a href="#" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
+                                Settings</a>
+                            <a href="{{ url_for('logout') }}" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
+                                Sign Out</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <a class="xl:hidden flex mr-6 items-center" href="#" id="mobile-menu-button">
+                <i class="ph ph-list  hover:text-gray-200"></i>
+            </a>
+            
+        </nav>
+
+                        <!-- Mobile Menu (Hidden by default) -->
+                        <div class="hidden absolute top-16 right-6 w-48 bg-white rounded-md shadow-lg z-50" id="mobile-menu">
+                            <ul class="px-4 py-4 font-semibold font-heading space-y-4 text-gray-800">
+                                <li>
+                                    <a class="hover:text-gray-600 transition-colors duration-200 {% if request.path == url_for('dashboard') %} active-link {% endif %}" href="{{ url_for('dashboard') }}">Dashboard</a>
+                                </li>
+                                <li>
+                                    <a class="hover:text-gray-600 transition-colors duration-200 {% if request.path == url_for('evaluate') %} active-link {% endif %}" href="{{ url_for('evaluate') }}">Evaluate</a>
+                                </li>
+                                <li>
+                                    <a class="hover:text-gray-600 transition-colors duration-200 {% if request.path == url_for('history') %} active-link {% endif %}" href="{{ url_for('history') }}">History</a>
+                                </li>
+                                <li>
+                                    <a class="hover:text-gray-600 transition-colors duration-200 {% if request.path == url_for('account') %} active-link {% endif %}" href="{{ url_for('account') }}">Account</a>
+                                </li>
+                                <li>
+                                    <a class="hover:text-gray-600 transition-colors duration-200 {% if request.path == url_for('comments') %} active-link {% endif %}" href="{{ url_for('comments') }}">Comments</a>
+                                </li>
+                            </ul>
+                        </div>
+                        
+
+    </section>
+

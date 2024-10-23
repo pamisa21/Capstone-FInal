@@ -201,3 +201,26 @@ function filterTable() {
         }
     }
 }   
+
+// Felter college in faculty //
+
+function applyFilters() {
+    const searchQuery = document.getElementById('searchUsers').value;
+    const selectedCollege = document.getElementById('filterCollege').value;
+    const url = new URL(window.location.href);
+    
+    // Update the search and college parameters in the URL
+    if (searchQuery) {
+        url.searchParams.set('search', searchQuery);
+    } else {
+        url.searchParams.delete('search');
+    }
+
+    if (selectedCollege) {
+        url.searchParams.set('college', selectedCollege);
+    } else {
+        url.searchParams.delete('college');
+    }
+
+    window.location.href = url.toString();
+}

@@ -1,0 +1,7 @@
+notes if flask restart 
+
+
+
+python -m pip install mysql-connector-python
+ python -m pip install Flask-SQLAlchemy    
+pip install flask_sqlalchemy    

@@ -1,0 +1,173 @@
+from flask import render_template, session, request, redirect, url_for
+from server import app  # Import the app instance from server.py
+import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+
+# Load the trained model and tokenizer
+model_path = "./twitter_xlm_roberta_fine_tuned_sentiment"
+model = AutoModelForSequenceClassification.from_pretrained(model_path)
+model.eval()
+tokenizer = AutoTokenizer.from_pretrained(model_path)
+
+# Function to predict sentiment
+def predict_sentiment(text):
+    # Tokenize the input text
+    inputs = tokenizer(text, return_tensors='pt', truncation=True, padding=True, max_length=512)
+
+    # Make predictions
+    with torch.no_grad():
+        outputs = model(**inputs)
+        logits = outputs.logits
+
+    # Get predicted class
+    predicted_class = logits.argmax().item()
+
+    # Sentiment mapping: Adjust this based on your model's output classes
+    sentiment_map = {0: 'Negative', 1: 'Neutral', 2: 'Positive'}
+    sentiment = sentiment_map.get(predicted_class, "Unknown")
+
+    return sentiment
+
+
+
+@app.route('/')
+def main():
+    return render_template('main.html')
+
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        if username:  # Check if the username is not empty
+            session['username'] = username
+            return redirect(url_for('evaluate'))
+        else:
+            return "Username is required"
+    return render_template('login.html')
+
+
+
+
+#logout
+@app.route('/logout')
+def logout():
+    # remove the username from the session if it's there
+    session.pop('username', None)
+    return redirect(url_for('login'))
+
+
+
+
+@app.route('/register')
+def register():
+    return render_template('register.html')
+
+
+
+
+#routes for evaluate connection to the model
+@app.route('/evaluate', methods=['GET', 'POST'])
+def evaluate():
+    if 'username' in session:
+        sentiment = None
+        if request.method == 'POST':
+            comment = request.form.get('comment')
+            if comment:
+                sentiment = predict_sentiment(comment)
+        
+        # Pass the username and sentiment (if available) to the template
+        return render_template('evaluate.html', username=session['username'], sentiment=sentiment)
+    
+    return redirect(url_for('login'))
+from flask import render_template, session, request, redirect, url_for
+from server import app  # Import the app instance from server.py
+import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+
+# Load the trained model and tokenizer
+model_path = "./twitter_xlm_roberta_fine_tuned_sentiment"
+model = AutoModelForSequenceClassification.from_pretrained(model_path)
+model.eval()
+tokenizer = AutoTokenizer.from_pretrained(model_path)
+
+# Function to predict sentiment
+def predict_sentiment(text):
+    # Tokenize the input text
+    inputs = tokenizer(text, return_tensors='pt', truncation=True, padding=True, max_length=512)
+
+    # Make predictions
+    with torch.no_grad():
+        outputs = model(**inputs)
+        logits = outputs.logits
+
+    # Get predicted class
+    predicted_class = logits.argmax().item()
+
+    # Sentiment mapping: Adjust this based on your model's output classes
+    sentiment_map = {0: 'Negative', 1: 'Neutral', 2: 'Positive'}
+    sentiment = sentiment_map.get(predicted_class, "Unknown")
+
+    return sentiment
+
+
+
+@app.route('/')
+def main():
+    return render_template('main.html')
+
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        if username:  # Check if the username is not empty
+            session['username'] = username
+            return redirect(url_for('evaluate'))
+        else:
+            return "Username is required"
+    return render_template('login.html')
+
+
+
+
+#logout
+@app.route('/logout')
+def logout():
+    # remove the username from the session if it's there
+    session.pop('username', None)
+    return redirect(url_for('login'))
+
+
+
+
+@app.route('/register')
+def register():
+    return render_template('register.html')
+
+
+
+
+#routes for evaluate connection to the model
+@app.route('/evaluate', methods=['GET', 'POST'])
+def evaluate():
+    if 'username' in session:
+        sentiment = None
+        if request.method == 'POST':
+            comment = request.form.get('comment')
+            if comment:
+                sentiment = predict_sentiment(comment)
+        
+        # Pass the username and sentiment (if available) to the template
+        return render_template('evaluate.html', username=session['username'], sentiment=sentiment)
+    
+    return redirect(url_for('login'))
+@app.route('/home')
+
+def home():
+    if 'username' in session:
+        username = session['username']
+        return render_template('home.html', username=username)
+    return redirect(url_for('login'))

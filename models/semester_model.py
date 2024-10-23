@@ -12,4 +12,4 @@ class Semester(db.Model):
     semester_number = db.Column(db.Integer, nullable=False)  # Numeric representation of the semester
 
     def __repr__(self):
-       return f'<Semester {self.name}>'
+        return f'<Semester {self.school_year} - {self.semester_number}>'

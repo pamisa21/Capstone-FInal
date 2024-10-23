@@ -42,22 +42,23 @@
                     </div>
                 
                     <!-- Filter by College Dropdown -->
+                
                     <div class="flex items-center">
-                        <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full" onchange="filterTable()">
-                            <option value="">Filter by College</option>
+                        <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full" onchange="applyFilters()">
+                            <option value="">Select College </option> <!-- This option clears the filter -->
                             <option value="Colleges of Agriculture">Colleges of Agriculture</option>
                             <option value="Arts and Sciences">Arts and Sciences</option>
-                            <option value="Forestry"> Forestry </option>
+                            <option value="Forestry">Forestry</option>
                             <option value="Business and Management">Business and Management</option>
                             <option value="Education">Education</option>
-                            <option value="Forestry, Nursing,"> Nursing</option>
-                            <option value=" Veterinary Medicine, Nursing,"> Veterinary Medicine</option>
-                            <option value="Human Ecology"> Human Ecology</option>
-                            <option value="Engineeringy"> Engineering</option>
+                            <option value="Nursing">Nursing</option>
+                            <option value="Veterinary Medicine">Veterinary Medicine</option>
+                            <option value="Human Ecology">Human Ecology</option>
+                            <option value="Engineering">Engineering</option>
                             <option value="Information Sciences and Computing">Information Sciences and Computing</option>
-                            <!-- Add more options as needed -->
                         </select>
                     </div>
+
                 </div>
                 
                 
@@ -71,7 +72,7 @@
                             <table class="data-table">
                                 <thead class="table-header">
                                     <tr>
-                                       
+                                       <th>&nbsp;</th>
                                         <th class="table-cell">Complete Name & Email</th>
                                         
                                         <th class="table-cell">College</th>
@@ -83,6 +84,7 @@
                                 <tbody class="table-body" id="accountsTableBody">
                                     {% for member in faculty_members %}
                                     <tr>
+                                        <td class="table-cell">{{ loop.index }}</td>
                                         <td class="table-cell">
                                             {{ member.name }}<br>
                                             <span class="email">{{ member.email }}</span>
@@ -116,24 +118,7 @@
                 </div>
             </div>
 
-            <!-- Pagination Section -->
-            <div class="flex items-center justify-between mt-6">
-                <a href="#" class="flex items-center px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-gray-100">
-                    <span>Previous</span>
-                </a>
-
-                <div class="items-center hidden md:flex gap-x-3">
-                    <a href="#" class="px-2 py-1 text-sm text-white rounded-md bg-green-800">1</a>
-                    <a href="#" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100">2</a>
-                    <a href="#" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100">3</a>
-                    <a href="#" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100">...</a>
-                    <a href="#" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100">12</a>
-                </div>
-
-                <a href="#" class="flex items-center px-5 py-2 text-sm text-yellow-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-yellow-400">
-                    <span>Next</span>
-                </a>
-            </div>
+           
         </div>
     </div>
 

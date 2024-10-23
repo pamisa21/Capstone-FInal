@@ -1,4 +1,4 @@
 .venv/
 ai_model/twitter_xlm_roberta_fine_tuned_sentiment/
 myenv/
-.git/
+.vscode/

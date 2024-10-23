@@ -51,6 +51,7 @@ def login():
             # Check if the password matches
             if user.password == password:  # Direct comparison
                 session['username'] = user.name  # Store username in session
+                session['user_id'] = user.id  # Store user ID in session
                 return redirect(url_for("loading_screen", target=url_for("dashboard")))
             else:
                 flash("Invalid password!", "error")  # Password is incorrect
@@ -60,7 +61,6 @@ def login():
         return redirect(url_for("login"))  # Redirect back to login
 
     return render_template('Auth/login.html')
-
 
 @app.route('/logout')
 def logout():
@@ -197,27 +197,41 @@ def FQS():
         return render_template('FQS.html', username=username)
     return redirect(url_for('loading_screen', target=url_for('FQS')))
 
-
+# analys
 @app.route('/analys', methods=['GET'])
 def analys():
     if 'username' in session:
         username = session['username']
         search_query = request.args.get('search', '')
 
+        # Fetch the default semester details
+        default_semester = Semester.query.first()  # Adjust this query as needed
+        
+        # Check if default_semester is None
+        if default_semester is None:
+            flash('No current semester found. Please set the semester first.', 'error')
+            return redirect(url_for('loading_screen', target=url_for('analys'))) 
+
+        # Prepare the query
+        query = db.session.query(Comment, Faculty).join(Faculty, Comment.faculty_id == Faculty.id)\
+            .filter(
+                Comment.semester_number == default_semester.semester_number,
+                Comment.school_year == default_semester.school_year,
+                Comment.status == 0  # Filter for active comments
+            )
+
+        # Add search query if present
         if search_query:
-            comments = db.session.query(Comment, Faculty).join(Faculty, Comment.faculty_id == Faculty.id)\
-                .filter(
-                    (Faculty.name.ilike(f'%{search_query}%')) | 
-                    (Comment.content.ilike(f'%{search_query}%'))
-                ).all()  # Search by faculty name or comment content
-        else:
-            comments = db.session.query(Comment, Faculty).join(Faculty, Comment.faculty_id == Faculty.id).all()  # Get all comments
+            query = query.filter(
+                (Faculty.name.ilike(f'%{search_query}%')) | 
+                (Comment.content.ilike(f'%{search_query}%'))
+            )
 
-        return render_template('analys.html', username=username, comments=comments)
+        comments = query.all()  # Execute the query
 
-    return redirect(url_for('loading_screen', target=url_for('analys')))
+        return render_template('analys.html', username=username, comments=comments, default_semester=default_semester)
 
-
+    return redirect(url_for('loading_screen', target=url_for('analys'))) 
 
 
 @app.route('/users_account', methods=['GET'])
@@ -239,21 +253,29 @@ def account():
 
 
 
-
 @app.route('/faculty', methods=['GET'])
 def faculty():
     if 'username' in session:
         username = session['username']
         search_query = request.args.get('search', '')  # Get the search query from the URL
+        selected_college = request.args.get('college', '')  # Get the selected college from the URL
 
-        # Fetch faculty members based on the search query
+        # Start building the query dynamically
+        query = Faculty.query
+
+        # Apply search query if present
         if search_query:
-            faculty_members = Faculty.query.filter(
-                (Faculty.name.ilike(f'%{search_query}%')) | 
+            query = query.filter(
+                (Faculty.name.ilike(f'%{search_query}%')) |
                 (Faculty.email.ilike(f'%{search_query}%'))
-            ).all()
-        else:
-            faculty_members = Faculty.query.all()  # Get all faculty members if no search query
+            )
+
+        # Apply the college filter only if a specific college is selected
+        if selected_college:
+            query = query.filter(Faculty.college.ilike(f'%{selected_college}%'))
+
+        # Execute the final query
+        faculty_members = query.all()
 
         return render_template('faculty.html', username=username, faculty_members=faculty_members)
 
@@ -497,3 +519,59 @@ def edit_semester():
         return render_template('Crud/edit_semester.html', username=username, default_semester=default_semester)
     
     return redirect(url_for('loading_screen', target=url_for('edit_semester')))
+
+
+
+# add Comments 
+@app.route('/add_comment', methods=['GET', 'POST'])
+def add_comment():
+    if request.method == 'POST':
+        user_id = session.get('user_id')  # Get the logged-in user's ID from the session
+        
+        if user_id is None:
+            flash('User is not logged in!', 'error')
+            return redirect(url_for('login'))  # Redirect to login if user_id is not set
+
+        # Get the content and faculty_id from the form
+        content = request.form.get('content')
+        faculty_id = request.form.get('faculty_id')
+
+        # Ensure all required fields are filled
+        if not content or not faculty_id:
+            flash('All fields are required!', 'error')
+            return render_template('Crud/add_comment.html', content=content, faculty_id=faculty_id, faculties=get_faculties())
+
+        # Fetch the current semester details
+        current_semester = Semester.query.first()  # Adjust this query as needed
+        if current_semester is None:
+            flash('No current semester found. Please set the semester first.', 'error')
+            return redirect(url_for('add_comment'))
+
+        semester_number = current_semester.semester_number
+        school_year = current_semester.school_year
+
+        # Create a new Comment instance
+        new_comment = Comment(
+            user_id=user_id,  # Set user_id to the logged-in user's ID
+            content=content,
+            faculty_id=faculty_id,
+            semester_number=semester_number,  # Store the semester number
+            school_year=school_year  # Store the school year
+        )
+
+        try:
+            db.session.add(new_comment)  # Add the comment to the session
+            db.session.commit()  # Commit the session to save the comment
+            flash('Comment added successfully!', 'success')  # Show success message
+            return redirect(url_for('analys'))  # Redirect to the analysis page
+        except Exception as e:
+            db.session.rollback()  # Rollback in case of error
+            flash('An error occurred while adding the comment. Please try again.', 'error')
+            return render_template('Crud/add_comment.html', content=content, faculty_id=faculty_id, faculties=get_faculties())
+
+    # For GET requests, render the form with the list of faculties
+    return render_template('Crud/add_comment.html', faculties=get_faculties())
+
+def get_faculties():
+    """Helper function to retrieve the list of faculties."""
+    return Faculty.query.all()  # Fetch all faculties from the database

@@ -21,40 +21,55 @@
 
         <div id="Comments" class="p-4">
             <!-- Filter and Search Section -->
-            <div class="flex flex-col mb-3 gap-4">
+            <form method="get" action="{{ url_for('comments') }}" class="flex flex-col mb-3 gap-4">
                 <h1 class="text-2xl font-bold">Comments Credentials</h1>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Search Input -->
                     <div class="flex items-center">
-                        <input type="text" placeholder="Search comments..." class="border rounded-md px-4 py-2 text-sm w-full" id="searchComments">
+                        <div class="flex items-center w-full">
+                            <input type="text" name="search" placeholder="Search comments..." class="border rounded-md px-4 py-2 text-sm w-full" id="searchComments" value="{{ search_query }}">
+                        </div>
                     </div>
 
                     <!-- Filter Options -->
                     <div class="flex flex-col md:flex-row gap-4">
                         <!-- Filter by Category -->
-                        <select id="filterCategory" class="border rounded-md px-4 py-2 text-sm w-full">
+                        <select name="category" id="filterCategory" class="border rounded-md px-4 py-2 text-sm w-full">
                             <option value="">Filter by Category</option>
-                            <option value="Positive">Positive</option>
-                            <option value="Negative">Negative</option>
-                            <option value="Neutral">Neutral</option>
+                            <option value="Positive" {% if filter_category == 'Positive' %}selected{% endif %}>Positive</option>
+                            <option value="Negative" {% if filter_category == 'Negative' %}selected{% endif %}>Negative</option>
+                            <option value="Neutral" {% if filter_category == 'Neutral' %}selected{% endif %}>Neutral</option>
                         </select>
 
                         <!-- Filter by Faculty -->
-                        <select id="filterFaculty" class="border rounded-md px-4 py-2 text-sm w-full">
+                        <!-- Filter by Faculty -->
+                        <select name="faculty" id="filterFaculty" class="border rounded-md px-4 py-2 text-sm w-full">
                             <option value="">Filter by Faculty</option>
-                            <option value="Arram T. Pamisa">Arram T. Pamisa</option>
-                            <option value="Ferdinand Bascones">Ferdinand Bascones</option>
+                            {% for faculty in all_faculty %}
+                                <option value="{{ faculty.name }}" {% if filter_faculty == faculty.name %}selected{% endif %}>
+                                    {{ faculty.name }}
+                                </option>
+                            {% endfor %}
                         </select>
 
-                        <!-- Filter by College -->
-                        <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full">
-                            <option value="">Filter by College</option>
-                            <option value="CISC">CISC</option>
-                        </select>
+
+                            <!-- Filter by College -->
+                            <select name="college" id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full">
+                                <option value="">Select College</option> <!-- This option clears the filter -->
+                                {% for college in all_colleges %}
+                                    <option value="{{ college[0] }}" {% if filter_college == college[0] %}selected{% endif %}>
+                                        {{ college[0] }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+
+
                     </div>
                 </div>
-            </div>
+
+                <button type="submit" class="px-4 py-2  setdf  text-white">Apply Filters</button>
+            </form>
 
             <!-- Table Section -->
             <div class="table-container">
@@ -65,30 +80,42 @@
                                 <thead class="table-header">
                                     <tr>
                                         <th class="table-cell">No.</th>
-                                        <th class="table-cell">Comment</th>
+                                        <th class="table-cell">Comment ID</th>
+                                        <th class="table-cell">Faculty ID</th>
                                         <th class="table-cell">Category</th>
-                                        <th class="table-cell">Faculty Name</th>
-                                        <th class="table-cell hidden md:table-cell">Department</th>
-                                        <th class="table-cell hidden md:table-cell">College</th>
+                                        <th class="table-cell hidden md:table-cell">Status</th>
                                         <th class="table-cell hidden md:table-cell">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="table-body" id="commentsTableBody">
+                                    {% for sentiment_comment, comment, faculty in sentiment_comments.items %}
                                     <tr>
-                                        <td class="table-cell">1</td>
-                                        <td class="table-cell">Great course content!</td>
-                                        <td class="table-cell">Positive</td>
-                                        <td class="table-cell">Arram T. Pamisa</td>
-                                        <td class="table-cell hidden md:table-cell">Information Technology</td>
-                                        <td class="table-cell hidden md:table-cell">CISC</td>
+                                        <td class="table-cell">{{ loop.index + (sentiment_comments.page - 1) * sentiment_comments.per_page }}</td>
+                                        <td class="table-cell">{{ comment.content }}</td>
+                                        <td class="table-cell">{{ faculty.name }}</td>
+                                        <td class="table-cell">
+                                            {% if sentiment_comment.category == 0 %}
+                                                Neutral
+                                            {% elif sentiment_comment.category == 1 %}
+                                                Positive
+                                            {% elif sentiment_comment.category == 2 %}
+                                                Negative
+                                            {% endif %}
+                                        </td>
+                                        <td class="table-cell hidden md:table-cell">
+                                            {% if sentiment_comment.publish == 1 %}
+                                                Published
+                                            {% else %}
+                                                Unpublished
+                                            {% endif %}
+                                        </td>
                                         <td class="px-4 py-4 text-sm whitespace-nowrap hidden md:table-cell">
                                             <div class="flex space-x-2">
                                                 <a href="#" title="View" class="text-blue-500 hover:text-blue-700">View</a>
-                                                <a href="#" title="Update" class="text-yellow-500 hover:text-yellow-700">Update</a>
-                                                <a href="#" title="Delete" class="text-red-500 hover:text-red-700">Delete</a>
                                             </div>
                                         </td>
                                     </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
@@ -97,27 +124,35 @@
             </div>
 
             <div class="flex items-center justify-between mt-6">
-                <a href="#" class="flex items-center px-5 py-2 text-sm text-gray-700 bg-white border rounded-md gap-x-2 hover:bg-gray-100">
-                    <span>Previous</span>
-                </a>
+                {% if sentiment_comments.has_prev %}
+                    <a href="{{ url_for('comments', page=sentiment_comments.prev_num, search=search_query, category=filter_category, faculty=filter_faculty, college=filter_college) }}" class="flex items-center px-5 py-2 text-sm text-gray-700 bg-white border rounded-md gap-x-2 hover:bg-gray-100">
+                        <span>Previous</span>
+                    </a>
+                {% endif %}
 
                 <div class="items-center hidden md:flex gap-x-3">
-                    <a href="#" class="px-2 py-1 text-sm text-white bg-green-800 rounded-md">1</a>
-                    <a href="#" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">2</a>
-                    <a href="#" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">3</a>
-                    <a href="#" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">...</a>
-                    <a href="#" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">12</a>
+                    {% for page_num in range(1, sentiment_comments.pages + 1) %}
+                        {% if page_num == sentiment_comments.page %}
+                            <a href="#" class="px-2 py-1 text-sm text-white bg-green-800 rounded-md">{{ page_num }}</a>
+                        {% else %}
+                            <a href="{{ url_for('comments', page=page_num, search=search_query, category=filter_category, faculty=filter_faculty, college=filter_college) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">{{ page_num }}</a>
+                        {% endif %}
+                    {% endfor %}
                 </div>
 
-                <a href="#" class="flex items-center px-5 py-2 text-sm text-yellow-700 bg-white border rounded-md gap-x-2 hover:bg-yellow-400">
-                    <span>Next</span>
-                </a>
+                {% if sentiment_comments.has_next %}
+                    <a href="{{ url_for('comments', page=sentiment_comments.next_num, search=search_query, category=filter_category, faculty=filter_faculty, college=filter_college) }}" class="flex items-center px-5 py-2 text-sm text-yellow-700 bg-white border rounded-md gap-x-2 hover:bg-yellow-400">
+                        <span>Next</span>
+                    </a>
+                {% endif %}
             </div>
+
         </div>
+
+        {% include "includes/footer_container.html" %}
     </div>
 
-    {% include "includes/footer_container.html" %}
+    {% include "includes/public/footers.html" %}
 </div>
 
 {% endblock content %}
-{% include "includes/public/footers.html" %}

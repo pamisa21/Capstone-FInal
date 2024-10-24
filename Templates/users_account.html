@@ -96,24 +96,34 @@
                 </div>
             </div>
 
-            <!-- Pagination Section -->
+                        <!-- Pagination Section -->
             <div class="flex items-center justify-between mt-6">
-                <a href="#" class="flex items-center px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-gray-100">
+                <a href="{{ url_for('account', page=pagination.prev_num, search=request.args.get('search')) }}" 
+                class="flex items-center px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-gray-100"
+                {% if not pagination.has_prev %}style="pointer-events: none; opacity: 0.5;"{% endif %}>
                     <span>Previous</span>
                 </a>
 
                 <div class="items-center hidden md:flex gap-x-3">
-                    <a href="#" class="px-2 py-1 text-sm text-white rounded-md bg-green-800">1</a>
-                    <a href="#" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100">2</a>
-                    <a href="#" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100">3</a>
-                    <a href="#" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100">...</a>
-                    <a href="#" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100">12</a>
+                    {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if page_num %}
+                            <a href="{{ url_for('account', page=page_num, search=request.args.get('search')) }}" 
+                            class="px-2 py-1 text-sm {% if pagination.page == page_num %}text-white rounded-md bg-green-800{% else %}text-gray-500 hover:bg-gray-100{% endif %}">
+                                {{ page_num }}
+                            </a>
+                        {% else %}
+                            <span class="px-2 py-1">...</span>
+                        {% endif %}
+                    {% endfor %}
                 </div>
 
-                <a href="#" class="flex items-center px-5 py-2 text-sm text-yellow-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-yellow-400">
+                <a href="{{ url_for('account', page=pagination.next_num, search=request.args.get('search')) }}" 
+                class="flex items-center px-5 py-2 text-sm text-yellow-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-yellow-400"
+                {% if not pagination.has_next %}style="pointer-events: none; opacity: 0.5;"{% endif %}>
                     <span>Next</span>
                 </a>
             </div>
+
         </div>
     </div>
 

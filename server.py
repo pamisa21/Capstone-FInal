@@ -3,6 +3,8 @@ from models.models import Users
 from models.faculty_model import Faculty
 from models.comments_model import Comment
 from models.semester_model import Semester
+from models.sentement_model import SentimentComment
+
 from models.extensions import db
 from datetime import datetime
 

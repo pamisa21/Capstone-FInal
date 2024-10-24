@@ -5,3 +5,7 @@ notes if flask restart
 python -m pip install mysql-connector-python
  python -m pip install Flask-SQLAlchemy    
 pip install flask_sqlalchemy    
+python -m pip install PyMySQL      
+python -m pip install torch  
+python -m pip install transformers    
+python -m pip install cryptography

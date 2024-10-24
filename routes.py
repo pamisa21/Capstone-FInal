@@ -2,7 +2,7 @@ from flask import render_template, session, request, redirect, url_for, flash
 from server import app,db
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
-from server import Users,Faculty,Comment,Semester  # Make sure to import the Users model
+from server import Users,Faculty,Comment,Semester,SentimentComment  
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -141,27 +141,90 @@ def loading_history():
 def history():
     if 'username' in session:
         username = session['username']
-        return render_template('history.html', username=username)
-    return redirect(url_for('loading_screen', target=url_for('login')))
 
+        # Fetch sentiment data grouped by both semester_number and school_year where Comment.status = 1
+        history_data = (db.session.query(Comment.semester_number, Comment.school_year,
+                                         db.func.count(SentimentComment.id).label('total_comments'),
+                                         db.func.sum(db.case((SentimentComment.category == 1, 1), else_=0)).label('positive'),
+                                         db.func.sum(db.case((SentimentComment.category == 2, 1), else_=0)).label('negative'),
+                                         db.func.sum(db.case((SentimentComment.category == 0, 1), else_=0)).label('neutral'))
+                        .join(SentimentComment, SentimentComment.comment_id == Comment.comment_id)
+                        .join(Faculty, Faculty.id == Comment.faculty_id)  # Join with Faculty table if needed
+                        .filter(Comment.status == 1)
+                        .group_by(Comment.semester_number, Comment.school_year)  # Group by both semester_number and school_year
+                        .all())
+
+        return render_template('history.html', username=username, history_data=history_data)
+
+    return redirect(url_for('loading_screen', target=url_for('login')))
 
 # Routes for comments with loading screen
 @app.route('/loading_comments')
 def loading_comments():
     return redirect(url_for("loading_screen", target=url_for("comments")))
 
+
 @app.route('/comments')
 def comments():
     if 'username' in session:
         username = session['username']
-        return render_template('comments.html', username=username)
+        
+        # Get the page number and search query from the query parameters
+        page = request.args.get('page', 1, type=int)
+        per_page = 5  # Set the number of comments per page
+        search_query = request.args.get('search', '', type=str)  # Get the search query
+        filter_category = request.args.get('category', '', type=str)  # Get the filter category
+        filter_faculty = request.args.get('faculty', '', type=str)  # Get the filter faculty
+        filter_college = request.args.get('college', '', type=str)  # Get the filter college
+
+        # Base query for fetching comments
+        query = (db.session.query(SentimentComment, Comment, Faculty)
+                 .join(Comment, SentimentComment.comment_id == Comment.comment_id)
+                 .join(Faculty, Comment.faculty_id == Faculty.id))
+
+        # Apply search filter
+        if search_query:
+            query = query.filter(Comment.content.ilike(f'%{search_query}%'))
+
+        # Apply category filter
+        if filter_category:
+            if filter_category == "Positive":
+                query = query.filter(SentimentComment.category == 1)
+            elif filter_category == "Negative":
+                query = query.filter(SentimentComment.category == 2)
+            elif filter_category == "Neutral":
+                query = query.filter(SentimentComment.category == 0)
+
+        # Apply faculty filter
+        if filter_faculty:
+            query = query.filter(Faculty.name == filter_faculty)
+
+        # Apply college filter
+        if filter_college:
+            query = query.filter(Faculty.college == filter_college)
+
+        # Pagination
+        sentiment_comments = query.paginate(page=page, per_page=per_page, error_out=False)
+
+        # Get all faculty names and unique college names for the dropdowns
+        all_faculty = db.session.query(Faculty).all()  # Fetch all faculty records
+        all_colleges = db.session.query(Faculty.college).distinct().all()  # Fetch unique college names
+        
+        return render_template(
+            'comments.html',
+            username=username,
+            sentiment_comments=sentiment_comments,
+            search_query=search_query,
+            filter_category=filter_category,
+            filter_faculty=filter_faculty,
+            filter_college=filter_college,
+            all_faculty=all_faculty,  # Pass the faculty list to the template
+            all_colleges=all_colleges   # Pass the unique colleges list to the template
+        )
+    
     return redirect(url_for('loading_screen', target=url_for('login')))
 
 
-# Routes for user account with loading screen
-@app.route('/loading_users_account')
-def loading_users_account():
-    return redirect(url_for("loading_screen", target=url_for("account")))
 
 
 # Routes for profile with loading screen
@@ -203,14 +266,16 @@ def analys():
     if 'username' in session:
         username = session['username']
         search_query = request.args.get('search', '')
+        page = request.args.get('page', 1, type=int)  # Get the current page, default to 1
+        per_page = 5  # Number of results per page
 
         # Fetch the default semester details
         default_semester = Semester.query.first()  # Adjust this query as needed
-        
+
         # Check if default_semester is None
         if default_semester is None:
             flash('No current semester found. Please set the semester first.', 'error')
-            return redirect(url_for('loading_screen', target=url_for('analys'))) 
+            return redirect(url_for('loading_screen', target=url_for('analys')))
 
         # Prepare the query
         query = db.session.query(Comment, Faculty).join(Faculty, Comment.faculty_id == Faculty.id)\
@@ -227,30 +292,43 @@ def analys():
                 (Comment.content.ilike(f'%{search_query}%'))
             )
 
-        comments = query.all()  # Execute the query
+        # Apply pagination
+        comments_pagination = query.paginate(page=page, per_page=per_page, error_out=False)
 
-        return render_template('analys.html', username=username, comments=comments, default_semester=default_semester)
+        return render_template('analys.html', 
+                               username=username, 
+                               comments=comments_pagination.items,  # Items for the current page
+                               pagination=comments_pagination,  # Pagination object for navigation
+                               default_semester=default_semester)
 
-    return redirect(url_for('loading_screen', target=url_for('analys'))) 
+    return redirect(url_for('loading_screen', target=url_for('analys')))
 
+
+#account section 
 
 @app.route('/users_account', methods=['GET'])
 def account():
     if 'username' in session:
         username = session['username']
         search_query = request.args.get('search', '')  
-        if search_query:
-                user_members = Users.query.filter(
-                    (Users.name.ilike(f'%{search_query}%')) | 
-                    (Users.email.ilike(f'%{search_query}%'))
-                ).all()     
-        else:
-                user_members = Users.query.all()  # Get all faculty members if no search query
+        page = request.args.get('page', 1, type=int)  # Get the current page number, default to 1
+        per_page = 5  # Number of records per page
 
-        return render_template('users_account.html', username=username, user_members=user_members)
+        # Handle search functionality
+        if search_query:
+            user_members = Users.query.filter(
+                (Users.name.ilike(f'%{search_query}%')) | 
+                (Users.email.ilike(f'%{search_query}%'))
+            ).paginate(page=page, per_page=per_page, error_out=False)
+        else:
+            user_members = Users.query.paginate(page=page, per_page=per_page, error_out=False)
+
+        return render_template('users_account.html', 
+                               username=username, 
+                               user_members=user_members.items,  # Items for the current page
+                               pagination=user_members)  # Pagination object for navigation
 
     return redirect(url_for('loading_screen', target=url_for('login')))
-
 
 
 @app.route('/faculty', methods=['GET'])

@@ -79,9 +79,10 @@
                             <table class="data-table">
                                 <thead class="table-header">
                                     <tr>
-                                        <th class="table-cell">No.</th>
+                                        <th class="table-cell ">No.</th>
                                         <th class="table-cell">Comment ID</th>
                                         <th class="table-cell">Faculty ID</th>
+                                        <th class="table-cell text-center">Semester</th>
                                         <th class="table-cell">Category</th>
                                         <th class="table-cell hidden md:table-cell">Status</th>
                                         <th class="table-cell hidden md:table-cell">Actions</th>
@@ -93,12 +94,23 @@
                                         <td class="table-cell">{{ loop.index + (sentiment_comments.page - 1) * sentiment_comments.per_page }}</td>
                                         <td class="table-cell">{{ comment.content }}</td>
                                         <td class="table-cell">{{ faculty.name }}</td>
+                                        <td class="table-cell text-center">
+                                            {% if comment.semester_number == 1 %}
+                                            1st Semester - {{ comment.school_year }}
+                                        {% elif comment.semester_number == 2 %}
+                                            2nd Semester - {{ comment.school_year }}
+                                        {% elif comment.semester_number == 3 %}
+                                            Mid Year - {{ comment.school_year }}
+                                        {% else %}
+                                            Unknown Semester / {{ comment.school_year }}
+                                        {% endif %}
+                                        </td>
                                         <td class="table-cell">
-                                            {% if sentiment_comment.category == 0 %}
+                                            {% if sentiment_comment.category == 1 %}
                                                 Neutral
-                                            {% elif sentiment_comment.category == 1 %}
-                                                Positive
                                             {% elif sentiment_comment.category == 2 %}
+                                                Positive
+                                            {% elif sentiment_comment.category == 0 %}
                                                 Negative
                                             {% endif %}
                                         </td>
@@ -110,9 +122,13 @@
                                             {% endif %}
                                         </td>
                                         <td class="px-4 py-4 text-sm whitespace-nowrap hidden md:table-cell">
-                                            <div class="flex space-x-2">
-                                                <a href="#" title="View" class="text-blue-500 hover:text-blue-700">View</a>
-                                            </div>
+ 
+                                                <div class="flex space-x-2">
+                                                    <a href="{{ url_for('view_sentiment_comment', sentiment_comment_id=sentiment_comment.id) }}" title="View" class="text-blue-500 hover:text-blue-700">View</a>
+    
+                                                </div>
+
+                                            
                                         </td>
                                     </tr>
                                     {% endfor %}

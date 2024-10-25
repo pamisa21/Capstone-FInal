@@ -1,0 +1,85 @@
+{% extends "layout/base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/variable.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+{% endblock css %}
+
+{% block content %}
+<div class="flex flex-col h-screen">
+    <header>
+        {% include "includes/navbar.html" %}
+    </header>
+
+    <div class="flex flex-1">
+        {% include "includes/sidebar.html" %}
+
+        <!-- Main Content Container -->
+        {% include "includes/container.html" %}
+
+        <div class="p-4">
+            <h1 class="text-2xl font-bold">View Comment Details</h1>
+            <form class="space-y-4 mt-4">
+
+                <!-- Read-only Comment Content -->
+                <div class="flex flex-col">
+                    <label for="content" class="text-lg font-semibold">Comment</label>
+                    <textarea id="content" name="content" rows="3" readonly 
+                              class="p-2 border border-gray-300 rounded bg-gray-100">{{ comment.content }}</textarea>
+                </div>
+        
+                <!-- Faculty Name (non-editable) -->
+                <div class="flex flex-col">
+                    <label class="text-lg font-semibold">Faculty</label>
+                    <p class="p-2 border border-gray-300 rounded bg-gray-100">{{ faculty_name }}</p>
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-lg font-semibold">Category</label>
+                    <p class="p-2 border border-gray-300 rounded bg-gray-100">
+                        {% if sentiment_comment.category == 0 %}
+                            Negative
+                        {% elif sentiment_comment.category == 1 %}
+                            Neutral
+                        {% elif sentiment_comment.category == 2 %}
+                            Positive
+                        {% else %}
+                            Unknown
+                        {% endif %}
+                    </p>
+                </div>
+                
+
+                <!-- Semester and School Year (read-only together) -->
+                <div class="flex flex-col">
+                    <label class="text-lg font-semibold">Semester & School Year</label>
+                    <p class="p-2 border border-gray-300 rounded bg-gray-100">
+                        {% if comment.semester_number == 1 %}
+                            1st Semester - {{ comment.school_year }}
+                        {% elif comment.semester_number == 2 %}
+                            2nd Semester - {{ comment.school_year }}
+                        {% elif comment.semester_number == 3 %}
+                            Mid Year - {{ comment.school_year }}
+                        {% else %}
+                            Unknown Semester - {{ comment.school_year }}
+                        {% endif %}
+                    </p>
+                </div>
+
+                <!-- Date Added (non-editable) -->
+                <div class="flex flex-col">
+                    <label class="text-lg font-semibold">Comments Submited</label>
+                    <p class="p-2 border border-gray-300 rounded bg-gray-100">{{ comment.date_added.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                </div>
+
+                <!-- Back Button -->
+                <div class="text-right mt-4">
+                    <a href="{{ url_for('comments') }}" class="font-semibold text-green-600 hover:underline">Back to Comments List</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% include "includes/footer_container.html" %}
+</div>
+{% endblock content %}

@@ -22,18 +22,22 @@
         <div id="Comments" class="p-4">
             <!-- Filter and Search Section -->
             <div class="flex flex-col mb-3 gap-4">
-                <h1 class="text-2xl font-bold"> New Comments <span class="text-xs text-yellow-500">    
+                <div class="flex items-center justify-between">
+                    <h1 class="text-2xl font-bold"> New Comments <span class="text-xs text-yellow-500">    
                         {% if default_semester.semester_number == 1 %}1st Semester
                         {% elif default_semester.semester_number == 2 %}2nd Semester
                         {% elif default_semester.semester_number == 3 %}Mid Semester
                         {% else %}Unknown Semester
                         {% endif %} {{ default_semester.school_year }}</span> 
                     </h1>
-                    <div class="flex justify-start">
+                    <a >
                         <div class="flex-shrink-0">
-                            <a href="{{ url_for('add_comment') }}" class="start p-2 rounded-md setdf">Add Comment</a>
+                            <a href="{{ url_for('add_comment') }}" class="start p-2 rounded-md ">Add Comment</a>
                         </div>
-                    </div>
+                    </a>
+                    
+                </div>
+
                     
                 <div class="flex flex-col md:flex-row items-center md:items-start gap-4">
                     <!-- Search Input -->
@@ -46,8 +50,12 @@
                     </div>
                     <!-- Button -->
                     <div class="flex-shrink-0">
-                        <button class="start p-2  rounded-md">Start Sentiment Process</button>
+                        <form action="{{ url_for('start_sentiment') }}" method="POST">
+                            <button type="submit" class="start p-2 rounded-md">Start Sentiment Process</button>
+                        </form>
                     </div>
+                    
+                    
                 </div>
                 
             </div>
@@ -97,7 +105,7 @@
                                     </tr>
                                     {% else %}
                                     <tr>
-                                        <td colspan="6" class="table-cell text-center">No comments found.</td>
+                                        <td colspan="6" class="table-cell text-center">No new comments.</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>

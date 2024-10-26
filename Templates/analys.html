@@ -17,144 +17,144 @@
         {% include "includes/sidebar.html" %}
 
         <!-- Main Content Container -->
-        {% include "includes/container.html" %}
+        <main class="flex-1 p-5 mx-5 mt-[100px] ml-2 md:ml-60">
 
-        <div id="Comments" class="p-4">
-            <!-- Filter and Search Section -->
-            <div class="flex flex-col mb-3 gap-4">
-                <div class="flex items-center justify-between">
-                    <h1 class="text-2xl font-bold"> New Comments <span class="text-xs text-yellow-500">    
-                        {% if default_semester.semester_number == 1 %}1st Semester
-                        {% elif default_semester.semester_number == 2 %}2nd Semester
-                        {% elif default_semester.semester_number == 3 %}Mid Semester
-                        {% else %}Unknown Semester
-                        {% endif %} {{ default_semester.school_year }}</span> 
-                    </h1>
-                    <a >
-                        <div class="flex-shrink-0">
-                            <a href="{{ url_for('add_comment') }}" class="start p-2 rounded-md ">Add Comment</a>
+            <div id="Comments">
+                <!-- Filter and Search Section -->
+                <div class="flex flex-col mb-3 gap-4">
+                    <div class="flex items-center justify-between">
+                        <h1 class="text-2xl font-bold"> New Comments <span class="text-xs text-yellow-500">    
+                            {% if default_semester.semester_number == 1 %}1st Semester
+                            {% elif default_semester.semester_number == 2 %}2nd Semester
+                            {% elif default_semester.semester_number == 3 %}Mid Semester
+                            {% else %}Unknown Semester
+                            {% endif %} {{ default_semester.school_year }}</span> 
+                        </h1>
+                        <a >
+                            <div class="flex-shrink-0">
+                                <a href="{{ url_for('add_comment') }}" class="start p-2 rounded-md ">Add Comment</a>
+                            </div>
+                        </a>
+                        
+                    </div>
+
+                        
+                    <div class="flex flex-col md:flex-row items-center md:items-start gap-4">
+                        <!-- Search Input -->
+                        <div class="flex-grow">
+                            <form method="GET" action="{{ url_for('analys') }}" class="w-full">
+                                <input type="text" name="search" placeholder="Search comments..." 
+                                    class="border rounded-md px-4 py-2 text-sm w-full" 
+                                    id="searchComments" value="{{ request.args.get('search', '') }}">
+                            </form>
                         </div>
-                    </a>
-                    
-                </div>
-
-                    
-                <div class="flex flex-col md:flex-row items-center md:items-start gap-4">
-                    <!-- Search Input -->
-                    <div class="flex-grow">
-                        <form method="GET" action="{{ url_for('analys') }}" class="w-full">
-                            <input type="text" name="search" placeholder="Search comments..." 
-                                class="border rounded-md px-4 py-2 text-sm w-full" 
-                                id="searchComments" value="{{ request.args.get('search', '') }}">
-                        </form>
+                        <!-- Button -->
+                        <div class="flex-shrink-0">
+                            <form action="{{ url_for('start_sentiment') }}" method="POST">
+                                <button type="submit" class="start p-2 rounded-md">Start Sentiment Process</button>
+                            </form>
+                        </div>
+                        
+                        
                     </div>
-                    <!-- Button -->
-                    <div class="flex-shrink-0">
-                        <form action="{{ url_for('start_sentiment') }}" method="POST">
-                            <button type="submit" class="start p-2 rounded-md">Start Sentiment Process</button>
-                        </form>
-                    </div>
-                    
                     
                 </div>
                 
-            </div>
-            
 
-            <!-- Table Section -->
-            <div class="table-container">
-                <div class="overflow-x-auto">
-                    <div class="table-wrapper">
-                        <div class="table-border">
-                            <table class="data-table">
-                                <thead class="table-header">
-                                    <tr>
-                                        <th class="table-cell">No.</th>
-                                        <th class="table-cell">Comment</th>
-                                        <th class="table-cell">Faculty Name</th>
-                                        <th class="table-cell hidden md:table-cell">Semester</th>
-                                        <th class="table-cell hidden md:table-cell">Date Created</th>
-                                        <th class="table-cell hidden md:table-cell">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="table-body" id="commentsTableBody">
-                                    {% for comment, faculty in comments %}
-                                    <tr>
-                                        <td class="table-cell">{{ loop.index }}</td>
-                                        <td class="table-cell">{{ comment.content }}</td>
-                                        <td class="table-cell">{{ faculty.name }}</td>
-                                        <td class="table-cell hidden md:table-cell">
-                                            {% if comment.semester_number == 1 %}
-                                                1st Semester - {{ comment.school_year }}
-                                            {% elif comment.semester_number == 2 %}
-                                                2nd Semester - {{ comment.school_year }}
-                                            {% elif comment.semester_number == 3 %}
-                                                Mid Year - {{ comment.school_year }}
-                                            {% else %}
-                                                Unknown Semester / {{ comment.school_year }}
-                                            {% endif %}
-                                        </td>
-                                        <td class="table-cell hidden md:table-cell">{{ comment.date_added.strftime('%Y-%m-%d') }}</td>
-                                        
-                                        <td class="px-4 py-4 text-sm whitespace-nowrap hidden md:table-cell">
-                                            <div class="flex space-x-2">
-                                                <a href="{{ url_for('view_comment', comment_id=comment.comment_id) }}" title="View" class="text-blue-500 hover:text-blue-700">View</a>
+                <!-- Table Section -->
+                <div class="table-container">
+                    <div class="overflow-x-auto">
+                        <div class="table-wrapper">
+                            <div class="table-border">
+                                <table class="data-table">
+                                    <thead class="table-header">
+                                        <tr>
+                                            <th class="table-cell">No.</th>
+                                            <th class="table-cell">Comment</th>
+                                            <th class="table-cell">Faculty Name</th>
+                                            <th class="table-cell hidden md:table-cell">Semester</th>
+                                            <th class="table-cell hidden md:table-cell">Date Created</th>
+                                            <th class="table-cell hidden md:table-cell">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="table-body" id="commentsTableBody">
+                                        {% for comment, faculty in comments %}
+                                        <tr>
+                                            <td class="table-cell">{{ loop.index }}</td>
+                                            <td class="table-cell">{{ comment.content }}</td>
+                                            <td class="table-cell">{{ faculty.name }}</td>
+                                            <td class="table-cell hidden md:table-cell">
+                                                {% if comment.semester_number == 1 %}
+                                                    1st Semester - {{ comment.school_year }}
+                                                {% elif comment.semester_number == 2 %}
+                                                    2nd Semester - {{ comment.school_year }}
+                                                {% elif comment.semester_number == 3 %}
+                                                    Mid Year - {{ comment.school_year }}
+                                                {% else %}
+                                                    Unknown Semester / {{ comment.school_year }}
+                                                {% endif %}
+                                            </td>
+                                            <td class="table-cell hidden md:table-cell">{{ comment.date_added.strftime('%Y-%m-%d') }}</td>
+                                            
+                                            <td class="px-4 py-4 text-sm whitespace-nowrap hidden md:table-cell">
+                                                <div class="flex space-x-2">
+                                                    <a href="{{ url_for('view_comment', comment_id=comment.comment_id) }}" title="View" class="text-blue-500 hover:text-blue-700">View</a>
 
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    {% else %}
-                                    <tr>
-                                        <td colspan="6" class="table-cell text-center">No new comments.</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                                
-                                
-                                
-                            </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="6" class="table-cell text-center">No new comments.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    
+                                    
+                                    
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Pagination Section -->
-            <div class="flex items-center justify-between mt-6">
-                <!-- Previous Page Link -->
-                <a href="{{ url_for('analys', page=pagination.prev_num, search=request.args.get('search')) }}" 
-                class="flex items-center px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-gray-100"
-                {% if not pagination.has_prev %}style="pointer-events: none; opacity: 0.5;"{% endif %}>
-                    <span>Previous</span>
-                </a>
+                
+                <!-- Pagination Section -->
+                <div class="flex items-center justify-between mt-6">
+                    <!-- Previous Page Link -->
+                    <a href="{{ url_for('analys', page=pagination.prev_num, search=request.args.get('search')) }}" 
+                    class="flex items-center px-5 py-2 text-sm text-green-900 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-gray-100"
+                    {% if not pagination.has_prev %}style="pointer-events: none; opacity: 0.5;"{% endif %}>
+                        <span>Previous</span>
+                    </a>
 
-                <!-- Page Numbers -->
-                <div class="items-center hidden md:flex gap-x-3">
-                    {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
-                        {% if page_num %}
-                            <a href="{{ url_for('analys', page=page_num, search=request.args.get('search')) }}" 
-                            class="px-2 py-1 text-sm {% if pagination.page == page_num %}text-white rounded-md bg-green-800{% else %}text-gray-500 hover:bg-gray-100{% endif %}">
-                                {{ page_num }}
-                            </a>
-                        {% else %}
-                            <span class="px-2 py-1">...</span>
-                        {% endif %}
-                    {% endfor %}
+                    <!-- Page Numbers -->
+                    <div class="items-center hidden md:flex gap-x-3">
+                        {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                            {% if page_num %}
+                                <a href="{{ url_for('analys', page=page_num, search=request.args.get('search')) }}" 
+                                class="px-2 py-1 text-sm {% if pagination.page == page_num %}text-white rounded-md bg-green-800{% else %}text-green-900 hover:bg-gray-100{% endif %}">
+                                    {{ page_num }}
+                                </a>
+                            {% else %}
+                                <span class="px-2 py-1">...</span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <!-- Next Page Link -->
+                    <a href="{{ url_for('analys', page=pagination.next_num, search=request.args.get('search')) }}" 
+                    class="flex items-center px-5  py-2 mt-2 text-sm text-yellow-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-yellow-400"
+                    {% if not pagination.has_next %}style="pointer-events: none; opacity: 0.5;"{% endif %}>
+                        <span>Next</span>
+                    </a>
                 </div>
 
-                <!-- Next Page Link -->
-                <a href="{{ url_for('analys', page=pagination.next_num, search=request.args.get('search')) }}" 
-                class="flex items-center px-5 py-2 text-sm text-yellow-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-yellow-400"
-                {% if not pagination.has_next %}style="pointer-events: none; opacity: 0.5;"{% endif %}>
-                    <span>Next</span>
-                </a>
+
+            
             </div>
-
-
-        
         </div>
-    </div>
 
-    {% include "includes/footer_container.html" %}
+    </main>
 </div>
 
 {% endblock content %}

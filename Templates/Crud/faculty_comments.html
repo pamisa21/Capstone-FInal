@@ -1,0 +1,135 @@
+{% extends "layout/base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/variable.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+{% endblock css %}
+
+{% block content %}
+<div class="flex flex-col h-screen">
+    <header>
+        {% include "includes/navbar.html" %}
+    </header>
+
+    <div class="flex flex-1">
+        {% include "includes/sidebar.html" %}
+
+        <!-- Main Content Container -->
+        {% include "includes/container.html" %}
+
+        <div id="Comments">
+           
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- Total Comments Card -->
+            <div class="bg-green-900 text-white rounded-lg shadow-md mb-5 p-8 flex flex-col">
+                <h2 class="text-lg font-semibold">Total Comments</h2>
+                <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-yellow-500 text-sm">Comments</span></h4>
+            </div>
+
+            <!-- Positive Comments Card -->
+            <div class="bg-white border-l-4 border-green-500 rounded-lg shadow-md mb-5 p-8 flex flex-col">
+                <h2 class="text-lg font-semibold green">Positive</h2>
+                <h4 class="text-3xl font-bold text-center text-green-500">{{ positive_comments }} <span class="ml-2 text-sm">Comments</span></h4>
+            </div>
+
+            <!-- Negative Comments Card -->
+            <div class="bg-white border-l-4 border-red-500 rounded-lg shadow-md mb-5 p-8 flex flex-col relative">
+                <h2 class="text-lg font-semibold text-red-500 green">Negative</h2>
+                <h4 class="text-3xl font-bold text-center text-red-500">{{ negative_comments }} <span class="ml-2 text-sm">Comments</span></h4>
+            </div>
+
+            <!-- Neutral Comments Card -->
+            <div class="bg-white border-l-4 border-yellow-500 rounded-lg shadow-md mb-5 p-8 flex flex-col relative">
+                <h2 class="text-lg font-semibold text-yellow-500 green">Neutral</h2>
+                <h4 class="text-3xl font-bold text-center text-yellow-500">{{ neutral_comments }} <span class="ml-2 text-sm">Comments</span></h4>
+            </div>
+
+            </div>
+            <div class="mt-4">
+                <h2 class="text-lg font-bold">Comments</h2>
+                <div class="overflow-x-auto">
+                    <div class="table-border">
+                        <table class="data-table">
+                            <thead class="table-header">
+                                <tr>
+                                    <th class="table-cell">no</th>
+                                    <th class="table-cell">Comment</th>
+                                    <th class="table-cell">Category</th>
+                                    <th class="table-cell">Semester Numbers</th>
+                                    <th class="table-cell">Date Added</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-body">
+                                {% for comment, sentiment in comments %}
+                                <tr>
+                                    <td class="table-cell">{{ loop.index}}</td>
+                                    <td class="table-cell">{{ comment.content }}</td>
+                                    <td class="table-cell">
+                                        {% if sentiment.category == 1 %}
+                                            Neutral
+                                        {% elif sentiment.category == 2 %}
+                                            Positive
+                                        {% elif sentiment.category == 0 %}
+                                            Negative
+                                        {% else %}
+                                            Unknown
+                                        {% endif %}
+                                    </td>
+                                    
+                                    <td class="table-cell">   {% if comment.semester_number == 1 %}
+                                        1st Semester - {{ comment.school_year }}
+                                    {% elif comment.semester_number == 2 %}
+                                        2nd Semester - {{ comment.school_year }}
+                                    {% elif comment.semester_number == 3 %}
+                                        Mid Year - {{ comment.school_year }}
+                                    {% else %}
+                                        Unknown Semester / {{ comment.school_year }}
+                                    {% endif %}</td> <!-- Assuming this field exists in SentimentComment -->
+                                    <td class="table-cell">{{ comment.date_added.strftime('%B %d, %Y') }}</td>
+
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="table-cell text-center">No comments available.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="flex items-center justify-between mt-6">
+                        {% if sentiment_comments.has_prev %}
+                            <a href="{{ url_for('faculty_comments', id=faculty.id, page=sentiment_comments.prev_num) }}" class="flex items-center px-5 py-2 text-sm text-gray-700 bg-white border rounded-md gap-x-2 hover:bg-gray-100">
+                                <span>Previous</span>
+                            </a>
+                        {% endif %}
+                    
+                        <div class="items-center hidden md:flex gap-x-3">
+                            {% for page_num in range(1, sentiment_comments.pages + 1) %}
+                                {% if page_num == sentiment_comments.page %}
+                                    <a href="#" class="px-2 py-1 text-sm text-white bg-green-800 rounded-md">{{ page_num }}</a>
+                                {% else %}
+                                    <a href="{{ url_for('faculty_comments', id=faculty.id, page=page_num) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">{{ page_num }}</a>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    
+                        {% if sentiment_comments.has_next %}
+                            <a href="{{ url_for('faculty_comments', id=faculty.id, page=sentiment_comments.next_num) }}" class="flex items-center px-5 py-2 text-sm text-yellow-700 bg-white border rounded-md gap-x-2 hover:bg-yellow-400">
+                                <span>Next</span>
+                            </a>
+                        {% endif %}
+                        <div class="text-right mt-4">
+                            <a href="{{ request.referrer }}" class="font-semibold text-green-600 hover:underline">Back</a>
+        
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include "includes/footer_container.html" %}
+</div>
+{% endblock content %} 

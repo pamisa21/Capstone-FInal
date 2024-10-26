@@ -1,0 +1,140 @@
+{% extends "layout/base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/variable.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+{% endblock css %}
+
+{% block content %}
+
+<div class="flex flex-col h-screen">
+    <header>
+        {% include "includes/navbar.html" %}
+    </header>
+
+    <div class="flex flex-1">
+        {% include "includes/sidebar.html" %}
+
+        <!-- Main Content Container -->
+        <main class="flex-1 p-5 mx-5 mt-[100px] ml-2 md:ml-60">
+
+            <div id="Comments" class="p-4">
+                <!-- Filter and Search Section -->
+                <form method="get" action="{{ url_for('semester_comments', semester=semester, year=year) }}" class="flex flex-col mb-3 gap-4">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-2xl font-bold">Sentiment Results for 
+                            <span class="text-yellow-500 ml-2 text-sm">
+                                {% if semester == 1 %}1st Semester
+                                {% elif semester == 2 %}2nd Semester
+                                {% elif semester == 3 %}Mid Semester
+                                {% else %}Unknown Semester
+                                {% endif %}
+                                - {{ year }}
+                            </span>
+                        </h2>
+                    </div>
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <select name="category" id="filterCategory" class="border rounded-md px-4 py-2 text-sm w-full">
+                            <option value="">Filter by Category</option>
+                            <option value="Positive" {% if filter_category == 'Positive' %}selected{% endif %}>Positive</option>
+                            <option value="Negative" {% if filter_category == 'Negative' %}selected{% endif %}>Negative</option>
+                            <option value="Neutral" {% if filter_category == 'Neutral' %}selected{% endif %}>Neutral</option>
+                        </select>
+                    
+                        <select name="faculty" id="filterFaculty" class="border rounded-md px-4 py-2 text-sm w-full">
+                            <option value="">Filter by Faculty</option>
+                            {% for faculty in all_faculty %}
+                                <option value="{{ faculty.name }}" {% if filter_faculty == faculty.name %}selected{% endif %}>
+                                    {{ faculty.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        
+                    </div>
+                    <button type="submit" class="px-4 py-2 setdf border rounded-md">Apply Filters</button>
+                </form>
+                
+                
+                
+                <!-- Table Section -->
+                <div class="table-container">
+                    <div class="overflow-x-auto">
+                        <div class="table-wrapper">
+                            <div class="table-border">
+                                <table class="data-table">
+                                    <thead class="table-header">
+                                        <tr>
+                                            <th class="table-cell">No.</th>
+                                            <th class="table-cell">Comment</th>
+                                            <th class="table-cell">Faculty Name</th>
+                                            <th class="table-cell">Category</th>
+                                            <th class="table-cell ">Date Created</th>
+                                            <th class="table-cell">Actions</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody class="table-body" id="commentsTableBody">
+                                        {% for comment, sentiment, faculty_name in comments_data %}
+                                        <tr>
+                                            <td class="table-cell">{{ loop.index }}</td>
+                                            <td class="table-cell">{{ comment.content }}</td>
+                                            <td class="table-cell">{{ faculty_name }}</td>  <!-- Updated line -->
+                                            <td class="table-cell">
+                                                {% if sentiment.category == 2 %}
+                                                    Positive
+                                                {% elif sentiment.category == 0 %}
+                                                    Negative
+                                                {% elif sentiment.category == 1 %}
+                                                    Neutral
+                                                {% else %}
+                                                    Unknown
+                                                {% endif %}
+                                            </td>
+                                            <td class="table-cell ">{{ comment.date_added.strftime('%B - %d - %Y') }}</td>
+                                            <td class="px-4 py-4 text-sm whitespace-nowrap hidden md:table-cell">
+                                                <div class="flex space-x-2">
+                                                    <a href="{{ url_for('view_sentiment_comment', sentiment_comment_id=sentiment.id) }}" title="View" class="text-blue-500 hover:text-blue-700">View</a>
+
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="6" class="table-cell text-center">No new comments.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    
+                                    
+                                </table>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:flex gap-x-3">
+                    {% for page_num in range(1, comments_data.pages + 1) %}
+                        {% if page_num == comments_data.page %}
+                            <span class="px-2 py-1 text-sm text-white bg-green-800 rounded-md">{{ page_num }}</span>
+                        {% else %}
+                            <a href="{{ url_for('semester_comments', semester=semester, year=year, page=page_num, category=filter_category, faculty=filter_faculty, college=filter_college) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">{{ page_num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <a href="{{ url_for('history') }}" class="ml-auto font-semibold text-green-600 hover:underline">Back to Comments List</a>
+                </div>
+                
+                
+            
+
+
+
+            </div>
+    </div>
+
+    {% include "includes/footer_container.html" %}
+</div>
+
+{% endblock content %}
+{% include "includes/public/footers.html" %}

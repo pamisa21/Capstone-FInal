@@ -30,7 +30,8 @@ def predict_sentiment(text):
 @app.route('/loading_screen')
 def loading_screen():
     # This route shows the loading screen, then redirects
-    target = request.args.get("target")@app.route('/')
+    target = request.args.get("target")
+    return render_template("loading.html", redirect_url=target)
 
 #Main 
 @app.route('/')
@@ -52,21 +53,24 @@ def login():
         password = request.form['password']
     
         user = Users.query.filter_by(email=email).first()
+        
         if user:
-            if user.password == password:  
-                session['username'] = user.name 
-                session['user_id'] = user.id  
-                return redirect(url_for("loading_screen", target=url_for("dashboard")))
+            if user.status == 1:  # Check if user is active
+                if user.password == password:
+                    session['username'] = user.name 
+                    session['user_id'] = user.id  
+                    return redirect(url_for("loading_screen", target=url_for("dashboard")))
+                else:
+                    flash("Invalid password!", "error")
             else:
-                flash("Invalid password!", "error")  
-        else:
-            flash("Email not found!", "error")  
+               flash("Account is not authorized to access the admin page. Access is restricted to staff and admin only. Please contact support if you need assistance.", "error")
 
-        return redirect(url_for("login"))  
+        else:
+            flash("Email not found!", "error")
+
+        return redirect(url_for("login"))
 
     return render_template('Auth/login.html')
-
-
 
 #Register
 @app.route('/register', methods=['GET', 'POST'])
@@ -76,7 +80,8 @@ def register():
         username = request.form['username']
         password = request.form['password']
         confpassword = request.form['confpassword']
-        
+        status = 1
+
         if password != confpassword:  
             flash("Passwords do not match!", "error")
             return redirect(url_for('register_page'))
@@ -86,7 +91,8 @@ def register():
             flash("Email address already exists!", "error")
             return redirect(url_for('register_page'))
 
-        new_user = Users(name=username, email=email, password=password)
+        # Assuming the Users model includes a 'status' field
+        new_user = Users(name=username, email=email, password=password, status=status)
         
         db.session.add(new_user)
         db.session.commit()
@@ -107,9 +113,8 @@ def register_page():
 @app.route('/logout')
 def logout():
     session.pop('username', None)
-    return redirect(url_for('loading_screen', target=url_for('login')))
-
-
+    session.pop('user_id', None)
+    return redirect(url_for('loading_screen', target=url_for('main')))
 
 
 
@@ -268,12 +273,11 @@ def history():
     if 'username' in session:
         username = session['username']
 
-
         history_data = (db.session.query(Comment.semester_number, Comment.school_year,
                                          db.func.count(SentimentComment.id).label('total_comments'),
-                                         db.func.sum(db.case((SentimentComment.category == 1, 1), else_=0)).label('positive'),
-                                         db.func.sum(db.case((SentimentComment.category == 2, 1), else_=0)).label('negative'),
-                                         db.func.sum(db.case((SentimentComment.category == 0, 1), else_=0)).label('neutral'))
+                                         db.func.sum(db.case((SentimentComment.category == 2, 1), else_=0)).label('positive'),
+                                         db.func.sum(db.case((SentimentComment.category == 0, 1), else_=0)).label('negative'),
+                                         db.func.sum(db.case((SentimentComment.category == 1, 1), else_=0)).label('neutral'))
                         .join(SentimentComment, SentimentComment.comment_id == Comment.comment_id)
                         .join(Faculty, Faculty.id == Comment.faculty_id)  
                         .filter(Comment.status == 1)
@@ -284,15 +288,69 @@ def history():
 
     return redirect(url_for('loading_screen', target=url_for('login')))
 
-
 #   Loading  History 
 @app.route('/loading_history')
 def loading_history():
     return redirect(url_for("loading_screen", target=url_for("history")))
 
 
+# View Coments Sentiment Resutls Routes s
+@app.route('/semester_comments/<int:semester>/<string:year>')
+def semester_comments(semester, year):
+    if 'username' in session:
+        username = session['username']
+        page = request.args.get('page', 1, type=int)
+        filter_category = request.args.get('category')
+        filter_faculty = request.args.get('faculty')
+        filter_college = request.args.get('college')
 
+        faculties_with_comments = (
+            db.session.query(Faculty)
+            .join(Comment, Comment.faculty_id == Faculty.id)
+            .filter(Comment.semester_number == semester, Comment.school_year == year, Comment.status == 1)
+            .group_by(Faculty.id)
+            .all()
+        )
 
+        # Base query for comments
+        query = (
+            db.session.query(Comment, SentimentComment, Faculty.name.label('faculty_name'))
+            .join(SentimentComment, SentimentComment.comment_id == Comment.comment_id)
+            .join(Faculty, Comment.faculty_id == Faculty.id)
+            .filter(Comment.semester_number == semester, Comment.school_year == year, Comment.status == 1)
+        )
+
+        # Apply category filter based on selected value
+        if filter_category:
+            if filter_category == "Positive":
+                query = query.filter(SentimentComment.category == 2)
+            elif filter_category == "Negative":
+                query = query.filter(SentimentComment.category == 0)
+            elif filter_category == "Neutral":
+                query = query.filter(SentimentComment.category == 1)
+
+        # Apply faculty name filter if provided
+        if filter_faculty:
+            query = query.filter(Faculty.name == filter_faculty)
+        if filter_college:
+            query = query.filter(Faculty.college == filter_college)
+
+        # Paginate the query
+        comments_data = query.paginate(page=page, per_page=5, error_out=False)
+
+        return render_template(
+            'Crud/semester_comments.html',
+            username=username,
+            comments_data=comments_data,
+            semester=semester,
+            year=year,
+            filter_category=filter_category,
+            filter_faculty=filter_faculty,
+            filter_college=filter_college,
+            all_faculty=faculties_with_comments
+        )
+
+    return redirect(url_for('loading_screen', target=url_for('login')))
 
 #   Comments  || Sentiment Process
 
@@ -321,11 +379,11 @@ def comments():
         # Apply category filter
         if filter_category:
             if filter_category == "Positive":
-                query = query.filter(SentimentComment.category == 1)
-            elif filter_category == "Negative":
                 query = query.filter(SentimentComment.category == 2)
-            elif filter_category == "Neutral":
+            elif filter_category == "Negative":
                 query = query.filter(SentimentComment.category == 0)
+            elif filter_category == "Neutral":
+                query = query.filter(SentimentComment.category == 1)
 
         # Apply faculty filter
         if filter_faculty:
@@ -437,14 +495,15 @@ def account():
         page = request.args.get('page', 1, type=int)  # Get the current page number, default to 1
         per_page = 5  # Number of records per page
 
-        # Handle search functionality
+        # Handle search functionality and filter by status = 1
         if search_query:
             user_members = Users.query.filter(
-                (Users.name.ilike(f'%{search_query}%')) | 
-                (Users.email.ilike(f'%{search_query}%'))
+                (Users.status == 1) &
+                ((Users.name.ilike(f'%{search_query}%')) | 
+                 (Users.email.ilike(f'%{search_query}%')))
             ).paginate(page=page, per_page=per_page, error_out=False)
         else:
-            user_members = Users.query.paginate(page=page, per_page=per_page, error_out=False)
+            user_members = Users.query.filter_by(status=1).paginate(page=page, per_page=per_page, error_out=False)
 
         return render_template('users_account.html', 
                                username=username, 
@@ -452,6 +511,7 @@ def account():
                                pagination=user_members)  # Pagination object for navigation
 
     return redirect(url_for('loading_screen', target=url_for('login')))
+
 
 
 #    view staff 
@@ -517,22 +577,23 @@ def faculty():
         username = session['username']
         search_query = request.args.get('search', '')  
         selected_college = request.args.get('college', '') 
+        page = request.args.get('page', 1, type=int)  # Get current page number
 
         query = Faculty.query
 
-
+        # Apply search filter
         if search_query:
             query = query.filter(
                 (Faculty.name.ilike(f'%{search_query}%')) |
                 (Faculty.email.ilike(f'%{search_query}%'))
             )
 
-  
+        # Apply college filter
         if selected_college:
             query = query.filter(Faculty.college.ilike(f'%{selected_college}%'))
 
-   
-        faculty_members = query.all()
+        # Paginate the results
+        faculty_members = query.paginate(page=page, per_page=5, error_out=False)
 
         return render_template('faculty.html', username=username, faculty_members=faculty_members)
 
@@ -650,6 +711,52 @@ def delete_faculty(id):
         else:
             flash('Faculty member not found.', 'error') 
         return redirect(url_for('faculty'))  
+    return redirect(url_for('loading_screen', target=url_for('login')))
+
+# View Faculty Commnets 
+
+@app.route('/faculty/comments/<int:id>', methods=['GET'])
+def faculty_comments(id):
+    if 'username' in session:
+        username = session['username']
+        
+        # Fetch the faculty member
+        faculty_member = Faculty.query.get(id)
+        if faculty_member is None:
+            flash('Faculty member not found!', 'error')
+            return redirect(url_for('faculty'))
+
+        # Get the page number from query parameters, default to 1
+        page = request.args.get('page', 1, type=int)
+
+        # Fetch comments and their sentiment analysis using inner joins
+        comments_query = (
+            db.session.query(Comment, SentimentComment)
+            .join(SentimentComment, Comment.comment_id == SentimentComment.comment_id)
+            .filter(Comment.faculty_id == id)
+        )
+        
+        # Paginate the results
+        sentiment_comments = comments_query.paginate(page=page, per_page=5)
+
+        # Initialize counters
+        total_comments = sentiment_comments.total
+        positive_comments = sum(1 for _, sentiment in sentiment_comments.items if sentiment.category == 2)
+        negative_comments = sum(1 for _, sentiment in sentiment_comments.items if sentiment.category == 0)
+        neutral_comments = sum(1 for _, sentiment in sentiment_comments.items if sentiment.category == 1)
+
+        return render_template(
+            'Crud/faculty_comments.html',
+            username=username,
+            faculty=faculty_member,
+            comments=sentiment_comments.items,
+            total_comments=total_comments,
+            positive_comments=positive_comments,
+            negative_comments=negative_comments,
+            neutral_comments=neutral_comments,
+            sentiment_comments=sentiment_comments
+        )
+
     return redirect(url_for('loading_screen', target=url_for('login')))
 
 

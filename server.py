@@ -14,6 +14,7 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 # Configure the SQLAlchemy part of the app instance
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/ComFES'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['FES_LOGO_PATH'] = '/static/img/feslogo.png'
 
 # Initialize SQLAlchemy with the app
 db.init_app(app)

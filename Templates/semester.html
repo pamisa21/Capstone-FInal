@@ -43,6 +43,13 @@
                                {% else %}Unknown
                                {% endif %}" readonly>
                     </div>
+                    <div class="flex flex-col">
+                        <label for="student_num" class="text-lg font-semibold">Total Numbers Of Students</label>
+                        <input type="text" id="student_num" name="student_num" 
+                               class="p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-300" 
+                               value="{{ default_semester.student_num }}" readonly>
+                    </div>
+                    
 
                     <div class="flex space-x-4">
                         <a href="{{ url_for('edit_semester') }}" 

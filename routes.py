@@ -811,7 +811,7 @@ def faculty_comments(id):
 def semester():
     if 'username' in session:
         username = session['username']
-        default_semester = Semester.query.first() 
+        default_semester = Semester.query.first()  # Fetch the first semester
         return render_template('semester.html', username=username, default_semester=default_semester)
     return redirect(url_for('loading_screen', target=url_for('semester')))
 
@@ -821,33 +821,39 @@ def edit_semester():
     if 'username' in session:
         username = session['username']
         
-        # Fetch the current default semester
-        default_semester = Semester.query.first()  # Adjust the query as needed
+       
+        default_semester = Semester.query.first() 
         
         if request.method == 'POST':
-            # Handle the form submission to edit the semester
             semester_number = request.form.get('semester_number')
             school_year = request.form.get('school_year')
+            student_num = request.form.get('student_num') 
+
+            print(f'Semester Number: {semester_number}, School Year: {school_year}, Student Num: {student_num}')
+      
             
-            # Update the semester details
             default_semester.semester_number = semester_number
             default_semester.school_year = school_year
+            default_semester.student_num = student_num  
             
-            # Commit changes to the database
+           
             db.session.commit()
             
-            # Redirect back to the semester page
+       
             return redirect(url_for('semester'))
         
-        # Render the edit semester page with the current default semester details
+        
         return render_template('Crud/edit_semester.html', username=username, default_semester=default_semester)
     
     return redirect(url_for('loading_screen', target=url_for('edit_semester')))
 
+
+
+
 # get Faculty
 def get_faculties():
     """Helper function to retrieve the list of faculties."""
-    return Faculty.query.all()  # Fetch all faculties from the database
+    return Faculty.query.all()  
 
 
 

@@ -10,6 +10,8 @@ class Semester(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     school_year = db.Column(db.String(20), nullable=False)  # E.g., "2024-2025"
     semester_number = db.Column(db.Integer, nullable=False)  # Numeric representation of the semester
+    student_num = db.Column(db.Integer, nullable=False)
+    
 
     def __repr__(self):
         return f'<Semester {self.school_year} - {self.semester_number}>'

@@ -19,7 +19,7 @@
         {% include "includes/sidebar.html" %}
 
         <!-- Main Content Container -->
-        {% include "includes/container.html" %}
+        <main class="flex-1 p-5 mx-5 mt-24 ml-2 md:ml-60">
 
 
             <!-- {% include "includes/container.html" %}  -->
@@ -92,6 +92,56 @@
                         <canvas id="sentimentPieChart" width="200" height="200"></canvas>
                     </div>
                 </div>
+               
+                <div class="table-container">
+                    
+                    <div class="overflow-x-auto">
+                        <div class="table-wrapper"><h1 class="ml-5 p-2  green text-center">List of Faculty </h1>
+                            <div class="table-border">
+                                <table class="data-table">
+                                    <thead class="table-header">
+                                        <tr>
+                                            <th class="table-cell">No</th>
+                                            <th class="table-cell">Faculty</th>
+                                            <th class="table-cell">Department and College</th>
+                                            <th class="table-cell">Sentiment Results</th>
+                                           
+                    
+                                        </tr>
+                                    </thead>
+                                    <tbody class="table-body" id="accountsTableBody">
+                                        {% for faculty in faculty_members %}
+                                        <tr>
+                                            <td class="table-cell">{{ loop.index}}</td>
+
+                                            <td class="table-cell">
+                                               {{ faculty.name }} <br>
+                                               <span  class="text-xs text-yellow-500">{{ faculty.email }}</span>
+                                               
+                                            </td>
+
+                                            <td class="table-cell">
+                                                {{ faculty.department }} <br>
+                                                <span  class="text-xs green">{{ faculty.college }}</span>
+                                                
+                                             </td>
+                                            <td class="px-4 py-4 text-sm whitespace-nowrap">
+                                                <div class="flex space-x-2">
+                                                    <a href="{{ url_for('faculty_comments', id=faculty.id) }}" title="Comments" class="text-green-500 hover:text-yellow-700 border border-green-500 rounded-md p-2">View Comments</a>
+                                                </div>
+                                            </td>
+                                            
+                                            <td class="px-4 py-4 text-sm whitespace-nowrap">
+
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
 
@@ -99,7 +149,7 @@
 
 
             
-        {% include "includes/footer_container.html" %}
+        </main>
     </div>
     
 </div>

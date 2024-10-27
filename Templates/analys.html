@@ -47,6 +47,13 @@
                                     class="border rounded-md px-4 py-2 text-sm w-full" 
                                     id="searchComments" value="{{ request.args.get('search', '') }}">
                             </form>
+                            
+                            <form action="{{ url_for('upload_comments') }}" method="post" enctype="multipart/form-data">
+                                <label for="file">Upload Excel File:</label>
+                                <input type="file" name="file" accept=".xlsx" required>
+                                <input type="submit"  class="green p-1" value="Upload">
+                            </form>
+                            
                         </div>
                         <!-- Button -->
                         <div class="flex-shrink-0">

@@ -12,6 +12,5 @@ class Comment(db.Model):
     semester_number = db.Column(db.Integer)
     school_year = db.Column(db.String(255))
     status = db.Column(db.Integer, default=0)  # Add status column with default value of 1
-    category = db.Column(db.Integer, default=0)   
     def __repr__(self):
         return f'<Comment {self.comment_id}>'  # Use comment_id for representation

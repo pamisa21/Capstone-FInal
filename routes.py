@@ -5,8 +5,10 @@ import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from server import Users,Faculty,Comment,Semester,SentimentComment  
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from datetime import datetime
-
+import pandas as pd  # import for excel uploading 
+import os # for uplading exxel file
 
 # Load model and tokenizer
 model_path = "./ai_model/twitter_xlm_roberta_fine_tuned_sentiment"
@@ -122,15 +124,16 @@ def logout():
 
 
 #   Dashboard
-@app.route('/loading_dashboard')
-def loading_dashboard():
-    return redirect(url_for("loading_screen", target=url_for("dashboard")))
-
 @app.route('/dashboard')
 def dashboard():
     if 'username' in session:
         username = session['username']
-        return render_template('dashboard.html', username=username)
+        
+        # Fetch all faculty members
+        faculty_members = Faculty.query.all()
+        
+        return render_template('dashboard.html', username=username, faculty_members=faculty_members)
+    
     return redirect(url_for('loading_screen', target=url_for('login')))
 
 
@@ -263,7 +266,50 @@ def add_comment():
     return render_template('Crud/add_comment.html', faculties=get_faculties())
 
 
+#  Upload Commnets usign excel file 
 
+@app.route('/upload_comments', methods=['POST'])
+def upload_comments():
+    if 'file' not in request.files:
+        flash('No file part', 'error')
+        return redirect(url_for('analys'))  # or any other relevant page
+
+    file = request.files['file']
+
+    if file.filename == '':
+        flash('No selected file', 'error')
+        return redirect(url_for('analys'))
+
+    if file and file.filename.endswith('.xlsx'):
+        filename = secure_filename(file.filename)
+        file_path = os.path.join('uploads', filename)  # Ensure you have an 'uploads' directory
+        file.save(file_path)
+
+        # Read the Excel file
+        df = pd.read_excel(file_path)
+
+        # Process each row and add to the database
+        for _, row in df.iterrows():
+            new_comment = Comment(
+                user_id=row['user_id'],  # Assuming your Excel has a 'user_id' column
+                content=row['content'],  # Assuming your Excel has a 'content' column
+                faculty_id=row['faculty_id'],  # Assuming your Excel has a 'faculty_id' column
+                semester_number=row['semester_number'],  # Add these as per your Excel structure
+                school_year=row['school_year']
+            )
+            db.session.add(new_comment)
+
+        try:
+            db.session.commit()
+            flash('Comments added successfully!', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('An error occurred while adding the comments.', 'error')
+
+        return redirect(url_for('analys'))
+
+    flash('Invalid file format. Please upload an Excel (.xlsx) file.', 'error')
+    return redirect(url_for('analys'))
 
 
 # History 

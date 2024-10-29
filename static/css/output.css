@@ -1,3 +1,5 @@
+@import url('./variable.css');
+
 *, ::before, ::after {
   --tw-border-spacing-x: 0;
   --tw-border-spacing-y: 0;
@@ -3536,4 +3538,31 @@ video {
     --tw-text-opacity: 1;
     color: rgb(255 255 255 / var(--tw-text-opacity));
   }
+
+  .primary{
+   color: var(--green6);
+    
+  }
+  .label{
+    color: var(--green5);
+    font-weight:bold;
+  }
+  .secondary{
+    color: var(--maze);
+     
+   }
+
+   .bg-g{
+    background-color: var(--green6);
+    
+   }
+   .bg-g:hover{
+    background-color: var(--maze);
+    
+   }
+   .white{
+
+    color: white;
+   }
 }
+

@@ -17,126 +17,120 @@
         {% include "includes/sidebar.html" %}
 
         <!-- Main Content Container -->
-        {% include "includes/container.html" %}
+        <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60">
 
-        <div id="Accounts">
-            <div class="flex flex-col mb-4 gap-4">
-                <div class="flex items-center justify-between">
-                    <h1 class="text-2xl font-bold">Faculty Account</h1>
-                    <a href="{{ url_for('add_faculty') }}">
-                        <button class="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded flex items-center gap-2">
-                            Add Faculty
-                        </button>
-                    </a>
-                </div>
-
-                <!-- Search and Filter Section -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Search Input -->
-                    <div class="flex items-center">
-                        <input type="text" placeholder="Search by name or email..." 
-                               class="border rounded-md px-4 py-2 text-sm w-full" 
-                               id="searchUsers" 
-                               onkeyup="filterTable()">
+            <div id="Accounts" class="w-100 h-100 mx-auto bg-white rounded-lg shadow-lg p-6">
+                <div class="flex flex-col mb-4 gap-4">
+                    <div class="flex items-center justify-between">
+                        <h1 class="text-2xl font-bold">Faculty Account</h1>
+                        <a href="{{ url_for('add_faculty') }}">
+                            <button class="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded flex items-center gap-2">
+                                Add Faculty
+                            </button>
+                        </a>
                     </div>
 
-                    <!-- Filter by College Dropdown -->
-                    <div class="flex items-center">
-                        <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full" onchange="applyFilters()">
-                            <option value="">Select College</option>
-                            <option value="Colleges of Agriculture">Colleges of Agriculture</option>
-                            <option value="Arts and Sciences">Arts and Sciences</option>
-                            <option value="Forestry">Forestry</option>
-                            <option value="Business and Management">Business and Management</option>
-                            <option value="Education">Education</option>
-                            <option value="Nursing">Nursing</option>
-                            <option value="Veterinary Medicine">Veterinary Medicine</option>
-                            <option value="Human Ecology">Human Ecology</option>
-                            <option value="Engineering">Engineering</option>
-                            <option value="Information Sciences and Computing">Information Sciences and Computing</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+                    <!-- Search and Filter Section -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Search Input -->
+                        <div class="flex items-center">
+                            <input type="text" placeholder="Search by name or email..." 
+                                class="border rounded-md px-4 py-2 text-sm w-full" 
+                                id="searchUsers" 
+                                onkeyup="filterTable()">
+                        </div>
 
-            <!-- Table Section -->
-            <div class="table-container">
-                <div class="overflow-x-auto">
-                    <div class="table-wrapper">
-                        <div class="table-border">
-                            <table class="data-table">
-                                <thead class="table-header">
-                                    <tr>
-                                       <th>&nbsp;</th>
-                                        <th class="table-cell">Complete Name & Email</th>
-                                        <th class="table-cell">College</th>
-                                        <th class="table-cell">Department</th>
-                                        <th class="table-cell">Status</th>
-                                        <th class="table-cell">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="table-body" id="accountsTableBody">
-                                    {% for member in faculty_members.items %}
-                                    <tr>
-                                        <td class="table-cell">{{ loop.index + (faculty_members.page - 1) * faculty_members.per_page }}</td>
-                                        <td class="table-cell">
-                                            {{ member.name }}<br>
-                                            <span class="email">{{ member.email }}</span>
-                                        </td>
-                                        <td class="table-cell">{{ member.college }}</td>
-                                        <td class="table-cell">{{ member.department }}</td>
-                                        <td class="table-cell status">
-                                            <div class="{% if member.status %}status-active{% else %}status-inactive{% endif %}">
-                                                {% if member.status %}Active{% else %}Inactive{% endif %}
-                                            </div>
-                                        </td>
-                                        <td class="px-4 py-4 text-sm whitespace-nowrap">
-                                            <div class="flex space-x-2">
-                                                <a href="{{ url_for('view_faculty', id=member.id) }}" title="View" class="text-blue-500 hover:text-blue-700">View</a>
-                                                <a href="{{ url_for('update_faculty', id=member.id) }}" title="Update" class="text-yellow-500 hover:text-yellow-700">Update</a>
-                                                <a href="{{ url_for('faculty_comments', id=member.id) }}" title="Comments" class="text-green-500 hover:text-yellow-700">Comments</a>
-                                                <form action="{{ url_for('delete_faculty', id=member.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this faculty member?');">
-                                                    <a href="#" title="Delete" class="text-red-500 hover:text-red-700" onclick="this.closest('form').submit(); return false;">Delete</a>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                        <!-- Filter by College Dropdown -->
+                        <div class="flex items-center">
+                            <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full" onchange="applyFilters()">
+                                <option value="">Select College</option>
+                                {% for college in ['Colleges of Agriculture', 'Arts and Sciences', 'Forestry', 'Business and Management', 'Education', 'Nursing', 'Veterinary Medicine', 'Human Ecology', 'Engineering', 'Information Sciences and Computing'] %}
+                                    <option value="{{ college }}" {% if college == request.args.get('college') %}selected{% endif %}>{{ college }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Pagination Controls -->
-            <div class="flex items-center justify-between mt-4">
-                {% if faculty_members.has_prev %}
-                    <a href="{{ url_for('faculty', page=faculty_members.prev_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-4 py-2 text-sm text-gray-700 bg-white border rounded-md hover:bg-gray-100">
-                        Previous
-                    </a>
-                {% endif %}
-
-                <div class="flex items-center hidden md:flex gap-x-3">
-                    {% for page_num in range(1, faculty_members.pages + 1) %}
-                        {% if page_num == faculty_members.page %}
-                            <a href="#" class="px-2 py-1 text-sm text-white bg-green-800 rounded-md">{{ page_num }}</a>
-                        {% else %}
-                            <a href="{{ url_for('faculty', page=page_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">{{ page_num }}</a>
-                        {% endif %}
-                    {% endfor %}
+                <!-- Table Section -->
+                <div class="table-container">
+                    <div class="overflow-x-auto">
+                        <div class="table-wrapper">
+                            <div class="table-border">
+                                <table class="data-table">
+                                    <thead class="table-header">
+                                        <tr>
+                                        <th>&nbsp;</th>
+                                            <th class="table-cell">Complete Name & Email</th>
+                                            <th class="table-cell">College</th>
+                                            <th class="table-cell">Department</th>
+                                            <th class="table-cell">Status</th>
+                                            <th class="table-cell">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="table-body" id="accountsTableBody">
+                                        {% for member in faculty_members.items %}
+                                        <tr>
+                                            <td class="table-cell">{{ loop.index + (faculty_members.page - 1) * faculty_members.per_page }}</td>
+                                            <td class="table-cell">
+                                                {{ member.name }}<br>
+                                                <span class="email">{{ member.email }}</span>
+                                            </td>
+                                            <td class="table-cell">{{ member.college }}</td>
+                                            <td class="table-cell">{{ member.department }}</td>
+                                            <td class="table-cell status">
+                                                <div class="{% if member.status %}status-active{% else %}status-inactive{% endif %}">
+                                                    {% if member.status %}Active{% else %}Inactive{% endif %}
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-4 text-sm whitespace-nowrap">
+                                                <div class="flex space-x-2">
+                                                    <a href="{{ url_for('view_faculty', id=member.id) }}" title="View" class="text-blue-500 hover:text-blue-700">View</a>
+                                                    <a href="{{ url_for('update_faculty', id=member.id) }}" title="Update" class="text-yellow-500 hover:text-yellow-700">Update</a>
+                                                    <a href="{{ url_for('faculty_comments', id=member.id) }}" title="Comments" class="text-green-500 hover:text-yellow-700">Comments</a>
+                                                    <form action="{{ url_for('delete_faculty', id=member.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this faculty member?');">
+                                                        <a href="#" title="Delete" class="text-red-500 hover:text-red-700" onclick="this.closest('form').submit(); return false;">Delete</a>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                {% if faculty_members.has_next %}
-                    <a href="{{ url_for('faculty', page=faculty_members.next_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-4 py-2 text-sm text-gray-700 bg-white border rounded-md hover:bg-gray-100">
-                        Next
-                    </a>
-                {% endif %}
+                <!-- Pagination Controls -->
+                <div class="flex items-center justify-between mt-4">
+                    {% if faculty_members.has_prev %}
+                        <a href="{{ url_for('faculty', page=faculty_members.prev_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-4 py-2 text-sm text-gray-700 bg-white border rounded-md hover:bg-gray-100">
+                            Previous
+                        </a>
+                    {% endif %}
+
+                    <div class="flex items-center hidden md:flex gap-x-3">
+                        {% for page_num in range(1, faculty_members.pages + 1) %}
+                            {% if page_num == faculty_members.page %}
+                                <a href="#" class="px-2 py-1 text-sm text-white bg-green-800 rounded-md">{{ page_num }}</a>
+                            {% else %}
+                                <a href="{{ url_for('faculty', page=page_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">{{ page_num }}</a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    {% if faculty_members.has_next %}
+                        <a href="{{ url_for('faculty', page=faculty_members.next_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-4 py-2 text-sm text-gray-700 bg-white border rounded-md hover:bg-gray-100">
+                            Next
+                        </a>
+                    {% endif %}
+                </div>
             </div>
-        </div>
+        </main>
     </div>
 
-    {% include "includes/footer_container.html" %}
+   
 </div>
 
 {% endblock content %}

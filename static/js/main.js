@@ -224,3 +224,6 @@ function applyFilters() {
 
     window.location.href = url.toString();
 }
+
+//pie graph 
+

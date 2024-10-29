@@ -19,31 +19,25 @@
         {% include "includes/sidebar.html" %}
 
         <!-- Main Content Container -->
-        <main class="flex-1 p-5 mx-5 mt-24 ml-2 md:ml-60">
-
-
-            <!-- {% include "includes/container.html" %}  -->
-
-            <div id="dashboard">
+        <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60">
+            <div id="dashboard" class="p-6">
                 <h1 class="text-2xl font-bold mb-6">Dashboard</h1>
+
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col">
                         <h2 class="text-lg font-semibold">Student Number!</h2>
-                        <h4 class="text-3xl font-bold text-center">789 <span class="ml-2 text-sm">Students</span></h4>
+                        <h4 class="text-3xl font-bold text-center">{{ default_semester.student_num }} <span class="ml-2 text-sm">Students</span></h4>
                     </div>
                     <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col">
                         <h2 class="text-lg font-semibold">Faculty Number!</h2>
-                        <h4 class="text-3xl font-bold text-center">789 <span class="ml-2 text-sm">Faculties</span></h4>
+                        <h4 class="text-3xl font-bold text-center">{{ faculty_count }} <span class="ml-2 text-sm">Faculties</span></h4>
                     </div>
                     <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col relative">
                         <h2 class="text-lg font-semibold">Total Comments!</h2>
-                        <h4 class="text-3xl font-bold text-center">789 <span class="ml-2 text-sm">Comments</span></h4>
-                        <a href="/comments" class="text-sm absolute top-0 right-0 mt-4 mr-2">
-                            <h3>view comments!</h3>
-                        </a>
+                        <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
+                        <a href="/comments" class="text-sm absolute top-0 right-0 mt-4 mr-2">View Comments!</a>
                     </div>
                 </div>
-                
 
                 <!-- Sentiment Analysis Card -->
                 <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col md:flex-row">
@@ -56,10 +50,10 @@
                                 <span class="material-icons text-green-500">thumb_up</span>
                                 <span class="ml-2">Positive</span>
                             </div>
-                            <p class="text-3xl font-bold">30%</p>
+                            <p class="text-3xl font-bold">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full mt-2">
-                            <div class="bg-green-500 h-2 rounded-full" style="width: 30%;"></div>
+                            <div class="bg-green-500 h-2 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
                         </div>
 
                         <!-- Neutral Sentiment -->
@@ -68,10 +62,10 @@
                                 <span class="material-icons text-gray-500">more_horiz</span>
                                 <span class="ml-2">Neutral</span>
                             </div>
-                            <p class="text-3xl font-bold">50%</p>
+                            <p class="text-3xl font-bold">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full mt-2">
-                            <div class="bg-gray-500 h-2 rounded-full" style="width: 50%;"></div>
+                            <div class="bg-gray-500 h-2 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
                         </div>
 
                         <!-- Negative Sentiment -->
@@ -80,10 +74,10 @@
                                 <span class="material-icons text-red-500">thumb_down</span>
                                 <span class="ml-2">Negative</span>
                             </div>
-                            <p class="text-3xl font-bold">20%</p>
+                            <p class="text-3xl font-bold">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full mt-2">
-                            <div class="bg-red-500 h-2 rounded-full" style="width: 20%;"></div>
+                            <div class="bg-red-500 h-2 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
                         </div>
                     </div>
 
@@ -92,47 +86,37 @@
                         <canvas id="sentimentPieChart" width="200" height="200"></canvas>
                     </div>
                 </div>
-               
+
                 <div class="table-container">
-                    
                     <div class="overflow-x-auto">
-                        <div class="table-wrapper"><h1 class="ml-5 p-2  green text-center">List of Faculty </h1>
+                        <div class="table-wrapper">
+                            <h2 class="ml-5 p-2 font-semibold green text-center">List of Faculty</h2>
                             <div class="table-border">
                                 <table class="data-table">
                                     <thead class="table-header">
                                         <tr>
-                                            <th class="table-cell">No</th>
+                                            <th class="table-cell">#</th>
                                             <th class="table-cell">Faculty</th>
                                             <th class="table-cell">Department and College</th>
                                             <th class="table-cell">Sentiment Results</th>
-                                           
-                    
                                         </tr>
                                     </thead>
                                     <tbody class="table-body" id="accountsTableBody">
                                         {% for faculty in faculty_members %}
                                         <tr>
-                                            <td class="table-cell">{{ loop.index}}</td>
-
-                                            <td class="table-cell">
+                                            <td class="table-cell">{{ loop.index }}</td>
+                                            <td class="table-cell primary">
                                                {{ faculty.name }} <br>
-                                               <span  class="text-xs text-yellow-500">{{ faculty.email }}</span>
-                                               
+                                               <span class="text-xs secondary">{{ faculty.email }}</span>
                                             </td>
-
-                                            <td class="table-cell">
+                                            <td class="table-cell primary">
                                                 {{ faculty.department }} <br>
-                                                <span  class="text-xs green">{{ faculty.college }}</span>
-                                                
+                                                <span class="text-xs secondary">{{ faculty.college }}</span>
                                              </td>
                                             <td class="px-4 py-4 text-sm whitespace-nowrap">
                                                 <div class="flex space-x-2">
-                                                    <a href="{{ url_for('faculty_comments', id=faculty.id) }}" title="Comments" class="text-green-500 hover:text-yellow-700 border border-green-500 rounded-md p-2">View Comments</a>
+                                                    <a href="{{ url_for('faculty_comments', id=faculty.id) }}" title="Comments" class="green border border-green-900 rounded-md p-2">View Comments</a>
                                                 </div>
-                                            </td>
-                                            
-                                            <td class="px-4 py-4 text-sm whitespace-nowrap">
-
                                             </td>
                                         </tr>
                                         {% endfor %}
@@ -143,19 +127,11 @@
                     </div>
                 </div>
             </div>
-
-
-
-
-
-            
         </main>
     </div>
-    
 </div>
 
 <!-- {% include "includes/footer_container.html" %} -->
 {% endblock content %}
 
-
-{% include "includes/public/footers.html" %}
+{% include "includes/public/footers.html" %} 

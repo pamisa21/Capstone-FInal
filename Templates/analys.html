@@ -17,13 +17,13 @@
         {% include "includes/sidebar.html" %}
 
         <!-- Main Content Container -->
-        <main class="flex-1 p-5 mx-5 mt-[100px] ml-2 md:ml-60">
+        <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60">
 
-            <div id="Comments">
+            <div id="Comments" class="w-100 h-100 mx-auto bg-white rounded-lg shadow-lg p-6"|>
                 <!-- Filter and Search Section -->
                 <div class="flex flex-col mb-3 gap-4">
                     <div class="flex items-center justify-between">
-                        <h1 class="text-2xl font-bold"> New Comments <span class="text-xs text-yellow-500">    
+                        <h1 class="text-2xl font-bold "> New Comments <span class="text-xs text-yellow-500">    
                             {% if default_semester.semester_number == 1 %}1st Semester
                             {% elif default_semester.semester_number == 2 %}2nd Semester
                             {% elif default_semester.semester_number == 3 %}Mid Semester

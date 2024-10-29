@@ -131,12 +131,54 @@ def dashboard():
         
         # Fetch all faculty members
         faculty_members = Faculty.query.all()
+        faculty_count = Faculty.query.count()  # Get total faculty count
         
-        return render_template('dashboard.html', username=username, faculty_members=faculty_members)
+        # Get the default semester and school year
+        default_semester = Semester.query.first()
+        default_semester_number = default_semester.semester_number
+        default_school_year = default_semester.school_year
+
+        # Count comments only for the default semester and school year
+        total_comments = (db.session.query(SentimentComment)
+                          .join(Comment, SentimentComment.comment_id == Comment.comment_id)
+                          .filter(Comment.semester_number == default_semester_number)
+                          .filter(Comment.school_year == default_school_year)
+                          .count())
+
+        # Count sentiments
+        positive_count = (db.session.query(SentimentComment)
+                          .join(Comment, SentimentComment.comment_id == Comment.comment_id)
+                          .filter(Comment.semester_number == default_semester_number)
+                          .filter(Comment.school_year == default_school_year)
+                          .filter(SentimentComment.category == 2)
+                          .count())
+
+        neutral_count = (db.session.query(SentimentComment)
+                         .join(Comment, SentimentComment.comment_id == Comment.comment_id)
+                         .filter(Comment.semester_number == default_semester_number)
+                         .filter(Comment.school_year == default_school_year)
+                         .filter(SentimentComment.category == 1)
+                         .count())
+
+        negative_count = (db.session.query(SentimentComment)
+                          .join(Comment, SentimentComment.comment_id == Comment.comment_id)
+                          .filter(Comment.semester_number == default_semester_number)
+                          .filter(Comment.school_year == default_school_year)
+                          .filter(SentimentComment.category == 0)
+                          .count())
+
+        return render_template(
+            'dashboard.html',
+            username=username,
+            faculty_members=faculty_members,
+            faculty_count=faculty_count,
+            total_comments=total_comments,
+            positive_count=positive_count,
+            neutral_count=neutral_count,
+            negative_count=negative_count
+        )
     
     return redirect(url_for('loading_screen', target=url_for('login')))
-
-
 
 #   Evaluate 
 @app.route('/evaluate', methods=['GET', 'POST'])
@@ -266,6 +308,8 @@ def add_comment():
     return render_template('Crud/add_comment.html', faculties=get_faculties())
 
 
+
+
 #  Upload Commnets usign excel file 
 
 @app.route('/upload_comments', methods=['POST'])
@@ -328,7 +372,9 @@ def history():
                         .join(Faculty, Faculty.id == Comment.faculty_id)  
                         .filter(Comment.status == 1)
                         .group_by(Comment.semester_number, Comment.school_year) 
-                        .all())
+                        
+                        .order_by(Comment.semester_number.desc()))
+                        
 
         return render_template('history.html', username=username, history_data=history_data)
 
@@ -405,18 +451,25 @@ def comments():
     if 'username' in session:
         username = session['username']
         
-        page = request.args.get('page', 1, type=int)
-        per_page = 5  
-        search_query = request.args.get('search', '', type=str)  
-        filter_category = request.args.get('category', '', type=str)  
-        filter_faculty = request.args.get('faculty', '', type=str) 
-        filter_college = request.args.get('college', '', type=str)  
+        # Get the default semester and school year
+        default_semester = Semester.query.first()
+        default_semester_number = default_semester.semester_number
+        default_school_year = default_semester.school_year
         
-        # Base query for fetching comments
+        page = request.args.get('page', 1, type=int)
+        per_page = 5
+        search_query = request.args.get('search', '', type=str)
+        filter_category = request.args.get('category', '', type=str)
+        filter_faculty = request.args.get('faculty', '', type=str)
+        filter_college = request.args.get('college', '', type=str)
+
+        # Base query for fetching comments that match the default semester and school year
         query = (db.session.query(SentimentComment, Comment, Faculty)
                  .join(Comment, SentimentComment.comment_id == Comment.comment_id)
                  .join(Faculty, Comment.faculty_id == Faculty.id)
-                 .order_by(Comment.comment_id.desc()))
+                 .filter(Comment.semester_number == default_semester_number)
+                 .filter(Comment.school_year == default_school_year)
+                 .order_by(SentimentComment.id.desc()))
 
         # Apply search filter
         if search_query:
@@ -442,8 +495,8 @@ def comments():
         # Pagination
         sentiment_comments = query.paginate(page=page, per_page=per_page, error_out=False)
 
-        all_faculty = db.session.query(Faculty).all()  
-        all_colleges = db.session.query(Faculty.college).distinct().all()  # 
+        all_faculty = db.session.query(Faculty).all()
+        all_colleges = db.session.query(Faculty.college).distinct().all()
         
         return render_template(
             'comments.html',
@@ -453,8 +506,8 @@ def comments():
             filter_category=filter_category,
             filter_faculty=filter_faculty,
             filter_college=filter_college,
-            all_faculty=all_faculty,  
-            all_colleges=all_colleges   
+            all_faculty=all_faculty,
+            all_colleges=all_colleges
         )
     
     return redirect(url_for('loading_screen', target=url_for('login')))
@@ -644,7 +697,6 @@ def faculty():
         return render_template('faculty.html', username=username, faculty_members=faculty_members)
 
     return redirect(url_for('loading_screen', target=url_for('login')))
-
 
 
 #   Add Faculty 

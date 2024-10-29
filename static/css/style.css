@@ -226,8 +226,10 @@ main {
 /* End-sidebar */
 
 
-
-
+.filterCategory
+{
+    background-color: var(--green6);
+}
 
 
 #dashboard h1 {
@@ -326,7 +328,7 @@ main {
     padding: 1rem 1rem; /* py-3.5 px-4 */
     text-align: left; /* text-left */
     font-size: 0.875rem; /* text-sm */
-    color: #6b7280; /* text-gray-500 */
+    color:var(--green6);
     
 }
 

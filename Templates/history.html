@@ -25,7 +25,12 @@
                     <div class="card max-w-xl mb-10 px-8 py-6 bg-gradient-to-br from-green-50 via-white to-green-50 border-l-4 border-green-600 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex-grow">
                         <div class="flex items-center justify-start">
                             <a class="Semester px-3 py-1 text-sm font-bold transition-colors duration-300 transform" tabindex="0" role="button">
-                                {{ history.semester_number }} Semester {{ history.school_year }}
+                                {% if history.semester_number == 3 %}
+                                    Mid Year {{ history.school_year }}
+                                {% else %}
+                                    {{ history.semester_number }} Semester {{ history.school_year }}
+                                {% endif %}
+
                             </a>
                         </div>
                         

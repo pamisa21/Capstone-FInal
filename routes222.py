@@ -2,7 +2,7 @@ from flask import render_template, session, request, redirect, url_for, flash
 from server import app,db
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
-from server import Users,Faculty,Comment,Semester,SentimentComment  
+from server import Users,Faculty,Comment,Semester,SentimentComment,AY_SEM  
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
@@ -208,7 +208,7 @@ def comments():
 
         # Apply faculty filter
         if filter_faculty:
-            query = query.filter(Faculty.name == filter_faculty)
+            query = query.filter(Faculty.lname == filter_faculty)
 
         # Apply college filter
         if filter_college:
@@ -301,7 +301,7 @@ def analys():
         # Add search query if present
         if search_query:
             query = query.filter(
-                (Faculty.name.ilike(f'%{search_query}%')) | 
+                (Faculty.lname.ilike(f'%{search_query}%')) | 
                 (Comment.content.ilike(f'%{search_query}%'))
             )
 
@@ -357,7 +357,7 @@ def faculty():
         # Apply search query if present
         if search_query:
             query = query.filter(
-                (Faculty.name.ilike(f'%{search_query}%')) |
+                (Faculty.lname.ilike(f'%{search_query}%')) |
                 (Faculty.email.ilike(f'%{search_query}%'))
             )
 
@@ -551,7 +551,7 @@ def view_comment(comment_id):
     if 'username' in session:
         # Perform an inner join between Comment and Faculty
         comment_instance = (
-            db.session.query(Comment, Faculty.name)
+            db.session.query(Comment, Faculty.lname)
             .join(Faculty, Comment.faculty_id == Faculty.id)
             .filter(Comment.comment_id == comment_id)
             .first()
@@ -568,48 +568,6 @@ def view_comment(comment_id):
 
 
 
-# Semester 
-# Route to view the default semester
-@app.route('/semester')
-def semester():
-    if 'username' in session:
-        username = session['username']
-        
-        # Fetch the default semester from the database
-        default_semester = Semester.query.first()  # Adjust this query as needed
-        
-        return render_template('semester.html', username=username, default_semester=default_semester)
-    
-    return redirect(url_for('loading_screen', target=url_for('semester')))
-
-# Route to edit the default semester
-@app.route('/edit_semester', methods=['GET', 'POST'])
-def edit_semester():
-    if 'username' in session:
-        username = session['username']
-        
-        # Fetch the current default semester
-        default_semester = Semester.query.first()  # Adjust the query as needed
-        
-        if request.method == 'POST':
-            # Handle the form submission to edit the semester
-            semester_number = request.form.get('semester_number')
-            school_year = request.form.get('school_year')
-            
-            # Update the semester details
-            default_semester.semester_number = semester_number
-            default_semester.school_year = school_year
-            
-            # Commit changes to the database
-            db.session.commit()
-            
-            # Redirect back to the semester page
-            return redirect(url_for('semester'))
-        
-        # Render the edit semester page with the current default semester details
-        return render_template('Crud/edit_semester.html', username=username, default_semester=default_semester)
-    
-    return redirect(url_for('loading_screen', target=url_for('edit_semester')))
 
 
 
@@ -714,7 +672,7 @@ def view_sentiment_comment(sentiment_comment_id):
     if 'username' in session:
         # Fetch the sentiment comment details by ID
         comment_instance = (
-            db.session.query(SentimentComment, Comment, Faculty.name)
+            db.session.query(SentimentComment, Comment, Faculty.lname)
             .join(Comment, SentimentComment.comment_id == Comment.comment_id)
             .join(Faculty, Comment.faculty_id == Faculty.id)
             .filter(SentimentComment.id == sentiment_comment_id)

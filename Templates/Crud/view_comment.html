@@ -26,34 +26,24 @@
                 <div class="flex flex-col">
                     <label for="content" class="text-lg font-semibold">Comment</label>
                     <textarea id="content" name="content" rows="5" readonly 
-                              class="p-2 border border-gray-300 rounded bg-gray-100">{{ comment.content }}</textarea>
+                              class="p-2 border border-gray-300 rounded bg-gray-100">{{ comment.comment }}</textarea>
                 </div>
         
                 <!-- Faculty Name (non-editable) -->
                 <div class="flex flex-col">
                     <label class="text-lg font-semibold">Faculty</label>
-                    <p class="p-2 border border-gray-300 rounded bg-gray-100">{{ faculty_name }}</p>
+                    <p class="p-2 border border-gray-300 rounded bg-gray-100">{{ faculty_firstname }} {{ faculty_name }} {{ faculty_mi }}</p> <!-- Correct variable usage -->
                 </div>
 
                 <!-- Semester and School Year (read-only together) -->
                 <div class="flex flex-col">
                     <label class="text-lg font-semibold">Semester & School Year</label>
-                    <p class="p-2 border border-gray-300 rounded bg-gray-100">
-                        {% if comment.semester_number == 1 %}
-                            1st Semester - {{ comment.school_year }}
-                        {% elif comment.semester_number == 2 %}
-                            2nd Semester - {{ comment.school_year }}
-                        {% elif comment.semester_number == 3 %}
-                            Mid Year - {{ comment.school_year }}
-                        {% else %}
-                            Unknown Semester - {{ comment.school_year }}
-                        {% endif %}
-                    </p>
+                    <p class="p-2 border border-gray-300 rounded bg-gray-100">{{ ay_sem.ay_name }}</p> <!-- Access ay_sem correctly -->
                 </div>
 
                 <!-- Date Added (non-editable) -->
                 <div class="flex flex-col">
-                    <label class="text-lg font-semibold">Comments Submited</label>
+                    <label class="text-lg font-semibold">Comments Submitted</label>
                     <p class="p-2 border border-gray-300 rounded bg-gray-100">{{ comment.date_added.strftime('%Y-%m-%d %H:%M:%S') }}</p>
                 </div>
 

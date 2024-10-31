@@ -8,39 +8,171 @@
 {% endblock css %}
 
 {% block content %}
-<!-- Include the sidebar here -->
 <div class="flex flex-col h-screen">
     <header>
         {% include "includes/navbar.html" %}
     </header>
     
     <div class="flex flex-1">
-        <!-- Sidebar -->
         {% include "includes/sidebar.html" %}
 
-        <!-- Main Content Container -->
         <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60">
             <div id="dashboard" class="p-6">
-                <h1 class="text-2xl font-bold mb-6">Dashboard</h1>
+                <!-- Dashboard Header with Filter Section -->
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+                    <h1 class="text-2xl font-bold">Dashboard</h1>
+                    <button class="border border-gray-300 rounded-md px-4 py-2 text-sm bg-white text-black shadow-lg transition-all duration-300 transform hover:bg-green-100 hover:shadow-2xl focus:outline-none">
+                        Print Results
+                    </button>
+                    <!-- Filter Section -->
+                   
+                </div>
+                <div class="flex flex-wrap items-center gap-4 mt-4 md:mt-0 ">
+                    
+                    <div class="flex flex-col">
+                        <select id="dashboardSemesterDropdown" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black">
+                            {% for semester in semesters %}
+                                <option value="{{ semester.ay_id }}" {% if semester.ay_id == default_semester %} selected {% endif %}>
+                                    {{ semester.ay_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            const dashboardDropdown = document.getElementById("dashboardSemesterDropdown");
+                            const savedSemester = localStorage.getItem("selectedSemester");
+                    
+                            // Load the last selected semester if available in localStorage
+                            if (savedSemester) {
+                                dashboardDropdown.value = savedSemester;
+                            }
+                    
+                            // Save selected semester to localStorage and refresh the page on change
+                            dashboardDropdown.addEventListener("change", function() {
+                                localStorage.setItem("selectedSemester", dashboardDropdown.value);
+                                location.reload();  // Refresh the page
+                            });
+                        });
+                    </script>
+                    <div id="loadingOverlay" class="hidden fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
+                        <div class="text-white text-lg font-semibold">Loading...</div>
+                    </div>
+                    
+                    
+                    
+                    <div class="flex items-center">
+                        <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg transition-all duration-300 transform hover:shadow-2xl focus:outline-none bg-white text-black" onchange="updateDepartments()">
+                            <option value="">Select College</option>
+                            {% for college in colleges %}
+                                <option value="{{ college.college_id }}" {% if college.college_id == request.args.get('college') %}selected{% endif %}>{{ college.college_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <select id="filterDepartment" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg transition-all duration-300 transform hover:shadow-2xl focus:outline-none bg-white text-black hidden">
+                            <option value="">Select Department</option>
+                            <!-- Departments will be populated here based on selected college -->
+                        </select>
+                    </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col">
-                        <h2 class="text-lg font-semibold">Student Number!</h2>
-                        <h4 class="text-3xl font-bold text-center">{{ default_semester.student_num }} <span class="ml-2 text-sm">Students</span></h4>
+                    <div class="flex items-center">
+                        <select id="filterFaculty" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg transition-all duration-300 transform hover:shadow-2xl focus:outline-none bg-white text-black hidden">
+                            <option value="">Select Faculty</option>
+                        </select>
                     </div>
-                    <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col">
-                        <h2 class="text-lg font-semibold">Faculty Number!</h2>
-                        <h4 class="text-3xl font-bold text-center">{{ faculty_count }} <span class="ml-2 text-sm">Faculties</span></h4>
-                    </div>
-                    <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col relative">
-                        <h2 class="text-lg font-semibold">Total Comments!</h2>
+                    
+                    <script>
+                        // Departments and faculties data from backend
+                        const departmentsByCollege = {{ departments_by_college | tojson }};
+                        const facultiesByDepartment = {{ faculties_by_department | tojson }};
+                    
+                        function updateDepartments() {
+                            const collegeSelect = document.getElementById('filterCollege');
+                            const departmentSelect = document.getElementById('filterDepartment');
+                            const selectedCollegeId = collegeSelect.value;
+                    
+                            departmentSelect.innerHTML = '<option value="">Select Department</option>';
+                    
+                            if (selectedCollegeId && departmentsByCollege[selectedCollegeId]) {
+                                departmentsByCollege[selectedCollegeId].forEach(department => {
+                                    const option = document.createElement('option');
+                                    option.value = department.department_id;
+                                    option.textContent = department.department_name;
+                                    departmentSelect.appendChild(option);
+                                });
+                                departmentSelect.classList.remove('hidden');
+                            } else {
+                                departmentSelect.classList.add('hidden');
+                            }
+                    
+                            // Reset faculty dropdown
+                            document.getElementById('filterFaculty').classList.add('hidden');
+                        }
+                    
+                        function updateFaculties() {
+                            const departmentSelect = document.getElementById('filterDepartment');
+                            const facultySelect = document.getElementById('filterFaculty');
+                            const selectedDepartmentId = departmentSelect.value;
+                    
+                            facultySelect.innerHTML = '<option value="">Select Faculty</option>';
+                    
+                            if (selectedDepartmentId && facultiesByDepartment[selectedDepartmentId]) {
+                                facultiesByDepartment[selectedDepartmentId].forEach(faculty => {
+                                    const option = document.createElement('option');
+                                    option.value = faculty.faculty_id;
+                                    option.textContent = faculty.faculty_name;
+                                    facultySelect.appendChild(option);
+                                });
+                                facultySelect.classList.remove('hidden');
+                            } else {
+                                facultySelect.classList.add('hidden');
+                            }
+                        }
+                    
+                        // Add event listeners for dropdown changes
+                        document.getElementById('filterCollege').addEventListener('change', updateDepartments);
+                        document.getElementById('filterDepartment').addEventListener('change', updateFaculties);
+                    </script>
+                    
+                </div>
+                
+                    
+                </div>
+
+                <!-- Total Comments and Sentiment Count Row -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="bg-white rounded-lg shadow-md p-8 flex flex-col relative col-span-1 md:col-span-2">
+                        <h2 class="text-lg font-semibold">Total Comments</h2>
                         <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
                         <a href="/comments" class="text-sm absolute top-0 right-0 mt-4 mr-2">View Comments!</a>
                     </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 col-span-1 md:col-span-2">
+                        <div class="bg-green-100 rounded-lg shadow-md p-6 flex flex-col items-center">
+                            <span class="material-icons primary">thumb_up</span>
+                            <h3 class="text-xl font-semibold mt-2">Positive</h3>
+                            <p class="text-3xl font-bold">{{ positive_count }}</p>
+                        </div>
+
+                        <div class="bg-gray-100 rounded-lg shadow-md p-6 flex flex-col items-center">
+                            <span class="material-icons primary">more_horiz</span>
+                            <h3 class="text-xl font-semibold mt-2">Neutral</h3>
+                            <p class="text-3xl font-bold">{{ neutral_count }}</p>
+                        </div>
+
+                        <div class="bg-red-100 rounded-lg shadow-md p-6 flex flex-col items-center">
+                            <span class="material-icons text-red-500">thumb_down</span>
+                            <h3 class="text-xl font-semibold mt-2">Negative</h3>
+                            <p class="text-3xl font-bold">{{ negative_count }}</p>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Sentiment Analysis Card -->
-                <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col md:flex-row">
+                <!-- Sentiment Analysis Card (Percentage) -->
+                <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col md:flex-row mt-6">
                     <div class="flex-grow">
                         <h2 class="text-lg font-semibold mb-4">Sentiment Analysis</h2>
                         
@@ -86,52 +218,8 @@
                         <canvas id="sentimentPieChart" width="200" height="200"></canvas>
                     </div>
                 </div>
-
-                <div class="table-container">
-                    <div class="overflow-x-auto">
-                        <div class="table-wrapper">
-                            <h2 class="ml-5 p-2 font-semibold green text-center">List of Faculty</h2>
-                            <div class="table-border">
-                                <table class="data-table">
-                                    <thead class="table-header">
-                                        <tr>
-                                            <th class="table-cell">#</th>
-                                            <th class="table-cell">Faculty</th>
-                                            <th class="table-cell">Department and College</th>
-                                            <th class="table-cell">Sentiment Results</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="table-body" id="accountsTableBody">
-                                        {% for faculty in faculty_members %}
-                                        <tr>
-                                            <td class="table-cell">{{ loop.index }}</td>
-                                            <td class="table-cell primary">
-                                               {{ faculty.name }} <br>
-                                               <span class="text-xs secondary">{{ faculty.email }}</span>
-                                            </td>
-                                            <td class="table-cell primary">
-                                                {{ faculty.department }} <br>
-                                                <span class="text-xs secondary">{{ faculty.college }}</span>
-                                             </td>
-                                            <td class="px-4 py-4 text-sm whitespace-nowrap">
-                                                <div class="flex space-x-2">
-                                                    <a href="{{ url_for('faculty_comments', id=faculty.id) }}" title="Comments" class="green border border-green-900 rounded-md p-2">View Comments</a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </main>
     </div>
 </div>
-
-<!-- {% include "includes/footer_container.html" %} -->
 {% endblock content %}
-
-{% include "includes/public/footers.html" %} 

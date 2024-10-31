@@ -225,5 +225,44 @@ function applyFilters() {
     window.location.href = url.toString();
 }
 
-//pie graph 
+//bar chart 
 
+document.addEventListener('DOMContentLoaded', () => {
+    const ctxBar = document.getElementById('sentimentBarChart');
+    if (ctxBar) {
+        const labels = ['1st Semester', '2nd Semester', 'Mid Year'];
+        const data = {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Positive Sentiment',
+                    data: [65, 59, 80], // Positive sentiment values
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Negative Sentiment',
+                    data: [20, 15, 10], // Display negative sentiment as positive values
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }
+            ]
+        };
+
+        new Chart(ctxBar.getContext('2d'), {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        suggestedMax: 100 // Adjust as needed
+                    }
+                }
+            }
+        });
+    }
+});

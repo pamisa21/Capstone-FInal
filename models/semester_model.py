@@ -1,16 +1,13 @@
 from datetime import datetime
-from models.extensions import db  # Import the db instance from extensions
-
-
-
+from models.extensions import db  
 
 class Semester(db.Model):
     __tablename__ = 'semesters'
 
     id = db.Column(db.Integer, primary_key=True)
-    school_year = db.Column(db.String(20), nullable=False)  # E.g., "2024-2025"
-    semester_number = db.Column(db.Integer, nullable=False)  # Numeric representation of the semester
-    student_num = db.Column(db.Integer, nullable=False)
+    school_year = db.Column(db.String(20), nullable=False)  
+    semester_number = db.Column(db.Integer, nullable=False)  
+  
     
 
     def __repr__(self):

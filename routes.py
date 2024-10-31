@@ -3,7 +3,7 @@ from flask import render_template, session, request, redirect, url_for, flash
 from server import app,db
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
-from server import Users,Faculty,Comment,Semester,SentimentComment  
+from server import Users,Faculty,Comment,Semester,SentimentComment,Department,College,Subject,AY_SEM,Student
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -27,6 +27,26 @@ def predict_sentiment(text):
     predicted_class = logits.argmax().item() 
     return predicted_class  
 
+
+@app.route('/start_sentiment', methods=['POST'])
+def start_sentiment():
+    if 'username' not in session:
+        return redirect(url_for('loading_screen', target=url_for('login')))
+
+    # Fetch all comments
+    comments = Comment.query.all()
+    
+    for comment in comments:
+        # Predict sentiment for each comment
+        sentiment = predict_sentiment(comment.comment)
+        # Update the category based on the predicted sentiment
+        comment.category = sentiment
+    
+    # Commit the changes to the database
+    db.session.commit()
+    
+    flash('Sentiment analysis completed successfully.', 'success')
+    return redirect(url_for('analys'))
 
 #loading Screen
 @app.route('/loading_screen')
@@ -123,62 +143,53 @@ def logout():
 #   admin Page //  Staff Page
 
 
-#   Dashboard
+# Dashboard
 @app.route('/dashboard')
 def dashboard():
     if 'username' in session:
         username = session['username']
-        
-        # Fetch all faculty members
-        faculty_members = Faculty.query.all()
-        faculty_count = Faculty.query.count()  # Get total faculty count
-        
-        # Get the default semester and school year
-        default_semester = Semester.query.first()
-        default_semester_number = default_semester.semester_number
-        default_school_year = default_semester.school_year
 
-        # Count comments only for the default semester and school year
-        total_comments = (db.session.query(SentimentComment)
-                          .join(Comment, SentimentComment.comment_id == Comment.comment_id)
-                          .filter(Comment.semester_number == default_semester_number)
-                          .filter(Comment.school_year == default_school_year)
-                          .count())
+        total_comments = db.session.query(SentimentComment).join(Comment).count()
+        positive_count = db.session.query(SentimentComment).join(Comment).filter(SentimentComment.category == 2).count()
+        neutral_count = db.session.query(SentimentComment).join(Comment).filter(SentimentComment.category == 1).count()
+        negative_count = db.session.query(SentimentComment).join(Comment).filter(SentimentComment.category == 0).count()
+        colleges = College.query.all()
+        semesters = AY_SEM.query.all()
 
-        # Count sentiments
-        positive_count = (db.session.query(SentimentComment)
-                          .join(Comment, SentimentComment.comment_id == Comment.comment_id)
-                          .filter(Comment.semester_number == default_semester_number)
-                          .filter(Comment.school_year == default_school_year)
-                          .filter(SentimentComment.category == 2)
-                          .count())
+        # Serialize departments by college
+        departments_by_college = {
+            college.college_id: [
+                {'department_id': dept.department_id, 'department_name': dept.department_name}
+                for dept in college.departments
+            ]
+            for college in colleges
+        }
 
-        neutral_count = (db.session.query(SentimentComment)
-                         .join(Comment, SentimentComment.comment_id == Comment.comment_id)
-                         .filter(Comment.semester_number == default_semester_number)
-                         .filter(Comment.school_year == default_school_year)
-                         .filter(SentimentComment.category == 1)
-                         .count())
-
-        negative_count = (db.session.query(SentimentComment)
-                          .join(Comment, SentimentComment.comment_id == Comment.comment_id)
-                          .filter(Comment.semester_number == default_semester_number)
-                          .filter(Comment.school_year == default_school_year)
-                          .filter(SentimentComment.category == 0)
-                          .count())
+        # Fetch faculties grouped by department
+        faculties_by_department = {
+            department.department_id: [
+                {'faculty_id': faculty.faculty_id, 'faculty_name': f'{faculty.lname} {faculty.fname}'}
+                for faculty in department.faculties
+            ]
+            for college in colleges for department in college.departments
+        }
 
         return render_template(
             'dashboard.html',
             username=username,
-            faculty_members=faculty_members,
-            faculty_count=faculty_count,
             total_comments=total_comments,
             positive_count=positive_count,
             neutral_count=neutral_count,
-            negative_count=negative_count
+            negative_count=negative_count,
+            colleges=colleges,
+            departments_by_college=departments_by_college,
+            faculties_by_department=faculties_by_department,
+            semesters=semesters
         )
-    
+
     return redirect(url_for('loading_screen', target=url_for('login')))
+
+
 
 #   Evaluate 
 @app.route('/evaluate', methods=['GET', 'POST'])
@@ -199,31 +210,23 @@ def evaluate():
     return redirect(url_for('loading_screen', target=url_for('login')))
 
 
-# Analys
-
 @app.route('/analys', methods=['GET'])
 def analys():
     if 'username' in session:
         username = session['username']
         search_query = request.args.get('search', '')
-        page = request.args.get('page', 1, type=int)  
-        per_page = 5  
-        default_semester = Semester.query.first() 
-        if default_semester is None:
-            flash('No current semester found. Please set the semester first.', 'error')
-            return redirect(url_for('loading_screen', target=url_for('analys')))
-        query = db.session.query(Comment, Faculty).join(Faculty, Comment.faculty_id == Faculty.id)\
-            .filter(
-                Comment.semester_number == default_semester.semester_number,
-                Comment.school_year == default_semester.school_year,
-                Comment.status == 0  
-            )\
-            .order_by(Comment.comment_id.desc())
-        
+        page = request.args.get('page', 1, type=int)
+        per_page = 5
+
+        query = db.session.query(Comment, Faculty, AY_SEM)\
+            .join(Faculty, Comment.faculty_id == Faculty.faculty_id)\
+            .join(AY_SEM, Comment.ay_id == AY_SEM.ay_id)\
+            .filter(Comment.category == 4) 
+
         if search_query:
             query = query.filter(
                 (Faculty.name.ilike(f'%{search_query}%')) | 
-                (Comment.content.ilike(f'%{search_query}%'))
+                (Comment.comment.ilike(f'%{search_query}%'))
             )
 
         # Apply pagination
@@ -231,28 +234,39 @@ def analys():
 
         return render_template('analys.html', 
                                username=username, 
-                               comments=comments_pagination.items,  
-                               pagination=comments_pagination,  
-                               default_semester=default_semester)
+                               comments=comments_pagination,  # Change here
+                               pagination=comments_pagination)  # Add pagination
     return redirect(url_for('loading_screen', target=url_for('analys')))
 
 
 
-#   View Comments 
+# View Comments 
 @app.route('/view_comment/<int:comment_id>', methods=['GET'])
 def view_comment(comment_id):
     if 'username' in session:
-       
+        username = session['username']  # Capture username for future use if needed
+        
+        # Query for the specific comment and associated faculty name
         comment_instance = (
-            db.session.query(Comment, Faculty.name)
-            .join(Faculty, Comment.faculty_id == Faculty.id)
+            db.session.query(Comment, Faculty, AY_SEM)\
+            .join(Faculty, Comment.faculty_id == Faculty.faculty_id)\
+            .join(AY_SEM, Comment.ay_id == AY_SEM.ay_id)\
             .filter(Comment.comment_id == comment_id)
             .first()
         )
 
+       
         if comment_instance:
-            comment, faculty_name = comment_instance
-            return render_template('Crud/view_comment.html', comment=comment, faculty_name=faculty_name)
+            comment, faculty, ay_sem = comment_instance  
+            faculty_name = faculty.lname  
+            faculty_firstname = faculty.fname  
+            faculty_mi = faculty.mi 
+            return render_template('Crud/view_comment.html', 
+                                   comment=comment, 
+                                   faculty_name=faculty_name,
+                                   faculty_firstname=faculty_firstname,
+                                   faculty_mi=faculty_mi,
+                                   ay_sem=ay_sem)  
 
         return "Comment not found", 404  
 
@@ -316,7 +330,7 @@ def add_comment():
 def upload_comments():
     if 'file' not in request.files:
         flash('No file part', 'error')
-        return redirect(url_for('analys'))  # or any other relevant page
+        return redirect(url_for('analys'))
 
     file = request.files['file']
 
@@ -326,18 +340,18 @@ def upload_comments():
 
     if file and file.filename.endswith('.xlsx'):
         filename = secure_filename(file.filename)
-        file_path = os.path.join('uploads', filename)  # Ensure you have an 'uploads' directory
+        file_path = os.path.join('uploads', filename) 
         file.save(file_path)
 
-        # Read the Excel file
+
         df = pd.read_excel(file_path)
 
         # Process each row and add to the database
         for _, row in df.iterrows():
             new_comment = Comment(
-                user_id=row['user_id'],  # Assuming your Excel has a 'user_id' column
-                content=row['content'],  # Assuming your Excel has a 'content' column
-                faculty_id=row['faculty_id'],  # Assuming your Excel has a 'faculty_id' column
+                user_id=row['user_id'], 
+                content=row['content'],  
+                faculty_id=row['faculty_id'],  
                 semester_number=row['semester_number'],  # Add these as per your Excel structure
                 school_year=row['school_year']
             )
@@ -369,7 +383,7 @@ def history():
                                          db.func.sum(db.case((SentimentComment.category == 0, 1), else_=0)).label('negative'),
                                          db.func.sum(db.case((SentimentComment.category == 1, 1), else_=0)).label('neutral'))
                         .join(SentimentComment, SentimentComment.comment_id == Comment.comment_id)
-                        .join(Faculty, Faculty.id == Comment.faculty_id)  
+                        .join(Faculty, Faculty.faculty_id == Comment.faculty_id)  
                         .filter(Comment.status == 1)
                         .group_by(Comment.semester_number, Comment.school_year) 
                         
@@ -398,9 +412,9 @@ def semester_comments(semester, year):
 
         faculties_with_comments = (
             db.session.query(Faculty)
-            .join(Comment, Comment.faculty_id == Faculty.id)
+            .join(Comment, Comment.faculty_id == Faculty.faculty_id)
             .filter(Comment.semester_number == semester, Comment.school_year == year, Comment.status == 1)
-            .group_by(Faculty.id)
+            .group_by(Faculty.faculty.faculty_id)
             .all()
         )
 
@@ -408,7 +422,7 @@ def semester_comments(semester, year):
         query = (
             db.session.query(Comment, SentimentComment, Faculty.name.label('faculty_name'))
             .join(SentimentComment, SentimentComment.comment_id == Comment.comment_id)
-            .join(Faculty, Comment.faculty_id == Faculty.id)
+            .join(Faculty, Comment.faculty_id == Faculty.faculty_id)
             .filter(Comment.semester_number == semester, Comment.school_year == year, Comment.status == 1)
         )
 
@@ -445,72 +459,40 @@ def semester_comments(semester, year):
     return redirect(url_for('loading_screen', target=url_for('login')))
 
 #   Comments  || Sentiment Process
-
-@app.route('/comments')
+@app.route('/comments', methods=['GET'])
 def comments():
     if 'username' in session:
         username = session['username']
-        
-        # Get the default semester and school year
-        default_semester = Semester.query.first()
-        default_semester_number = default_semester.semester_number
-        default_school_year = default_semester.school_year
-        
+        search_query = request.args.get('search', '')
         page = request.args.get('page', 1, type=int)
         per_page = 5
-        search_query = request.args.get('search', '', type=str)
-        filter_category = request.args.get('category', '', type=str)
-        filter_faculty = request.args.get('faculty', '', type=str)
-        filter_college = request.args.get('college', '', type=str)
 
-        # Base query for fetching comments that match the default semester and school year
-        query = (db.session.query(SentimentComment, Comment, Faculty)
-                 .join(Comment, SentimentComment.comment_id == Comment.comment_id)
-                 .join(Faculty, Comment.faculty_id == Faculty.id)
-                 .filter(Comment.semester_number == default_semester_number)
-                 .filter(Comment.school_year == default_school_year)
-                 .order_by(SentimentComment.id.desc()))
-
-        # Apply search filter
-        if search_query:
-            query = query.filter(Comment.content.ilike(f'%{search_query}%'))
-
-        # Apply category filter
-        if filter_category:
-            if filter_category == "Positive":
-                query = query.filter(SentimentComment.category == 2)
-            elif filter_category == "Negative":
-                query = query.filter(SentimentComment.category == 0)
-            elif filter_category == "Neutral":
-                query = query.filter(SentimentComment.category == 1)
-
-        # Apply faculty filter
-        if filter_faculty:
-            query = query.filter(Faculty.name == filter_faculty)
-
-        # Apply college filter
-        if filter_college:
-            query = query.filter(Faculty.college == filter_college)
-
-        # Pagination
-        sentiment_comments = query.paginate(page=page, per_page=per_page, error_out=False)
-
-        all_faculty = db.session.query(Faculty).all()
-        all_colleges = db.session.query(Faculty.college).distinct().all()
         
-        return render_template(
-            'comments.html',
-            username=username,
-            sentiment_comments=sentiment_comments,
-            search_query=search_query,
-            filter_category=filter_category,
-            filter_faculty=filter_faculty,
-            filter_college=filter_college,
-            all_faculty=all_faculty,
-            all_colleges=all_colleges
-        )
-    
-    return redirect(url_for('loading_screen', target=url_for('login')))
+        query = db.session.query(Comment, Faculty, AY_SEM).join(Faculty, Comment.faculty_id == Faculty.faculty_id)\
+        .join(AY_SEM, Comment.ay_id == AY_SEM.ay_id)\
+        .filter(Comment.category != 0)
+
+       
+        if search_query:
+            query = query.filter(
+                (Faculty.name.ilike(f'%{search_query}%')) | 
+                (Comment.comment.ilike(f'%{search_query}%'))
+            )
+
+       
+        comments_pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+
+        
+        return render_template('comments.html', 
+                        username=username, 
+                        comments=comments_pagination.items,  
+                        comments_pagination=comments_pagination,
+                        search_query=search_query,  
+                        filter_category=request.args.get('category', ''), 
+                        filter_faculty=request.args.get('faculty', ''))
+
+    return redirect(url_for('loading_screen', target=url_for('comments')))
+
 
 
 #   Routes for comments with loading screen
@@ -521,13 +503,16 @@ def loading_comments():
 
 # View Sentement_Commets 
 
+
+
+
 @app.route('/view_sentiment_comment/<int:sentiment_comment_id>', methods=['GET'])
 def view_sentiment_comment(sentiment_comment_id):
     if 'username' in session:
         comment_instance = (
             db.session.query(SentimentComment, Comment, Faculty.name)
             .join(Comment, SentimentComment.comment_id == Comment.comment_id)
-            .join(Faculty, Comment.faculty_id == Faculty.id)
+            .join(Faculty, Comment.faculty_id == Faculty.faculty_id)
             .filter(SentimentComment.id == sentiment_comment_id)
             .first()
         )
@@ -543,44 +528,11 @@ def view_sentiment_comment(sentiment_comment_id):
 
 
 
-#   Start Sentiment Process
 
-@app.route('/startsentiment', methods=['POST'])
-def start_sentiment():
-    # Ensure the user is logged in (if needed)
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
 
-    # Fetch the default semester from the database
-    default_semester = Semester.query.first()  # Adjust this query based on how you identify the default semester
-    if not default_semester:
-        flash("No default semester found!", "error")
-        return redirect(url_for('comments'))
 
-    # Query comments that have status = 0 and match the current semester
-    comments = Comment.query.filter_by(status=0, semester_number=default_semester.semester_number).all()
 
-    for comment in comments:
-        # Predict sentiment
-        predicted_class = predict_sentiment(comment.content)
-        
-        # Store sentiment into SentimentComment
-        sentiment_comment = SentimentComment(
-            comment_id=comment.comment_id,
-            category=predicted_class,  # Store the predicted integer class
-            created_at=datetime.utcnow(),
-            publish=0  # Default publish status
-        )
-        db.session.add(sentiment_comment)
 
-        # Update the comment status
-        comment.status = 1  # Mark the comment as processed
-        db.session.add(comment)
-
-    db.session.commit()  # Commit all changes to the database
-
-    flash("Sentiment analysis completed successfully!", "success")
-    return redirect(url_for('comments'))
 
 
 
@@ -627,46 +579,6 @@ def view_user(user_id):
     return redirect(url_for('loading_screen', target=url_for('login')))
 
 
-# Delete Staff account 
-@app.route('/delete_user/<int:user_id>', methods=['POST'])
-def delete_user(user_id):
-    if 'username' in session:
-        user = Users.query.get(user_id)  
-        
-        if user:
-            db.session.delete(user)  
-            db.session.commit() 
-            flash('User deleted successfully!', 'success')
-        else:
-            flash('User not found.', 'error')
-        
-        return redirect(url_for('account'))
-
-    return redirect(url_for('loading_screen', target=url_for('login')))
-
-
-# Update Staff Account 
-@app.route('/update_user/<int:user_id>', methods=['GET', 'POST'])
-def update_user(user_id):
-    if 'username' in session:
-        user = Users.query.get(user_id)  
-        
-        if request.method == 'POST':
-            # Update user details
-            user.name = request.form['name']
-            user.email = request.form['email']
-           
-            db.session.commit()  
-            return redirect(url_for('account'))  
-        
-        if user:
-            return render_template('Crud/update_user.html', user=user)  
-        return "User not found", 404 
-
-    return redirect(url_for('loading_screen', target=url_for('login')))
-
-
-
 
 
 #  Faculty 
@@ -675,23 +587,20 @@ def faculty():
     if 'username' in session:
         username = session['username']
         search_query = request.args.get('search', '')  
-        selected_college = request.args.get('college', '') 
-        page = request.args.get('page', 1, type=int)  # Get current page number
+        page = request.args.get('page', '1')  
 
+      
+        if page.isdigit():
+            page = int(page) 
+        else:
+            page = 1  
         query = Faculty.query
 
-        # Apply search filter
         if search_query:
             query = query.filter(
                 (Faculty.name.ilike(f'%{search_query}%')) |
                 (Faculty.email.ilike(f'%{search_query}%'))
             )
-
-        # Apply college filter
-        if selected_college:
-            query = query.filter(Faculty.college.ilike(f'%{selected_college}%'))
-
-        # Paginate the results
         faculty_members = query.paginate(page=page, per_page=5, error_out=False)
 
         return render_template('faculty.html', username=username, faculty_members=faculty_members)
@@ -699,56 +608,12 @@ def faculty():
     return redirect(url_for('loading_screen', target=url_for('login')))
 
 
-#   Add Faculty 
-
-@app.route('/faculty/add', methods=['GET', 'POST'])
-def add_faculty():
+# View Faculty
+@app.route('/faculty/view/<faculty_id>', methods=['GET'])  
+def view_faculty(faculty_id):
     if 'username' in session:
         username = session['username']
-        
-        if request.method == 'POST':
-            name = request.form['name']
-            department = request.form['department']
-            college = request.form['college']
-            gender = request.form['gender']
-            birthdate = request.form['birthdate']  
-            email = request.form['email']
-            password = request.form['password']
-            confpassword = request.form['confpassword']
-            
-          
-            if password != confpassword:
-                flash('Passwords do not match!', 'error')
-                return redirect(url_for('add_faculty'))
-
-            
-            new_faculty = Faculty(
-                name=name, 
-                department=department, 
-                college=college, 
-                gender=gender, 
-                birthdate=birthdate,  
-                email=email, 
-                password=password
-            )
-         
-            db.session.add(new_faculty)
-            db.session.commit()
-            
-            return redirect(url_for('faculty'))  
-        
-        return render_template('Crud/add_faculty.html', username=username)  
-
-    return redirect(url_for('loading_screen', target=url_for('login')))
-
-
-#    View Faculty 
-@app.route('/faculty/view/<int:id>', methods=['GET'])
-def view_faculty(id):
-    if 'username' in session:
-        username = session['username']
-        faculty_member = Faculty.query.get(id)
-        
+        faculty_member = Faculty.query.get(faculty_id)  
         if faculty_member is None:
             flash('Faculty member not found!', 'error')
             return redirect(url_for('faculty'))
@@ -758,86 +623,27 @@ def view_faculty(id):
     return redirect(url_for('loading_screen', target=url_for('login')))
 
 
-# Update Faculty 
-
-@app.route('/faculty/update/<int:id>', methods=['GET', 'POST'])
-def update_faculty(id):
-    if 'username' in session:
-        username = session['username']
-        faculty_member = Faculty.query.get(id)
-
-        if faculty_member is None:
-            flash('Faculty member not found!', 'error')
-            return redirect(url_for('faculty'))
-
-        if request.method == 'POST':
-            faculty_member.name = request.form['name']
-            faculty_member.department = request.form['department']
-            faculty_member.college = request.form['college']
-            faculty_member.gender = request.form['gender']
-            faculty_member.birthdate = request.form['birthdate']  # Optional
-            faculty_member.email = request.form['email']
-            password = request.form['password']
-            confpassword = request.form['confpassword']
-
-            # Check if passwords match
-            if password != confpassword:
-                flash('Passwords do not match!', 'error')
-                return redirect(url_for('update_faculty', id=id))
-
-            # Update the password if it's provided
-            if password:
-                faculty_member.password = password
-            
-            db.session.commit()
-            return redirect(url_for('faculty'))  # Redirect to the faculty page after updating
-
-        return render_template('Crud/update_faculty.html', username=username, faculty=faculty_member)
-
-    return redirect(url_for('loading_screen', target=url_for('login')))
-
-
-#Delete Faculty 
-@app.route('/faculty/delete/<int:id>', methods=['POST'])
-def delete_faculty(id):
-    if 'username' in session:
-        faculty_member = Faculty.query.get(id) 
-        if faculty_member:
-            db.session.delete(faculty_member) 
-            db.session.commit()  
-            flash('Faculty member deleted successfully.', 'success') 
-        else:
-            flash('Faculty member not found.', 'error') 
-        return redirect(url_for('faculty'))  
-    return redirect(url_for('loading_screen', target=url_for('login')))
-
-# View Faculty Commnets 
-
-@app.route('/faculty/comments/<int:id>', methods=['GET'])
-def faculty_comments(id):
+# View Faculty Comments
+@app.route('/faculty/comments/<faculty_id>', methods=['GET'])  
+def faculty_comments(faculty_id):
     if 'username' in session:
         username = session['username']
         
-        # Fetch the faculty member
-        faculty_member = Faculty.query.get(id)
+        faculty_member = Faculty.query.get(faculty_id)  
         if faculty_member is None:
             flash('Faculty member not found!', 'error')
             return redirect(url_for('faculty'))
 
-        # Get the page number from query parameters, default to 1
         page = request.args.get('page', 1, type=int)
 
-        # Fetch comments and their sentiment analysis using inner joins
         comments_query = (
             db.session.query(Comment, SentimentComment)
             .join(SentimentComment, Comment.comment_id == SentimentComment.comment_id)
-            .filter(Comment.faculty_id == id)
+            .filter(Comment.faculty_id == faculty_id)
         )
         
-        # Paginate the results
         sentiment_comments = comments_query.paginate(page=page, per_page=5)
 
-        # Initialize counters
         total_comments = sentiment_comments.total
         positive_comments = sum(1 for _, sentiment in sentiment_comments.items if sentiment.category == 2)
         negative_comments = sum(1 for _, sentiment in sentiment_comments.items if sentiment.category == 0)
@@ -856,58 +662,6 @@ def faculty_comments(id):
         )
 
     return redirect(url_for('loading_screen', target=url_for('login')))
-
-
-# Semester 
-@app.route('/semester')
-def semester():
-    if 'username' in session:
-        username = session['username']
-        default_semester = Semester.query.first()  # Fetch the first semester
-        return render_template('semester.html', username=username, default_semester=default_semester)
-    return redirect(url_for('loading_screen', target=url_for('semester')))
-
-#   Editt Semester 
-@app.route('/edit_semester', methods=['GET', 'POST'])
-def edit_semester():
-    if 'username' in session:
-        username = session['username']
-        
-       
-        default_semester = Semester.query.first() 
-        
-        if request.method == 'POST':
-            semester_number = request.form.get('semester_number')
-            school_year = request.form.get('school_year')
-            student_num = request.form.get('student_num') 
-
-            print(f'Semester Number: {semester_number}, School Year: {school_year}, Student Num: {student_num}')
-      
-            
-            default_semester.semester_number = semester_number
-            default_semester.school_year = school_year
-            default_semester.student_num = student_num  
-            
-           
-            db.session.commit()
-            
-       
-            return redirect(url_for('semester'))
-        
-        
-        return render_template('Crud/edit_semester.html', username=username, default_semester=default_semester)
-    
-    return redirect(url_for('loading_screen', target=url_for('edit_semester')))
-
-
-
-
-# get Faculty
-def get_faculties():
-    """Helper function to retrieve the list of faculties."""
-    return Faculty.query.all()  
-
-
 
 
 

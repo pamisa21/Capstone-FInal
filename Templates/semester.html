@@ -30,41 +30,28 @@
                             <input type="text" id="school_year" name="school_year" required 
                                 class="p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-300" 
                                 placeholder="Enter school year (e.g., 2024-2025)"
-                                value="{{ default_semester.school_year }}" readonly>
+                                value="{{ default_school_year }}" readonly>
                         </div>
 
                         <div class="flex flex-col">
                             <label for="semester" class="text-lg font-semibold">Semester</label>
                             <input type="text" id="semester_display" name="semester_display" 
                                 class="p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-300" 
-                                value="{% if default_semester.semester_number == 1 %}1st Semester
-                                {% elif default_semester.semester_number == 2 %}2nd Semester
-                                {% elif default_semester.semester_number == 3 %}Mid Year
+                                value="{% if default_semester_number == 1 %}1st Semester
+                                {% elif default_semester_number == 2 %}2nd Semester
+                                {% elif default_semester_number == 3 %}Mid Year
                                 {% else %}Unknown
                                 {% endif %}" readonly>
-                        </div>
-                        <div class="flex flex-col">
-                            <label for="student_num" class="text-lg font-semibold">Total Numbers Of Students</label>
-                            <input type="text" id="student_num" name="student_num" 
-                                class="p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-300" 
-                                value="{{ default_semester.student_num }}" readonly>
-                        </div>
-                        
-
-                        <div class="flex space-x-4">
-                            <a href="{{ url_for('edit_semester') }}" 
-                            class="setdf mt-4 px-4 py-2 font-semibold">
-                                Change Default Semester
-                            </a>
                         </div>
                         
                     </div>
                 </div>
             </div>
+            
+         
+
         </main>
     </div>
-
-   
 </div>
 
 {% endblock content %}

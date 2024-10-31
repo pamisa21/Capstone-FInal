@@ -72,96 +72,85 @@
                 </form>
 
                 <!-- Table Section -->
-                <div class="table-container">
-                    <div class="overflow-x-auto">
-                        <div class="table-wrapper">
-                            <div class="table-border">
-                                <table class="data-table">
-                                    <thead class="table-header">
-                                        <tr>
-                                            <th class="table-cell ">No.</th>
-                                            <th class="table-cell">Comment ID</th>
-                                            <th class="table-cell">Faculty ID</th>
-                                            <th class="table-cell text-center">Semester</th>
-                                            <th class="table-cell">Category</th>
-                                            <th class="table-cell hidden md:table-cell">Status</th>
-                                            <th class="table-cell hidden md:table-cell">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="table-body" id="commentsTableBody">
-                                        {% for sentiment_comment, comment, faculty in sentiment_comments.items %}
-                                        <tr>
-                                            <td class="table-cell">{{ loop.index + (sentiment_comments.page - 1) * sentiment_comments.per_page }}</td>
-                                            <td class="table-cell">{{ comment.content }}</td>
-                                            <td class="table-cell">{{ faculty.name }}</td>
-                                            <td class="table-cell text-center">
-                                                {% if comment.semester_number == 1 %}
-                                                1st Semester - {{ comment.school_year }}
-                                            {% elif comment.semester_number == 2 %}
-                                                2nd Semester - {{ comment.school_year }}
-                                            {% elif comment.semester_number == 3 %}
-                                                Mid Year - {{ comment.school_year }}
-                                            {% else %}
-                                                Unknown Semester / {{ comment.school_year }}
+            
+               <div class="table-container">
+                <div class="overflow-x-auto">
+                    <div class="table-wrapper">
+                        <div class="table-border">
+                            <table class="data-table">
+                                <thead class="table-header">
+                                    <tr>
+                                        <th class="table-cell">No.</th>
+                                        <th class="table-cell">Comment</th>
+                                        <th class="table-cell">Faculty Name</th>
+                                        <th class="table-cell text-center">Semester</th>
+                                        <th class="table-cell">Category</th>
+                                        <th class="table-cell hidden md:table-cell">Status</th>
+                                        <th class="table-cell hidden md:table-cell">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-body" id="commentsTableBody">
+                                    {% for comment, faculty, ay_sem in comments %}
+                                    <tr>
+                                        <td class="table-cell">{{ loop.index + (comments_pagination.page - 1) * comments_pagination.per_page }}</td>
+                                        <td class="table-cell">{{ comment.comment }}</td>
+                                        <td class="table-cell">{{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}</td>
+                                        <td class="table-cell text-center">{{ ay_sem.ay_name }}</td>
+                                        <td class="table-cell text-center">
+                                            {% if comment.category == 1 %}
+                                                Neutral
+                                            {% elif comment.category == 0 %}
+                                                Negative
+                                            {% elif comment.category == 2 %}
+                                                Positive
                                             {% endif %}
-                                            </td>
-                                            <td class="table-cell">
-                                                {% if sentiment_comment.category == 1 %}
-                                                    Neutral
-                                                {% elif sentiment_comment.category == 2 %}
-                                                    Positive
-                                                {% elif sentiment_comment.category == 0 %}
-                                                    Negative
-                                                {% endif %}
-                                            </td>
-                                            <td class="table-cell hidden md:table-cell">
-                                                {% if sentiment_comment.publish == 1 %}
-                                                    Published
-                                                {% else %}
-                                                    Unpublished
-                                                {% endif %}
-                                            </td>
-                                            <td class="px-4 py-4 text-sm whitespace-nowrap hidden md:table-cell">
-    
-                                                    <div class="flex space-x-2">
-                                                        <a href="{{ url_for('view_sentiment_comment', sentiment_comment_id=sentiment_comment.id) }}" title="View" class="secondary hover:underline">View</a>
-        
-                                                    </div>
-
-                                                
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
+                                        </td>
+                                        
+            
+                                        <td class="table-cell hidden md:table-cell">
+                                            {% if comment.publish == 1 %}
+                                                Published
+                                            {% else %}
+                                                Unpublished
+                                            {% endif %}
+                                        </td>
+                                        <td class="px-4 py-4 text-sm whitespace-nowrap hidden md:table-cell">
+                                            <div class="flex space-x-2">
+                                                <a href="{{ url_for('view_comment', comment_id=comment.comment_id) }}" title="View" class="secondary hover:underline">View</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="flex items-center justify-between mt-6">
-                    {% if sentiment_comments.has_prev %}
-                        <a href="{{ url_for('comments', page=sentiment_comments.prev_num, search=search_query, category=filter_category, faculty=filter_faculty, college=filter_college) }}" class="flex items-center px-5 py-2 text-sm text-gray-700 bg-white border rounded-md gap-x-2 hover:bg-gray-100">
-                            <span>Previous</span>
-                        </a>
-                    {% endif %}
-
-                    <div class="items-center hidden md:flex gap-x-3">
-                        {% for page_num in range(1, sentiment_comments.pages + 1) %}
-                            {% if page_num == sentiment_comments.page %}
-                                <a href="#" class="px-2 py-1 text-sm text-white bg-green-800 rounded-md">{{ page_num }}</a>
-                            {% else %}
-                                <a href="{{ url_for('comments', page=page_num, search=search_query, category=filter_category, faculty=filter_faculty, college=filter_college) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">{{ page_num }}</a>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-
-                    {% if sentiment_comments.has_next %}
-                        <a href="{{ url_for('comments', page=sentiment_comments.next_num, search=search_query, category=filter_category, faculty=filter_faculty, college=filter_college) }}" class="flex items-center px-5 py-2 text-sm text-yellow-700 bg-white border rounded-md gap-x-2 hover:bg-yellow-400">
-                            <span>Next</span>
-                        </a>
-                    {% endif %}
-                </div>
+            {% if comments_pagination.has_prev %}
+            <a href="{{ url_for('comments', page=comments_pagination.prev_num, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="flex items-center px-5 py-2 text-sm text-gray-700 bg-white border rounded-md gap-x-2 hover:bg-gray-100">
+                <span>Previous</span>
+            </a>
+        {% endif %}
+        
+        <div class="items-center hidden md:flex gap-x-3">
+            {% for page_num in range(1, comments_pagination.pages + 1) %}
+                {% if page_num == comments_pagination.page %}
+                    <a href="#" class="px-2 py-1 text-sm text-white bg-green-800 rounded-md">{{ page_num }}</a>
+                {% else %}
+                    <a href="{{ url_for('comments', page=page_num, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">{{ page_num }}</a>
+                {% endif %}
+            {% endfor %}
+        </div>
+        
+        {% if comments_pagination.has_next %}
+            <a href="{{ url_for('comments', page=comments_pagination.next_num, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="flex items-center px-5 py-2 text-sm text-yellow-700 bg-white border rounded-md gap-x-2 hover:bg-yellow-400">
+                <span>Next</span>
+            </a>
+        {% endif %}
+        
 
             </div>
 

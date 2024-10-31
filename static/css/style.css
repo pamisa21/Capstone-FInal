@@ -178,7 +178,7 @@ input:checked + .toggle-bg + .toggle-dot {
 
 /* Sidebar responsive */
 #sidebar {
-    transition: width 0.3s ease;
+
     height: 85%;
     box-shadow: 2px 2px 2px 2px rgba(84, 86, 85, 0.1); 
     margin-top: 10px;
@@ -198,13 +198,7 @@ input:checked + .toggle-bg + .toggle-dot {
     margin-left: 110px;  
 }
 
-.sidebar-transition {
-    transition: width 1.0s ease; 
-}
 
-main {
-    transition: margin-left 0.1s cubic-bezier(0.4, 0, 0.2, 1); 
-}
 
 
 
@@ -213,11 +207,6 @@ main {
 #sidebar.collapsed .text-sm {
     display: none;
     
-}
-
-#sidebar.collapsed .w-5.h-5 {
-    margin: 0 auto; /* Center icons when collapsed */
-    color: black; /* Change icon color to black when collapsed */
 }
 
 

@@ -11,7 +11,7 @@ class Comment(db.Model):
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
     ay_id = db.Column(db.String(20), db.ForeignKey('AY_SEM.ay_id'), nullable=False)
     status = db.Column(db.Integer, default=0)
-    category = db.Column(db.Integer, default=4, nullable=False)
+    category = db.Column(db.Integer, default=3, nullable=False)
 
     def __repr__(self):
         return f'<Comment {self.comment_id}>'

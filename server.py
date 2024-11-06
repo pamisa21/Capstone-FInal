@@ -20,6 +20,7 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/ComFES'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['FES_LOGO_PATH'] = '/static/img/feslogo.png'
+app.config['LOADING_GIF'] = '/static/img/Orange and Purple Vibrant Colorful Geometric Website Logo.gif'
 
 # Initialize SQLAlchemy with the app
 db.init_app(app)
@@ -33,7 +34,7 @@ def inject_default_semester():
     latest_semester = all_semesters[0] if all_semesters else None
 
     # Set the latest semester as the default if no semester is in localStorage
-    default_semester = latest_semester.ay_id if latest_semester else None
+    default_semester = latest_semester.ay_id if latest_semester else None   
     default_school_year = latest_semester.ay_name if latest_semester else None
 
     return {

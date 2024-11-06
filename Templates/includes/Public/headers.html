@@ -6,19 +6,19 @@
         <!-- Logo -->
         <a href="#" class="flex items-center">
           <img src="static/img/feslogo.png" alt="Logo" class="h-9 w-auto">
-          <span class="ml-3 text-2xl font-bold font-heading">CMU FES</span>
+          <span class="ml-3 text-2xl font-bold font-heading focus-in-expand-fwd">CMU FES</span>
         </a>
         
         <!-- Nav Links (Hidden on small screens) -->
         <ul class="hidden md:flex px-4 mx-auto font-semibold font-heading space-x-12">
-          <li><a id="home-link" class="active hover:text-green-600 cursor-pointer" onclick="showSection('home')">Home</a></li>
-          <li><a id="about-link" class="hover:text-green-600 cursor-pointer" onclick="showSection('about')">Team</a></li>
-          <li><a id="contact-link" class="hover:text-green-600 cursor-pointer" onclick="showSection('contact')">Contact</a></li>
+          <li><a id="home-link" class="active hvr-underline-from-center cursor-pointer" onclick="showSection('home')">Home</a></li>
+          <li><a id="about-link" class="hvr-underline-from-center cursor-pointer" onclick="showSection('about')">Team</a></li>
+          <li><a id="contact-link" class="hvr-underline-from-center cursor-pointer" onclick="showSection('contact')">Contact</a></li>
         </ul>
 
         {% if 'user_id' in session %}
           <!-- Show Dashboard button if user is logged in -->
-          <div class="hidden md:flex items-center space-x-3 border rounded-md px-3 py-2 bg-[#083B0A] text-white hover:bg-[#F1BE48] hover:text-white" id="dashboard-button">
+          <div class="hidden md:flex items-center space-x-3 border rounded-md px-3 py-2 hvr-underline-from-center" id="dashboard-button">
             <a href="{{ url_for('dashboard') }}" class="flex items-center space-x-2">
               <i class="ph ph-house-line text-current"></i>
               <span>Dashboard</span>
@@ -27,7 +27,7 @@
           
         {% else %}
           <!-- Login button -->
-          <div class="hidden md:flex items-center space-x-3 border rounded-md px-3 py-2 hover:bg-[#F1BE48] login-register hover:text-white mr-2" id="login-button">
+          <div class="hidden md:flex items-center space-x-3 border rounded-md px-3 py-2  hvr-underline-from-center mr-2" id="login-button">
             <a href="{{ url_for('login') }}" class="flex items-center space-x-2">
               <i class="ph ph-sign-in text-current"></i>
               <span>Login</span>
@@ -35,7 +35,7 @@
           </div>
           
           <!-- Register button -->
-          <div class="hidden md:flex items-center space-x-3 border rounded-md px-3 py-2 bg-[#083B0A] text-white hover:bg-[#F1BE48] login-register hover:text-white" id="register-button">
+          <div class="hidden md:flex items-center space-x-3 border rounded-md px-3 py-2 hvr-underline-from-center " id="register-button">
             <a href="{{ url_for('register') }}" class="flex items-center space-x-2">
               <i class="ph ph-house-plus text-current"></i>
               <span>Sign up</span>

@@ -9,3 +9,8 @@ python -m pip install PyMySQL
 python -m pip install torch  
 python -m pip install transformers    
 python -m pip install cryptography
+
+python -m pip install pandas openpyxl  --- for excel file
+
+sentencepiece
+emoji

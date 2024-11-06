@@ -71,52 +71,24 @@ function toggleText() {
 
 
 
-
-
 document.addEventListener('DOMContentLoaded', () => {
     const toggleButton = document.getElementById('toggle-button');
-    if (toggleButton) {
-        toggleButton.addEventListener('click', function () {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar) {
-                sidebar.classList.toggle('collapsed');
+    const sidebar = document.getElementById('sidebar');
 
-                const icon = this.querySelector('svg');
-                if (icon) {
-                    icon.classList.toggle('rotate-90');
-                }
-            }
-        });
+    // Check localStorage for previous collapse state and apply it
+    if (localStorage.getItem('sidebarCollapsed') === 'true') {
+        sidebar.classList.add('collapsed');
     }
+
+    toggleButton.addEventListener('click', function () {
+        sidebar.classList.toggle('collapsed');
+        
+        // Update localStorage with the new state
+        const isCollapsed = sidebar.classList.contains('collapsed');
+        localStorage.setItem('sidebarCollapsed', isCollapsed);
+    });
 });
 
-// Initialize sentiment pie chart
-document.addEventListener('DOMContentLoaded', () => {
-    const ctx = document.getElementById('sentimentPieChart');
-    if (ctx) {
-        new Chart(ctx.getContext('2d'), {
-            type: 'pie',
-            data: {
-                labels: ['Positive', 'Neutral', 'Negative'],
-                datasets: [{
-                    data: [30, 50, 20],
-                    backgroundColor: ['#38a169', '#a0aec0', '#e53e3e'],
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top',
-                    }
-                }
-            }
-        });
-    }
-});
 
 document.addEventListener('DOMContentLoaded', () => {
     const notificationToggle = document.getElementById('notification-toggle');
@@ -158,8 +130,8 @@ function toggleMobileMenu() {
     const rows = tableBody.getElementsByTagName('tr');
 
     for (let i = 0; i < rows.length; i++) {
-        const nameCell = rows[i].getElementsByTagName('td')[0]; // Assuming name & email is the first cell
-        const collegeCell = rows[i].getElementsByTagName('td')[1]; // Assuming college is the second cell
+        const nameCell = rows[i].getElementsByTagName('td')[0]; 
+        const collegeCell = rows[i].getElementsByTagName('td')[1]; 
         let nameText = nameCell.textContent || nameCell.innerText;
         let collegeText = collegeCell.textContent || collegeCell.innerText;
 
@@ -227,42 +199,3 @@ function applyFilters() {
 
 //bar chart 
 
-document.addEventListener('DOMContentLoaded', () => {
-    const ctxBar = document.getElementById('sentimentBarChart');
-    if (ctxBar) {
-        const labels = ['1st Semester', '2nd Semester', 'Mid Year'];
-        const data = {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Positive Sentiment',
-                    data: [65, 59, 80], // Positive sentiment values
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Negative Sentiment',
-                    data: [20, 15, 10], // Display negative sentiment as positive values
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
-                }
-            ]
-        };
-
-        new Chart(ctxBar.getContext('2d'), {
-            type: 'bar',
-            data: data,
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        suggestedMax: 100 // Adjust as needed
-                    }
-                }
-            }
-        });
-    }
-});

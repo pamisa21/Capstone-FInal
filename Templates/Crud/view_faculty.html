@@ -16,9 +16,9 @@
         {% include "includes/sidebar.html" %}
 
         <!-- Main Content Container -->
-        <main class="flex-1 p-5 mx-5 mt-[100px] ml-2 md:ml-60">
+        <main class="flex-1 p-4 mx-5 mt-[90px] ml-2 md:ml-60">
 
-            <div class="p-4">
+            <div class="p-2">
                 <h1 class="text-2xl font-bold">View Faculty Details</h1>
                 <form class="space-y-4 mt-4">
 
@@ -29,12 +29,12 @@
                     </div>
                     <div class="flex flex-col">
                         <label class="text-lg font-semibold">Name:</label>
-                        <p class="p-2 border border-gray-300 rounded bg-gray-100">{{ faculty.name }}</p>
+                        <p class="p-2 border border-gray-300 rounded bg-gray-100">{{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}</p>
                     </div>
                     <!-- Read-only Email -->
                     <div class="flex flex-col">
                         <label class="text-lg font-semibold">Email:</label>
-                        <p class="p-2 border border-gray-300 rounded bg-gray-100">{{ faculty.email }}</p>
+                        <p class="p-2 border border-gray-300 rounded bg-gray-100">{{ faculty.email }} </p>
                     </div>
                     <!-- Read-only Department -->
                     <div class="flex flex-col">
@@ -54,8 +54,10 @@
                     </div>
 
                     <div class="text-right mt-4">
+                     
                         <a href="{{ url_for('faculty') }}" class="font-semibold text-green-600 hover:underline">Back to Faculty List</a>
                     </div>
+                    
                 </form>
             </div>
         </main>

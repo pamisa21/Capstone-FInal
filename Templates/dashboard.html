@@ -16,20 +16,18 @@
     <div class="flex flex-1">
         {% include "includes/sidebar.html" %}
 
-        <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60">
+        <main class="flex-1 p-4 mx-5 mt-20 ml-2 md:ml-60">
             <div id="dashboard" class="p-6">
                 <!-- Dashboard Header with Filter Section -->
-                <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-2">
                     <h1 class="text-2xl font-bold">Dashboard</h1>
-                    <button class="border border-gray-300 rounded-md px-4 py-2 text-sm bg-white text-black shadow-lg transition-all duration-300 transform hover:bg-green-100 hover:shadow-2xl focus:outline-none">
+                    <button class="border border-gray-300 rounded-md px-4 py-2 text-sm  hvr-underline-from-center focus:outline-none">
                         Print Results
                     </button>
-                    <!-- Filter Section -->
-                   
                 </div>
-                <div class="flex flex-wrap items-center gap-4 mt-4 md:mt-0 ">
-                    
-                    <div class="flex flex-col">
+
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0 mb-5  ">
+                    <div class="flex flex-col  ">
                         <select id="dashboardSemesterDropdown" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black">
                             {% for semester in semesters %}
                                 <option value="{{ semester.ay_id }}" {% if semester.ay_id == default_semester %} selected {% endif %}>
@@ -38,187 +36,253 @@
                             {% endfor %}
                         </select>
                     </div>
-                    
                     <script>
                         document.addEventListener("DOMContentLoaded", function() {
                             const dashboardDropdown = document.getElementById("dashboardSemesterDropdown");
-                            const savedSemester = localStorage.getItem("selectedSemester");
-                    
-                            // Load the last selected semester if available in localStorage
+                            const savedSemester = localStorage.getItem("selectedDashboardSemester");
+
+                            // If saved semester exists in localStorage, set it as the default
                             if (savedSemester) {
                                 dashboardDropdown.value = savedSemester;
                             }
-                    
-                            // Save selected semester to localStorage and refresh the page on change
+
+                            // On change, store the selected semester in localStorage and update the dashboard
                             dashboardDropdown.addEventListener("change", function() {
-                                localStorage.setItem("selectedSemester", dashboardDropdown.value);
-                                location.reload();  // Refresh the page
+                                localStorage.setItem("selectedDashboardSemester", dashboardDropdown.value);
+                                window.location.href = `/dashboard?ay_id=${dashboardDropdown.value}`;  // Reload the page with selected semester
                             });
                         });
                     </script>
-                    <div id="loadingOverlay" class="hidden fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
-                        <div class="text-white text-lg font-semibold">Loading...</div>
-                    </div>
                     
                     
-                    
-                    <div class="flex items-center">
-                        <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg transition-all duration-300 transform hover:shadow-2xl focus:outline-none bg-white text-black" onchange="updateDepartments()">
+
+                    <!-- College Dropdown -->
+                    <div class="flex items-center   ">
+                        <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black" onchange="updateDashboard()">
                             <option value="">Select College</option>
                             {% for college in colleges %}
-                                <option value="{{ college.college_id }}" {% if college.college_id == request.args.get('college') %}selected{% endif %}>{{ college.college_name }}</option>
+                                <option value="{{ college.college_id }}" {% if college.college_id == selected_college %}selected{% endif %}>{{ college.college_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    
-                    <div class="flex items-center">
-                        <select id="filterDepartment" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg transition-all duration-300 transform hover:shadow-2xl focus:outline-none bg-white text-black hidden">
+                    <div class="flex items-center   r">
+                        <select id="filterDepartment" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black" onchange="updateDashboard()">
                             <option value="">Select Department</option>
-                            <!-- Departments will be populated here based on selected college -->
+                            {% for department in selected_departments %}
+                                <option value="{{ department.department_id }}" {% if department.department_id == selected_department %}selected{% endif %}>
+                                    {{ department.department_name }}
+                                </option>
+                            {% endfor %}
                         </select>
                     </div>
-
-                    <div class="flex items-center">
-                        <select id="filterFaculty" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg transition-all duration-300 transform hover:shadow-2xl focus:outline-none bg-white text-black hidden">
-                            <option value="">Select Faculty</option>
-                        </select>
-                    </div>
-                    
-                    <script>
-                        // Departments and faculties data from backend
-                        const departmentsByCollege = {{ departments_by_college | tojson }};
-                        const facultiesByDepartment = {{ faculties_by_department | tojson }};
-                    
-                        function updateDepartments() {
-                            const collegeSelect = document.getElementById('filterCollege');
-                            const departmentSelect = document.getElementById('filterDepartment');
-                            const selectedCollegeId = collegeSelect.value;
-                    
-                            departmentSelect.innerHTML = '<option value="">Select Department</option>';
-                    
-                            if (selectedCollegeId && departmentsByCollege[selectedCollegeId]) {
-                                departmentsByCollege[selectedCollegeId].forEach(department => {
-                                    const option = document.createElement('option');
-                                    option.value = department.department_id;
-                                    option.textContent = department.department_name;
-                                    departmentSelect.appendChild(option);
-                                });
-                                departmentSelect.classList.remove('hidden');
-                            } else {
-                                departmentSelect.classList.add('hidden');
-                            }
-                    
-                            // Reset faculty dropdown
-                            document.getElementById('filterFaculty').classList.add('hidden');
-                        }
-                    
-                        function updateFaculties() {
-                            const departmentSelect = document.getElementById('filterDepartment');
-                            const facultySelect = document.getElementById('filterFaculty');
-                            const selectedDepartmentId = departmentSelect.value;
-                    
-                            facultySelect.innerHTML = '<option value="">Select Faculty</option>';
-                    
-                            if (selectedDepartmentId && facultiesByDepartment[selectedDepartmentId]) {
-                                facultiesByDepartment[selectedDepartmentId].forEach(faculty => {
-                                    const option = document.createElement('option');
-                                    option.value = faculty.faculty_id;
-                                    option.textContent = faculty.faculty_name;
-                                    facultySelect.appendChild(option);
-                                });
-                                facultySelect.classList.remove('hidden');
-                            } else {
-                                facultySelect.classList.add('hidden');
-                            }
-                        }
-                    
-                        // Add event listeners for dropdown changes
-                        document.getElementById('filterCollege').addEventListener('change', updateDepartments);
-                        document.getElementById('filterDepartment').addEventListener('change', updateFaculties);
-                    </script>
-                    
+                   
                 </div>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        const departmentDropdown = document.getElementById("filterDepartment");
+                        const savedDepartment = localStorage.getItem("selectedDepartment");
                 
-                    
+                        // Load last selected department if available
+                        if (savedDepartment) {
+                            departmentDropdown.value = savedDepartment;
+                        }
+                
+                        // Save selected department to localStorage and refresh the page on change
+                        departmentDropdown.addEventListener("change", function() {
+                            localStorage.setItem("selectedDepartment", departmentDropdown.value);
+                            updateDashboard(); // Call the function to update the dashboard with the selected department
+                        });
+                    });
+                
+                    function updateDashboard() {
+                        const selectedCollegeId = document.getElementById("filterCollege").value;
+                        const selectedSemester = document.getElementById("dashboardSemesterDropdown").value;
+                        const selectedDepartmentId = document.getElementById("filterDepartment").value;
+                
+                        window.location.href = `/dashboard?college_id=${selectedCollegeId}&ay_id=${selectedSemester}&department_id=${selectedDepartmentId}`; // Reload with college_id, ay_id, and department_id
+                    }
+                </script>
+
+                            <!-- Total Comments and Sentiment Count Row -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- Total Comments Card -->
+                <div class="bg-white rounded-lg shadow-md p-8 flex flex-col relative col-span-1 md:col-span-2   ">
+                    <h2 class="text-lg font-semibold">Total Comments</h2>
+                    <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
+                    <a href="/comments" class="text-sm absolute top-0 right-0 mt-4 mr-2">View Comments!</a>
                 </div>
 
-                <!-- Total Comments and Sentiment Count Row -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="bg-white rounded-lg shadow-md p-8 flex flex-col relative col-span-1 md:col-span-2">
-                        <h2 class="text-lg font-semibold">Total Comments</h2>
-                        <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
-                        <a href="/comments" class="text-sm absolute top-0 right-0 mt-4 mr-2">View Comments!</a>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 col-span-1 md:col-span-2  ">
+                    <div class="bg-green-100 rounded-lg shadow-md p-6 flex flex-col items-center hvr-grow">
+                        <span class="material-icons primary">thumb_up</span>
+                        <h3 class="text-xl font-semibold mt-2">Positive</h3>
+                        <p class="text-3xl font-bold">{{ positive_count }}</p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 col-span-1 md:col-span-2">
-                        <div class="bg-green-100 rounded-lg shadow-md p-6 flex flex-col items-center">
-                            <span class="material-icons primary">thumb_up</span>
-                            <h3 class="text-xl font-semibold mt-2">Positive</h3>
-                            <p class="text-3xl font-bold">{{ positive_count }}</p>
-                        </div>
-
-                        <div class="bg-gray-100 rounded-lg shadow-md p-6 flex flex-col items-center">
-                            <span class="material-icons primary">more_horiz</span>
-                            <h3 class="text-xl font-semibold mt-2">Neutral</h3>
-                            <p class="text-3xl font-bold">{{ neutral_count }}</p>
-                        </div>
-
-                        <div class="bg-red-100 rounded-lg shadow-md p-6 flex flex-col items-center">
-                            <span class="material-icons text-red-500">thumb_down</span>
-                            <h3 class="text-xl font-semibold mt-2">Negative</h3>
-                            <p class="text-3xl font-bold">{{ negative_count }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sentiment Analysis Card (Percentage) -->
-                <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col md:flex-row mt-6">
-                    <div class="flex-grow">
-                        <h2 class="text-lg font-semibold mb-4">Sentiment Analysis</h2>
-                        
-                        <!-- Positive Sentiment -->
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center">
-                                <span class="material-icons text-green-500">thumb_up</span>
-                                <span class="ml-2">Positive</span>
-                            </div>
-                            <p class="text-3xl font-bold">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full mt-2">
-                            <div class="bg-green-500 h-2 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                        </div>
-
-                        <!-- Neutral Sentiment -->
-                        <div class="flex items-center justify-between mb-2 mt-4">
-                            <div class="flex items-center">
-                                <span class="material-icons text-gray-500">more_horiz</span>
-                                <span class="ml-2">Neutral</span>
-                            </div>
-                            <p class="text-3xl font-bold">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full mt-2">
-                            <div class="bg-gray-500 h-2 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                        </div>
-
-                        <!-- Negative Sentiment -->
-                        <div class="flex items-center justify-between mb-2 mt-4">
-                            <div class="flex items-center">
-                                <span class="material-icons text-red-500">thumb_down</span>
-                                <span class="ml-2">Negative</span>
-                            </div>
-                            <p class="text-3xl font-bold">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full mt-2">
-                            <div class="bg-red-500 h-2 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                        </div>
+                    <div class="bg-gray-100 rounded-lg shadow-md p-6 flex flex-col items-center hvr-grow">
+                        <span class="material-icons primary">more_horiz</span>
+                        <h3 class="text-xl font-semibold mt-2">Neutral</h3>
+                        <p class="text-3xl font-bold">{{ neutral_count }}</p>
                     </div>
 
-                    <!-- Pie Chart -->
-                    <div class="mt-4 md:mt-0 md:ml-6">
-                        <canvas id="sentimentPieChart" width="200" height="200"></canvas>
+                    <div class="bg-[#F1BE48] bg-opacity-10 rounded-lg shadow-md p-6 flex flex-col items-center hvr-grow">
+                        <span class="material-icons text-[#F1BE48]">thumb_down</span>
+                        <h3 class="text-xl font-semibold mt-2 text-[#F1BE48]">Negative</h3>
+                        <p class="text-3xl font-bold">{{ negative_count }}</p>
                     </div>
                 </div>
             </div>
+
+            <!-- Sentiment Analysis Card (Percentage) -->
+            <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col md:flex-row mt-6">
+                <div class="flex-grow">
+                    <h2 class="text-lg font-semibold mb-4">Sentiment Analysis this semester</h2>
+                    
+                    <!-- Positive Sentiment -->
+                                     <!-- Positive Sentiment -->
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <span class="material-icons text-[#083B0A]">thumb_up</span>
+                            <span class="ml-2">Positive</span>
+                        </div>
+                        <p class="text-3xl font-bold">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full mt-2">
+                        <div class="bg-[#083B0A] h-2 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                    </div>
+
+                    <!-- Neutral Sentiment -->
+                    <div class="flex items-center justify-between mb-2 mt-4">
+                        <div class="flex items-center">
+                            <span class="material-icons text-gray-500">more_horiz</span>
+                            <span class="ml-2">Neutral</span>
+                        </div>
+                        <p class="text-3xl font-bold">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full mt-2">
+                        <div class="bg-gray-400 h-2 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                    </div>
+
+                    <!-- Negative Sentiment -->
+                    <div class="flex items-center justify-between mb-2 mt-4">
+                        <div class="flex items-center">
+                            <span class="material-icons text-[#F1BE48]">thumb_down</span>
+                            <span class="ml-2">Negative</span>
+                        </div>
+                        <p class="text-3xl font-bold">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full mt-2">
+                        <div class="bg-[#F1BE48] h-2 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                    </div>
+
+                    
+                </div>
+                  <!-- Pie Chart -->
+                  <div class="mt-4 md:mt-0 md:ml-6">
+                    <canvas id="sentimentPieChart" width="200" height="200"></canvas>
+                </div>
+                
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const ctx = document.getElementById('sentimentPieChart');
+                        if (ctx) {
+                            // Check if there are any comments
+                            const totalComments = {{ total_comments }};
+                            let chartData, chartColors, chartLabels;
+                
+                            if (totalComments === 0) {
+                                // Show "No Data" message in blue
+                                chartData = [1]; // single segment for "No Data"
+                                chartColors = ['#3182ce']; // blue color
+                                chartLabels = ['No Data'];
+                            } else {
+                                // Use actual sentiment data
+                                chartData = [
+                                    {{ positive_count }},
+                                    {{ neutral_count }},
+                                    {{ negative_count }}
+                                ];
+                                chartColors = ['#083B0A', '#a0aec0', '#F1BE48'];
+                                chartLabels = ['Positive', 'Neutral', 'Negative'];
+                            }
+                
+                            // Initialize Chart.js pie chart with the computed data
+                            new Chart(ctx.getContext('2d'), {
+                                type: 'pie',
+                                data: {
+                                    labels: chartLabels,
+                                    datasets: [{
+                                        data: chartData,
+                                        backgroundColor: chartColors,
+                                        hoverOffset: 4
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            display: true,
+                                            position: 'top',
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    });
+                </script>
+                
+            </div>
+              <!-- Sentiment Bar Chart -->
+              <div class="bg-white rounded-lg shadow-md mt-8 p-8">
+                <h2 class="text-xl font-semibold mb-6">Sentiment Analysis </h2>
+                <canvas id="sentimentBarChart" width="400" height="200"></canvas>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const ctxBar = document.getElementById('sentimentBarChart');
+                        if (ctxBar) {
+                            const semesterLabels = {{ semester_labels | tojson }};
+                            const positiveData = {{ positive_data | tojson }};
+                            const negativeData = {{ negative_data | tojson }};
+                            
+                            new Chart(ctxBar, {
+                                type: 'bar',
+                                data: {
+                                    labels: semesterLabels,
+                                    datasets: [
+                                        {
+                                            label: 'Positive Sentiment',
+                                            data: positiveData,
+                                            backgroundColor: '#083B0A',
+                                        },
+                                        {
+                                            label: 'Negative Sentiment',
+                                            data: negativeData,
+                                            backgroundColor: '#F1BE48',
+                                        }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    scales: {
+                                        x: { 
+                                            beginAtZero: true 
+                                        },
+                                        y: {
+                                            beginAtZero: true
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    });
+                </script>
+            </div>
+            
+            
+            
+            
         </main>
     </div>
 </div>

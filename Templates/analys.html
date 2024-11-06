@@ -56,13 +56,22 @@
                             </form>
                             
                         </div>
-                        <!-- Button -->
-                        <div class="flex-shrink-0">
-                            <form method="POST" action="{{ url_for('start_sentiment') }}">
-                                <button type="submit" class="start p-2 rounded-md">Start Sentiment Process</button>
-                            </form>
-                        </div>
-                        
+    <!-- Button -->
+
+
+<div class="flex-shrink-0">
+    <form method="POST" action="{{ url_for('start_sentiment') }}" onsubmit="showLoadingScreen()">
+        <button type="submit" class="start p-2 rounded-md">Start Sentiment Process</button>
+    </form>
+</div>
+
+<script>
+    function showLoadingScreen() {
+        // Show the loading screen when the form is submitted
+        document.getElementById('loadingScreen').style.display = 'flex';
+    }
+</script>
+
                         
                         
                     </div>
@@ -157,6 +166,13 @@
         </div>
 
     </main>
+    
+</div>
+<div id="loadingScreen" style="display: none;" class="preloader fixed inset-0 flex items-center justify-center bg-transparent">
+    <div class="flex flex-col items-center justify-center w-full bg-white p-5 rounded shadow-lg">
+        <img src="{{ config['LOADING_GIF'] }}" alt="Loading..." class="w-full mb-4">
+        <h1 class="text-center text-lg font-semibold">Processing, please wait...</h1>
+    </div>
 </div>
 
 {% endblock content %}

@@ -1,54 +1,250 @@
-<!-- <section class="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
-                    <div class="w-full md:w-3/4 lg:w-1/2">
-                        <h2 class="text-center text-xl font-semibold mb-4">Sentiment Analysis Bar Chart</h2>
-                        <div class="bg-white shadow-lg p-4 rounded-lg">
-                            <canvas id="sentimentBarChart" class="w-full h-64"></canvas>
+{% extends "layout/base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/variable.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+{% endblock css %}
+
+{% block content %}
+<div class="flex flex-col h-screen">
+    <header>
+        {% include "includes/navbar.html" %}
+    </header>
+    
+    <div class="flex flex-1">
+        {% include "includes/sidebar.html" %}
+
+        <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60">
+            <div id="dashboard" class="p-6">
+                <!-- Dashboard Header with Filter Section -->
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+                    <h1 class="text-2xl font-bold">Dashboard</h1>
+                    <button class="border border-gray-300 rounded-md px-4 py-2 text-sm bg-white text-black shadow-lg transition-all duration-300 transform hover:bg-green-100 hover:shadow-2xl focus:outline-none">
+                        Print Results
+                    </button>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-4 mt-4 md:mt-0 mb-10 ">
+                    <div class="flex flex-col">
+                        <select id="dashboardSemesterDropdown" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black">
+                            {% for semester in semesters %}
+                                <option value="{{ semester.ay_id }}" {% if semester.ay_id == default_semester %} selected {% endif %}>
+                                    {{ semester.ay_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            const dashboardDropdown = document.getElementById("dashboardSemesterDropdown");
+                            const savedSemester = localStorage.getItem("selectedSemester");
+
+                            // Load last selected semester if available
+                            if (savedSemester) {
+                                dashboardDropdown.value = savedSemester;
+                            }
+
+                            // Save selected semester to localStorage and refresh the page on change
+                            dashboardDropdown.addEventListener("change", function() {
+                                localStorage.setItem("selectedSemester", dashboardDropdown.value);
+                                window.location.href = `/dashboard?ay_id=${dashboardDropdown.value}`; // Reload with ay_id
+                            });
+                        });
+                    </script>
+
+                    <div class="flex flex-wrap items-center gap-4 mt-4 md:mt-0 ">
+                        <div class="flex items-center">
+                            <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg transition-all duration-300 transform hover:shadow-2xl focus:outline-none bg-white text-black" onchange="updateDashboard()">
+                                <option value="">Select College</option>
+                                {% for college in colleges %}
+                                    <option value="{{ college.college_id }}" {% if college.college_id == selected_college %}selected{% endif %}>{{ college.college_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <!-- Other filters like department and faculty -->
+                    </div>
+
+                    <script>
+                        function updateDashboard() {
+                            const collegeSelect = document.getElementById('filterCollege');
+                            const selectedCollegeId = collegeSelect.value;
+                            const selectedSemester = document.getElementById("dashboardSemesterDropdown").value;
+                            
+                            // Redirect to dashboard with selected college and semester
+                            window.location.href = `/dashboard?college_id=${selectedCollegeId}&ay_id=${selectedSemester}`;
+                        }
+                    </script>
+
+                    
+                    <div class="flex items-center">
+                        <select id="filterDepartment" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg transition-all duration-300 transform hover:shadow-2xl focus:outline-none bg-white text-black hidden">
+                            <option value="">Select Department</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center">
+                        <select id="filterFaculty" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg transition-all duration-300 transform hover:shadow-2xl focus:outline-none bg-white text-black hidden">
+                            <option value="">Select Faculty</option>
+                        </select>
+                    </div>
+
+                    <script>
+                        // Departments and faculties data from backend
+                        const departmentsByCollege = {{ departments_by_college | tojson }};
+                        const facultiesByDepartment = {{ faculties_by_department | tojson }};
+                    
+                        function updateDepartments() {
+                            const collegeSelect = document.getElementById('filterCollege');
+                            const departmentSelect = document.getElementById('filterDepartment');
+                            const selectedCollegeId = collegeSelect.value;
+                    
+                            departmentSelect.innerHTML = '<option value="">Select Department</option>';
+                    
+                            if (selectedCollegeId && departmentsByCollege[selectedCollegeId]) {
+                                departmentsByCollege[selectedCollegeId].forEach(department => {
+                                    const option = document.createElement('option');
+                                    option.value = department.department_id;
+                                    option.textContent = department.department_name;
+                                    departmentSelect.appendChild(option);
+                                });
+                                departmentSelect.classList.remove('hidden');
+                            } else {
+                                departmentSelect.classList.add('hidden');
+                            }
+
+                            // Reset faculty dropdown
+                            document.getElementById('filterFaculty').classList.add('hidden');
+                        }
+                    
+                        function updateFaculties() {
+                            const departmentSelect = document.getElementById('filterDepartment');
+                            const facultySelect = document.getElementById('filterFaculty');
+                            const selectedDepartmentId = departmentSelect.value;
+                    
+                            facultySelect.innerHTML = '<option value="">Select Faculty</option>';
+                    
+                            if (selectedDepartmentId && facultiesByDepartment[selectedDepartmentId]) {
+                                facultiesByDepartment[selectedDepartmentId].forEach(faculty => {
+                                    const option = document.createElement('option');
+                                    option.value = faculty.faculty_id;
+                                    option.textContent = faculty.faculty_name;
+                                    facultySelect.appendChild(option);
+                                });
+                                facultySelect.classList.remove('hidden');
+                            } else {
+                                facultySelect.classList.add('hidden');
+                            }
+                        }
+
+                        // Add event listeners for dropdown changes
+                        document.getElementById('filterCollege').addEventListener('change', updateDepartments);
+                        document.getElementById('filterDepartment').addEventListener('change', updateFaculties);
+                    </script>
+                </div>
+
+                <!-- Total Comments and Sentiment Count Row -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <!-- Total Comments Card -->
+                    <div class="bg-white rounded-lg shadow-md p-8 flex flex-col relative col-span-1 md:col-span-2">
+                        <h2 class="text-lg font-semibold">Total Comments</h2>
+                        <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
+                        <a href="/comments" class="text-sm absolute top-0 right-0 mt-4 mr-2">View Comments!</a>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 col-span-1 md:col-span-2">
+                        <div class="bg-green-100 rounded-lg shadow-md p-6 flex flex-col items-center">
+                            <span class="material-icons primary">thumb_up</span>
+                            <h3 class="text-xl font-semibold mt-2">Positive</h3>
+                            <p class="text-3xl font-bold">{{ positive_count }}</p>
+                        </div>
+
+                        <div class="bg-gray-100 rounded-lg shadow-md p-6 flex flex-col items-center">
+                            <span class="material-icons primary">more_horiz</span>
+                            <h3 class="text-xl font-semibold mt-2">Neutral</h3>
+                            <p class="text-3xl font-bold">{{ neutral_count }}</p>
+                        </div>
+
+                        <div class="bg-red-100 rounded-lg shadow-md p-6 flex flex-col items-center">
+                            <span class="material-icons text-red-500">thumb_down</span>
+                            <h3 class="text-xl font-semibold mt-2">Negative</h3>
+                            <p class="text-3xl font-bold">{{ negative_count }}</p>
                         </div>
                     </div>
-                </section> -->
-                
-                
+                </div>
 
-                
-                <!-- <div class="table-container">
-                    <div class="overflow-x-auto">
-                        <div class="table-wrapper">
-                            <h2 class="ml-5 p-2 font-semibold green text-center">List of Faculty</h2>
-                            <div class="table-border">
-                                <table class="data-table">
-                                    <thead class="table-header">
-                                        <tr>
-                                            <th class="table-cell">#</th>
-                                            <th class="table-cell">Faculty</th>
-                                            <th class="table-cell">Department and College</th>
-                                            <th class="table-cell">Sentiment Results</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="table-body" id="accountsTableBody">
-                                        {% for faculty in faculty_members %}
-                                        <tr>
-                                            <td class="table-cell">{{ loop.index }}</td>
-                                            <td class="table-cell primary">
-                                               {{ faculty.name }} <br>
-                                               <span class="text-xs secondary">{{ faculty.email }}</span>
-                                            </td>
-                                            <td class="table-cell primary">
-                                                {{ faculty.department }} <br>
-                                                <span class="text-xs secondary">{{ faculty.college }}</span>
-                                             </td>
-                                            <td class="px-4 py-4 text-sm whitespace-nowrap">
-                                                <div class="flex space-x-2">
-                                                    <a href="{{ url_for('faculty_comments', id=faculty.id) }}" title="Comments" class="green border border-green-900 rounded-md p-2">View Comments</a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+                <!-- Sentiment Analysis Card (Percentage) -->
+                <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col md:flex-row mt-6">
+                    <div class="flex-grow">
+                        <h2 class="text-lg font-semibold mb-4">Sentiment Analysis</h2>
+                        
+                        <!-- Positive Sentiment -->
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center">
+                                <span class="material-icons text-green-500">thumb_up</span>
+                                <span class="ml-2">Positive</span>
                             </div>
+                            <p class="text-3xl font-bold">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full mt-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                        </div>
+
+                        <!-- Neutral Sentiment -->
+                        <div class="flex items-center justify-between mb-2 mt-4">
+                            <div class="flex items-center">
+                                <span class="material-icons text-gray-500">more_horiz</span>
+                                <span class="ml-2">Neutral</span>
+                            </div>
+                            <p class="text-3xl font-bold">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full mt-2">
+                            <div class="bg-gray-400 h-2 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                        </div>
+
+                        <!-- Negative Sentiment -->
+                        <div class="flex items-center justify-between mb-2 mt-4">
+                            <div class="flex items-center">
+                                <span class="material-icons text-red-500">thumb_down</span>
+                                <span class="ml-2">Negative</span>
+                            </div>
+                            <p class="text-3xl font-bold">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full mt-2">
+                            <div class="bg-red-500 h-2 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
                         </div>
                     </div>
-                </div> -->
+                </div>
+
+                <!-- Comment List -->
+                <div class="bg-white rounded-lg shadow-md p-5">
+                    <h2 class="text-lg font-semibold mb-4">Comments List</h2>
+                    <table class="min-w-full bg-white">
+                        <thead>
+                            <tr>
+                                <th class="py-2 px-4 border-b">Comment</th>
+                                <th class="py-2 px-4 border-b">Sentiment</th>
+                                <th class="py-2 px-4 border-b">Date Added</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for comment in comments %}
+                            <tr>
+                                <td class="py-2 px-4 border-b">{{ comment.comment_text }}</td>
+                                <td class="py-2 px-4 border-b">{{ comment.sentiment }}</td>
+                                <td class="py-2 px-4 border-b">{{ comment.date_added.strftime('%Y-%m-%d') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock content %}
 
 
 
@@ -61,551 +257,233 @@
 
 
 
-                routes 
 
 
+
+
+
+
+
+
+
+
+{% extends "layout/base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/variable.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+{% endblock css %}
+
+{% block content %}
+<div class="flex flex-col h-screen">
+    <header>
+        {% include "includes/navbar.html" %}
+    </header>
+    
+    <div class="flex flex-1">
+        {% include "includes/sidebar.html" %}
+
+        <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60">
+            <div id="dashboard" class="p-6">
+                <!-- Dashboard Header with Filter Section -->
+                <div class="flex flex-col md:flex-row justify-between items-center mb-2">
+                    <h1 class="text-2xl font-bold">Dashboard</h1>
+                    <button class="border border-gray-300 rounded-md px-4 py-2 text-sm bg-white text-black shadow-lg transition-all duration-300 transform hover:bg-green-100 hover:shadow-2xl focus:outline-none">
+                        Print Results
+                    </button>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0 mb-3">
+                    <!-- Semester Dropdown -->
+                    <div class="flex flex-col">
+                        <select id="dashboardSemesterDropdown" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black">
+                            {% for semester in semesters %}
+                                <option value="{{ semester.ay_id }}" {% if semester.ay_id == default_semester %} selected {% endif %}>
+                                    {{ semester.ay_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 
-#   Dashboard
-@app.route('/dashboard')
-def dashboard():
-    if 'username' in session:
-        username = session['username']
-        
-        # Fetch all faculty members
-        faculty_members = Faculty.query.all()
-        faculty_count = Faculty.query.count()  # Get total faculty count
-        
-        # Get the default semester and school year
-        default_semester = Semester.query.first()
-        default_semester_number = default_semester.semester_number
-        default_school_year = default_semester.school_year
+                    <!-- College Dropdown -->
+                    <div class="flex items-center">
+                        <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black" onchange="updateDropdowns()">
+                            <option value="">Select College</option>
+                            {% for college in colleges %}
+                                <option value="{{ college.college_id }}" {% if college.college_id == selected_college %}selected{% endif %}>
+                                    {{ college.college_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                
+                    <!-- Department Dropdown -->
+                    <div class="flex items-center">
+                        <select id="filterDepartment" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black hidden" onchange="updateFacultyDropdown()">
+                            <option value="">Select Department</option>
+                        </select>
+                    </div>
+                
+                    <!-- Faculty Dropdown -->
+                    <div class="flex items-center">
+                        <select id="filterFaculty" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black hidden">
+                            <option value="">Select Faculty</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        const dashboardDropdown = document.getElementById("dashboardSemesterDropdown");
+                        const savedSemester = localStorage.getItem("selectedSemester");
+                
+                        // Load last selected semester if available
+                        if (savedSemester) {
+                            dashboardDropdown.value = savedSemester;
+                        }
+                
+                        // Save selected semester to localStorage and refresh the page on change
+                        dashboardDropdown.addEventListener("change", function() {
+                            localStorage.setItem("selectedSemester", dashboardDropdown.value);
+                            window.location.href = `/dashboard?ay_id=${dashboardDropdown.value}`;
+                        });
+                
+                        // Initialize dropdowns with saved values or default
+                        updateDropdowns();
+                    });
+                
+                    function updateDropdowns() {
+                        const collegeSelect = document.getElementById('filterCollege');
+                        const departmentSelect = document.getElementById('filterDepartment');
+                        const facultySelect = document.getElementById('filterFaculty');
+                        const selectedCollegeId = collegeSelect.value;
+                
+                        departmentSelect.innerHTML = '<option value="">Select Department</option>';
+                        facultySelect.innerHTML = '<option value="">Select Faculty</option>';
+                
+                        // Populate department dropdown based on selected college
+                        {% for department in all_departments %}
+                            if (selectedCollegeId === "{{ department.college_id }}") {
+                                const option = document.createElement("option");
+                                option.value = "{{ department.department_id }}";
+                                option.textContent = "{{ department.department_name }}";
+                                departmentSelect.appendChild(option);
+                            }
+                        {% endfor %}
+                
+                        // Toggle visibility of department dropdown
+                        departmentSelect.classList.toggle('hidden', selectedCollegeId === "");
+                
+                        // Clear and hide faculty dropdown until a department is selected
+                        facultySelect.classList.add('hidden');
+                    }
+                
+                    function updateFacultyDropdown() {
+                        const departmentSelect = document.getElementById('filterDepartment');
+                        const facultySelect = document.getElementById('filterFaculty');
+                        const selectedDepartmentId = departmentSelect.value;
+                
+                        facultySelect.innerHTML = '<option value="">Select Faculty</option>';
+                
+                        // Populate faculty dropdown based on selected department
+                        {% for department_id, faculties in faculties_by_department.items() %}
+                            if (selectedDepartmentId === "{{ department_id }}") {
+                                {% for faculty in faculties %}
+                                    const option = document.createElement("option");
+                                    option.value = "{{ faculty.faculty_id }}";
+                                    option.textContent = "{{ faculty.faculty_name }}";
+                                    facultySelect.appendChild(option);
+                                {% endfor %}
+                            }
+                        {% endfor %}
+                
+                        // Show faculty dropdown if there are faculties in the selected department
+                        facultySelect.classList.toggle('hidden', selectedDepartmentId === "");
+                    }
+                </script>
+                
 
-        # Count comments only for the default semester and school year
-        total_comments = (db.session.query(SentimentComment)
-                          .join(Comment, SentimentComment.comment_id == Comment.comment_id)
-                          .filter(Comment.semester_number == default_semester_number)
-                          .filter(Comment.school_year == default_school_year)
-                          .count())
+                <!-- Total Comments and Sentiment Count Row -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <!-- Total Comments Card -->
+                    <div class="bg-white rounded-lg shadow-md p-8 flex flex-col relative col-span-1 md:col-span-2">
+                        <h2 class="text-lg font-semibold">Total Comments</h2>
+                        <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
+                        <a href="/comments" class="text-sm absolute top-0 right-0 mt-4 mr-2">View Comments!</a>
+                    </div>
 
-        # Count sentiments
-        positive_count = (db.session.query(SentimentComment)
-                          .join(Comment, SentimentComment.comment_id == Comment.comment_id)
-                          .filter(Comment.semester_number == default_semester_number)
-                          .filter(Comment.school_year == default_school_year)
-                          .filter(SentimentComment.category == 2)
-                          .count())
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 col-span-1 md:col-span-2">
+                        <div class="bg-green-100 rounded-lg shadow-md p-6 flex flex-col items-center">
+                            <span class="material-icons primary">thumb_up</span>
+                            <h3 class="text-xl font-semibold mt-2">Positive</h3>
+                            <p class="text-3xl font-bold">{{ positive_count }}</p>
+                        </div>
 
-        neutral_count = (db.session.query(SentimentComment)
-                         .join(Comment, SentimentComment.comment_id == Comment.comment_id)
-                         .filter(Comment.semester_number == default_semester_number)
-                         .filter(Comment.school_year == default_school_year)
-                         .filter(SentimentComment.category == 1)
-                         .count())
+                        <div class="bg-gray-100 rounded-lg shadow-md p-6 flex flex-col items-center">
+                            <span class="material-icons primary">more_horiz</span>
+                            <h3 class="text-xl font-semibold mt-2">Neutral</h3>
+                            <p class="text-3xl font-bold">{{ neutral_count }}</p>
+                        </div>
 
-        negative_count = (db.session.query(SentimentComment)
-                          .join(Comment, SentimentComment.comment_id == Comment.comment_id)
-                          .filter(Comment.semester_number == default_semester_number)
-                          .filter(Comment.school_year == default_school_year)
-                          .filter(SentimentComment.category == 0)
-                          .count())
+                        <div class="bg-red-100 rounded-lg shadow-md p-6 flex flex-col items-center">
+                            <span class="material-icons text-red-500">thumb_down</span>
+                            <h3 class="text-xl font-semibold mt-2">Negative</h3>
+                            <p class="text-3xl font-bold">{{ negative_count }}</p>
+                        </div>
+                    </div>
+                </div>
 
-        return render_template(
-            'dashboard.html',
-            username=username,
-            faculty_members=faculty_members,
-            faculty_count=faculty_count,
-            total_comments=total_comments,
-            positive_count=positive_count,
-            neutral_count=neutral_count,
-            negative_count=negative_count
-        )
-    
-    return redirect(url_for('loading_screen', target=url_for('login')))
-
-#   Evaluate 
-@app.route('/evaluate', methods=['GET', 'POST'])
-def evaluate():
-    if 'username' in session:  
-        sentiment = None
-        if request.method == 'POST':
-            comment = request.form.get('comment')
-            if comment: 
-                predicted_class = predict_sentiment(comment)
-                if predicted_class == 0:
-                    sentiment = 'Negative'
-                elif predicted_class == 1:
-                    sentiment = 'Neutral'
-                elif predicted_class == 2:
-                    sentiment = 'Positive'
-        return render_template('evaluate.html', username=session['username'], sentiment=sentiment)
-    return redirect(url_for('loading_screen', target=url_for('login')))
-
-
-# Analys
-
-@app.route('/analys', methods=['GET'])
-def analys():
-    if 'username' in session:
-        username = session['username']
-        search_query = request.args.get('search', '')
-        page = request.args.get('page', 1, type=int)  
-        per_page = 5  
-        default_semester = Semester.query.first() 
-        if default_semester is None:
-            flash('No current semester found. Please set the semester first.', 'error')
-            return redirect(url_for('loading_screen', target=url_for('analys')))
-        query = db.session.query(Comment, Faculty).join(Faculty, Comment.faculty_id == Faculty.id)\
-            .filter(
-                Comment.semester_number == default_semester.semester_number,
-                Comment.school_year == default_semester.school_year,
-                Comment.status == 0  
-            )\
-            .order_by(Comment.comment_id.desc())
-        z
-        if search_query:
-            query = query.filter(
-                (Faculty.name.ilike(f'%{search_query}%')) | 
-                (Comment.content.ilike(f'%{search_query}%'))
-            )
-
-        # Apply pagination
-        comments_pagination = query.paginate(page=page, per_page=per_page, error_out=False)
-
-        return render_template('analys.html', 
-                               username=username, 
-                               comments=comments_pagination.items,  
-                               pagination=comments_pagination,  
-                               default_semester=default_semester)
-    return redirect(url_for('loading_screen', target=url_for('analys')))
-
-
-
-#   View Comments 
-@app.route('/view_comment/<int:comment_id>', methods=['GET'])
-def view_comment(comment_id):
-    if 'username' in session:
-       
-        comment_instance = (
-            db.session.query(Comment, Faculty.name)
-            .join(Faculty, Comment.faculty_id == Faculty.id)
-            .filter(Comment.comment_id == comment_id)
-            .first()
-        )
-
-        if comment_instance:
-            comment, faculty_name = comment_instance
-            return render_template('Crud/view_comment.html', comment=comment, faculty_name=faculty_name)
-
-        return "Comment not found", 404  
-
-    return redirect(url_for('loading_screen', target=url_for('login')))
-
-
-
-#   Add Comments 
-@app.route('/add_comment', methods=['GET', 'POST'])
-def add_comment():
-    if request.method == 'POST':
-        user_id = session.get('user_id')  
-        
-        if user_id is None:
-            flash('User is not logged in!', 'error')
-            return redirect(url_for('login')) 
-
-
-        content = request.form.get('content')
-        faculty_id = request.form.get('faculty_id')
-
-
-        if not content or not faculty_id:
-            flash('All fields are required!', 'error')
-            return render_template('Crud/add_comment.html', content=content, faculty_id=faculty_id, faculties=get_faculties())
-
-
-        current_semester = Semester.query.first()  
-        if current_semester is None:
-            flash('No current semester found. Please set the semester first.', 'error')
-            return redirect(url_for('add_comment'))
-
-        semester_number = current_semester.semester_number
-        school_year = current_semester.school_year
-
-
-        new_comment = Comment(
-            user_id=user_id, 
-            content=content,
-            faculty_id=faculty_id,
-            semester_number=semester_number,  
-            school_year=school_year  
-        )
-        try:
-            db.session.add(new_comment)  
-            db.session.commit()  
-            flash('Comment added successfully!', 'success')
-            return redirect(url_for('analys'))  
-        except Exception as e:
-            db.session.rollback()  
-            flash('An error occurred while adding the comment. Please try again.', 'error')
-            return render_template('Crud/add_comment.html', content=content, faculty_id=faculty_id, faculties=get_faculties())
-    return render_template('Crud/add_comment.html', faculties=get_faculties())
-
-
-
-
-#  Upload Commnets usign excel file 
-
-@app.route('/upload_comments', methods=['POST'])
-def upload_comments():
-    if 'file' not in request.files:
-        flash('No file part', 'error')
-        return redirect(url_for('analys'))  # or any other relevant page
-
-    file = request.files['file']
-
-    if file.filename == '':
-        flash('No selected file', 'error')
-        return redirect(url_for('analys'))
-
-    if file and file.filename.endswith('.xlsx'):
-        filename = secure_filename(file.filename)
-        file_path = os.path.join('uploads', filename)  # Ensure you have an 'uploads' directory
-        file.save(file_path)
-
-        # Read the Excel file
-        df = pd.read_excel(file_path)
-
-        # Process each row and add to the database
-        for _, row in df.iterrows():
-            new_comment = Comment(
-                user_id=row['user_id'],  # Assuming your Excel has a 'user_id' column
-                content=row['content'],  # Assuming your Excel has a 'content' column
-                faculty_id=row['faculty_id'],  # Assuming your Excel has a 'faculty_id' column
-                semester_number=row['semester_number'],  # Add these as per your Excel structure
-                school_year=row['school_year']
-            )
-            db.session.add(new_comment)
-
-        try:
-            db.session.commit()
-            flash('Comments added successfully!', 'success')
-        except Exception as e:
-            db.session.rollback()
-            flash('An error occurred while adding the comments.', 'error')
-
-        return redirect(url_for('analys'))
-
-    flash('Invalid file format. Please upload an Excel (.xlsx) file.', 'error')
-    return redirect(url_for('analys'))
-
-
-# History 
-
-@app.route('/history')
-def history():
-    if 'username' in session:
-        username = session['username']
-
-        history_data = (db.session.query(Comment.semester_number, Comment.school_year,
-                                         db.func.count(SentimentComment.id).label('total_comments'),
-                                         db.func.sum(db.case((SentimentComment.category == 2, 1), else_=0)).label('positive'),
-                                         db.func.sum(db.case((SentimentComment.category == 0, 1), else_=0)).label('negative'),
-                                         db.func.sum(db.case((SentimentComment.category == 1, 1), else_=0)).label('neutral'))
-                        .join(SentimentComment, SentimentComment.comment_id == Comment.comment_id)
-                        .join(Faculty, Faculty.id == Comment.faculty_id)  
-                        .filter(Comment.status == 1)
-                        .group_by(Comment.semester_number, Comment.school_year) 
+                <!-- Sentiment Analysis Card (Percentage) -->
+                <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col md:flex-row mt-6">
+                    <div class="flex-grow">
+                        <h2 class="text-lg font-semibold mb-4">Sentiment Analysis</h2>
                         
-                        .order_by(Comment.semester_number.desc()))
-                        
+                        <!-- Positive Sentiment -->
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center">
+                                <span class="material-icons text-green-500">thumb_up</span>
+                                <span class="ml-2">Positive</span>
+                            </div>
+                            <p class="text-3xl font-bold">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full mt-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                        </div>
 
-        return render_template('history.html', username=username, history_data=history_data)
+                        <!-- Neutral Sentiment -->
+                        <div class="flex items-center justify-between mb-2 mt-4">
+                            <div class="flex items-center">
+                                <span class="material-icons text-gray-500">more_horiz</span>
+                                <span class="ml-2">Neutral</span>
+                            </div>
+                            <p class="text-3xl font-bold">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full mt-2">
+                            <div class="bg-gray-400 h-2 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                        </div>
 
-    return redirect(url_for('loading_screen', target=url_for('login')))
-
-#   Loading  History 
-@app.route('/loading_history')
-def loading_history():
-    return redirect(url_for("loading_screen", target=url_for("history")))
-
-
-# View Coments Sentiment Resutls Routes s
-@app.route('/semester_comments/<int:semester>/<string:year>')
-def semester_comments(semester, year):
-    if 'username' in session:
-        username = session['username']
-        page = request.args.get('page', 1, type=int)
-        filter_category = request.args.get('category')
-        filter_faculty = request.args.get('faculty')
-        filter_college = request.args.get('college')
-
-        faculties_with_comments = (
-            db.session.query(Faculty)
-            .join(Comment, Comment.faculty_id == Faculty.id)
-            .filter(Comment.semester_number == semester, Comment.school_year == year, Comment.status == 1)
-            .group_by(Faculty.id)
-            .all()
-        )
-
-        # Base query for comments
-        query = (
-            db.session.query(Comment, SentimentComment, Faculty.name.label('faculty_name'))
-            .join(SentimentComment, SentimentComment.comment_id == Comment.comment_id)
-            .join(Faculty, Comment.faculty_id == Faculty.id)
-            .filter(Comment.semester_number == semester, Comment.school_year == year, Comment.status == 1)
-        )
-
-        # Apply category filter based on selected value
-        if filter_category:
-            if filter_category == "Positive":
-                query = query.filter(SentimentComment.category == 2)
-            elif filter_category == "Negative":
-                query = query.filter(SentimentComment.category == 0)
-            elif filter_category == "Neutral":
-                query = query.filter(SentimentComment.category == 1)
-
-        # Apply faculty name filter if provided
-        if filter_faculty:
-            query = query.filter(Faculty.name == filter_faculty)
-        if filter_college:
-            query = query.filter(Faculty.college == filter_college)
-
-        # Paginate the query
-        comments_data = query.paginate(page=page, per_page=5, error_out=False)
-
-        return render_template(
-            'Crud/semester_comments.html',
-            username=username,
-            comments_data=comments_data,
-            semester=semester,
-            year=year,
-            filter_category=filter_category,
-            filter_faculty=filter_faculty,
-            filter_college=filter_college,
-            all_faculty=faculties_with_comments
-        )
-
-    return redirect(url_for('loading_screen', target=url_for('login')))
-
-#   Comments  || Sentiment Process
-
-@app.route('/comments')
-def comments():
-    if 'username' in session:
-        username = session['username']
-        
-        # Get the default semester and school year
-        default_semester = Semester.query.first()
-        default_semester_number = default_semester.semester_number
-        default_school_year = default_semester.school_year
-        
-        page = request.args.get('page', 1, type=int)
-        per_page = 5
-        search_query = request.args.get('search', '', type=str)
-        filter_category = request.args.get('category', '', type=str)
-        filter_faculty = request.args.get('faculty', '', type=str)
-        filter_college = request.args.get('college', '', type=str)
-
-        # Base query for fetching comments that match the default semester and school year
-        query = (db.session.query(SentimentComment, Comment, Faculty)
-                 .join(Comment, SentimentComment.comment_id == Comment.comment_id)
-                 .join(Faculty, Comment.faculty_id == Faculty.id)
-                 .filter(Comment.semester_number == default_semester_number)
-                 .filter(Comment.school_year == default_school_year)
-                 .order_by(SentimentComment.id.desc()))
-
-        # Apply search filter
-        if search_query:
-            query = query.filter(Comment.content.ilike(f'%{search_query}%'))
-
-        # Apply category filter
-        if filter_category:
-            if filter_category == "Positive":
-                query = query.filter(SentimentComment.category == 2)
-            elif filter_category == "Negative":
-                query = query.filter(SentimentComment.category == 0)
-            elif filter_category == "Neutral":
-                query = query.filter(SentimentComment.category == 1)
-
-        # Apply faculty filter
-        if filter_faculty:
-            query = query.filter(Faculty.name == filter_faculty)
-
-        # Apply college filter
-        if filter_college:
-            query = query.filter(Faculty.college == filter_college)
-
-        # Pagination
-        sentiment_comments = query.paginate(page=page, per_page=per_page, error_out=False)
-
-        all_faculty = db.session.query(Faculty).all()
-        all_colleges = db.session.query(Faculty.college).distinct().all()
-        
-        return render_template(
-            'comments.html',
-            username=username,
-            sentiment_comments=sentiment_comments,
-            search_query=search_query,
-            filter_category=filter_category,
-            filter_faculty=filter_faculty,
-            filter_college=filter_college,
-            all_faculty=all_faculty,
-            all_colleges=all_colleges
-        )
-    
-    return redirect(url_for('loading_screen', target=url_for('login')))
+                        <!-- Negative Sentiment -->
+                        <div class="flex items-center justify-between mb-2 mt-4">
+                            <div class="flex items-center">
+                                <span class="material-icons text-red-500">thumb_down</span>
+                                <span class="ml-2">Negative</span>
+                            </div>
+                            <p class="text-3xl font-bold">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full mt-2">
+                            <div class="bg-red-500 h-2 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                        </div>
+                    </div>
+                </div>
 
 
-#   Routes for comments with loading screen
-@app.route('/loading_comments')
-def loading_comments():
-    return redirect(url_for("loading_screen", target=url_for("comments")))
+     
 
-
-# View Sentement_Commets 
-
-@app.route('/view_sentiment_comment/<int:sentiment_comment_id>', methods=['GET'])
-def view_sentiment_comment(sentiment_comment_id):
-    if 'username' in session:
-        comment_instance = (
-            db.session.query(SentimentComment, Comment, Faculty.name)
-            .join(Comment, SentimentComment.comment_id == Comment.comment_id)
-            .join(Faculty, Comment.faculty_id == Faculty.id)
-            .filter(SentimentComment.id == sentiment_comment_id)
-            .first()
-        )
-
-        if comment_instance:
-            sentiment_comment, comment, faculty_name = comment_instance
-            return render_template('Crud/view_comment_sentiment.html', sentiment_comment=sentiment_comment, comment=comment, faculty_name=faculty_name)
-
-        return "Comment not found", 404
-
-    return redirect(url_for('loading_screen', target=url_for('login')))
-
-
-
-
-#   Start Sentiment Process
-
-@app.route('/startsentiment', methods=['POST'])
-def start_sentiment():
-    # Ensure the user is logged in (if needed)
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-
-    # Fetch the default semester from the database
-    default_semester = Semester.query.first()  # Adjust this query based on how you identify the default semester
-    if not default_semester:
-        flash("No default semester found!", "error")
-        return redirect(url_for('comments'))
-
-    # Query comments that have status = 0 and match the current semester
-    comments = Comment.query.filter_by(status=0, semester_number=default_semester.semester_number).all()
-
-    for comment in comments:
-        # Predict sentiment
-        predicted_class = predict_sentiment(comment.content)
-        
-        # Store sentiment into SentimentComment
-        sentiment_comment = SentimentComment(
-            comment_id=comment.comment_id,
-            category=predicted_class,  # Store the predicted integer class
-            created_at=datetime.utcnow(),
-            publish=0  # Default publish status
-        )
-        db.session.add(sentiment_comment)
-
-        # Update the comment status
-        comment.status = 1  # Mark the comment as processed
-        db.session.add(comment)
-
-    db.session.commit()  # Commit all changes to the database
-
-    flash("Sentiment analysis completed successfully!", "success")
-    return redirect(url_for('comments'))
-
-
-
-#    Staff || Useer || Admin
-
-@app.route('/users_account', methods=['GET'])
-def account():
-    if 'username' in session:
-        username = session['username']
-        search_query = request.args.get('search', '')  
-        page = request.args.get('page', 1, type=int)  # Get the current page number, default to 1
-        per_page = 5  # Number of records per page
-
-        # Handle search functionality and filter by status = 1
-        if search_query:
-            user_members = Users.query.filter(
-                (Users.status == 1) &
-                ((Users.name.ilike(f'%{search_query}%')) | 
-                 (Users.email.ilike(f'%{search_query}%')))
-            ).paginate(page=page, per_page=per_page, error_out=False)
-        else:
-            user_members = Users.query.filter_by(status=1).paginate(page=page, per_page=per_page, error_out=False)
-
-        return render_template('users_account.html', 
-                               username=username, 
-                               user_members=user_members.items,  # Items for the current page
-                               pagination=user_members)  # Pagination object for navigation
-
-    return redirect(url_for('loading_screen', target=url_for('login')))
-
-
-
-#    view staff 
-@app.route('/view_user/<int:user_id>', methods=['GET'])
-def view_user(user_id):
-    if 'username' in session:
-        user = Users.query.get(user_id)  
-        
-        if user:
-            return render_template('Crud/view_user.html', user=user)
-        
-        return "User not found", 404  
-
-    return redirect(url_for('loading_screen', target=url_for('login')))
-
-
-# Delete Staff account 
-@app.route('/delete_user/<int:user_id>', methods=['POST'])
-def delete_user(user_id):
-    if 'username' in session:
-        user = Users.query.get(user_id)  
-        
-        if user:
-            db.session.delete(user)  
-            db.session.commit() 
-            flash('User deleted successfully!', 'success')
-        else:
-            flash('User not found.', 'error')
-        
-        return redirect(url_for('account'))
-
-    return redirect(url_for('loading_screen', target=url_for('login')))
-
-
-# Update Staff Account 
-@app.route('/update_user/<int:user_id>', methods=['GET', 'POST'])
-def update_user(user_id):
-    if 'username' in session:
-        user = Users.query.get(user_id)  
-        
-        if request.method == 'POST':
-            # Update user details
-            user.name = request.form['name']
-            user.email = request.form['email']
-           
-            db.session.commit()  
-            return redirect(url_for('account'))  
-        
-        if user:
-            return render_template('Crud/update_user.html', user=user)  
-        return "User not found", 404 
-
-    return redirect(url_for('loading_screen', target=url_for('login')))
-
-
-
+            
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock content %}

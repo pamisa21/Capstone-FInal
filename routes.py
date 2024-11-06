@@ -1,32 +1,56 @@
 # Import
-from flask import render_template, session, request, redirect, url_for, flash
+from flask import render_template, session, request, redirect, url_for, flash, jsonify
 from server import app,db
 import torch
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from transformers import AutoTokenizer, AutoModelForSequenceClassification,pipeline
 from server import Users,Faculty,Comment,Semester,SentimentComment,Department,College,Subject,AY_SEM,Student
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
-import pandas as pd  # import for excel uploading 
-import os # for uplading exxel file
+import pandas as pd  
+import os
+import emoji
+import string
+import re
+from sqlalchemy import func, case
 
 # Load model and tokenizer
-model_path = "./ai_model/twitter_xlm_roberta_fine_tuned_sentiment"
-model = AutoModelForSequenceClassification.from_pretrained(model_path)
-model.eval()
-tokenizer = AutoTokenizer.from_pretrained(model_path)
+sentiment_pipeline = pipeline("sentiment-analysis", model="./ai_model/fine_tuned_twitter_xlm-roberta_model_bv2.3")
 
 
 
-# Function to predict sentiment
+def preprocess_text(text):
+    # Convert to lowercase
+    text = text.lower()
+    
+    # Remove emojis
+    text = emoji.replace_emoji(text, replace='')
+    
+    # Remove special characters except basic punctuation
+    text = re.sub(r'[^a-zA-Z0-9\s.,!?]', '', text)
+    
+    # Normalize spaces
+    text = " ".join(text.split())
+    
+    # Remove numeric characters
+    text = re.sub(r'\d+', '', text).strip()
+    
+    return text
+
 def predict_sentiment(text):
-    inputs = tokenizer(text, return_tensors='pt', truncation=True, padding=True, max_length=512)
-    with torch.no_grad():
-        outputs = model(**inputs)
-        logits = outputs.logits
-    predicted_class = logits.argmax().item() 
-    return predicted_class  
+    # Preprocess the text before prediction
+    preprocessed_text = preprocess_text(text)
 
+    # Get model predictions
+    inputs = sentiment_pipeline.tokenizer(preprocessed_text, return_tensors='pt', truncation=True, padding=True, max_length=512)
+    with torch.no_grad():
+        outputs = sentiment_pipeline.model(**inputs)
+        logits = outputs.logits
+    predicted_class = logits.argmax().item()
+
+
+    
+    return predicted_class
 
 @app.route('/start_sentiment', methods=['POST'])
 def start_sentiment():
@@ -47,6 +71,8 @@ def start_sentiment():
     
     flash('Sentiment analysis completed successfully.', 'success')
     return redirect(url_for('analys'))
+
+
 
 #loading Screen
 @app.route('/loading_screen')
@@ -144,35 +170,82 @@ def logout():
 
 
 # Dashboard
-@app.route('/dashboard')
+#ssa
+
+@app.route('/dashboard', methods=['GET'])
 def dashboard():
+    # Check if the user is logged in
     if 'username' in session:
         username = session['username']
 
-        total_comments = db.session.query(SentimentComment).join(Comment).count()
-        positive_count = db.session.query(SentimentComment).join(Comment).filter(SentimentComment.category == 2).count()
-        neutral_count = db.session.query(SentimentComment).join(Comment).filter(SentimentComment.category == 1).count()
-        negative_count = db.session.query(SentimentComment).join(Comment).filter(SentimentComment.category == 0).count()
+        # Get the selected ay_id, college_id, and department_id from query parameters
+        selected_ay_id = request.args.get('ay_id')  # This will come from the navbar dropdown
+        selected_college_id = request.args.get('college_id')
+        selected_department_id = request.args.get('department_id')
+
+        # Base query for comments
+        query = (
+            db.session.query(Comment)
+            .join(Faculty)
+            .join(Department)
+            .join(College)
+            .filter(Comment.category != 3)  # Exclude comments with category 3
+        )
+
+        # Filter by ay_id if provided
+        if selected_ay_id:
+            query = query.filter(Comment.ay_id == selected_ay_id)
+
+        # Filter by college_id if provided
+        if selected_college_id:
+            query = query.filter(College.college_id == selected_college_id)
+
+        # Filter by department_id if provided
+        if selected_department_id:
+            query = query.filter(Department.department_id == selected_department_id)
+
+        # Count total comments and sentiment counts
+        total_comments = query.count()
+        positive_count = query.filter(Comment.category == 2).count()  # Count positive comments
+        neutral_count = query.filter(Comment.category == 1).count()    # Count neutral comments
+        negative_count = query.filter(Comment.category == 0).count()  # Count negative comments
+
+        # Query sentiment data for each semester
+        semester_sentiments = (
+            db.session.query(
+                AY_SEM.ay_name,
+                func.count(case((Comment.category == 2, 1), else_=None)).label("positive"),
+                func.count(case((Comment.category == 1, 1), else_=None)).label("neutral"),
+                func.count(case((Comment.category == 0, 1), else_=None)).label("negative")
+            )
+            .join(Comment, Comment.ay_id == AY_SEM.ay_id)
+            .group_by(AY_SEM.ay_name)
+            .all()
+        )
+
+        # Prepare semester sentiment data for the template
+        semester_sentiment_data = [
+            {
+                "ay_name": row.ay_name,
+                "positive": row.positive,
+                "neutral": row.neutral,
+                "negative": row.negative
+            }
+            for row in semester_sentiments
+        ]
+
+        # Prepare data for bar chart
+        semester_labels = [data['ay_name'] for data in semester_sentiment_data]
+        positive_data = [data['positive'] for data in semester_sentiment_data]
+        neutral_data = [data['neutral'] for data in semester_sentiment_data]
+        negative_data = [data['negative'] for data in semester_sentiment_data]
+
+        # Fetch dropdown data
         colleges = College.query.all()
         semesters = AY_SEM.query.all()
 
-        # Serialize departments by college
-        departments_by_college = {
-            college.college_id: [
-                {'department_id': dept.department_id, 'department_name': dept.department_name}
-                for dept in college.departments
-            ]
-            for college in colleges
-        }
-
-        # Fetch faculties grouped by department
-        faculties_by_department = {
-            department.department_id: [
-                {'faculty_id': faculty.faculty_id, 'faculty_name': f'{faculty.lname} {faculty.fname}'}
-                for faculty in department.faculties
-            ]
-            for college in colleges for department in college.departments
-        }
+        # Fetch departments based on selected college
+        selected_departments = Department.query.filter_by(college_id=selected_college_id).all() if selected_college_id else []
 
         return render_template(
             'dashboard.html',
@@ -182,13 +255,19 @@ def dashboard():
             neutral_count=neutral_count,
             negative_count=negative_count,
             colleges=colleges,
-            departments_by_college=departments_by_college,
-            faculties_by_department=faculties_by_department,
-            semesters=semesters
+            selected_departments=selected_departments,
+            semesters=semesters,
+            default_semester=selected_ay_id,
+            selected_college=selected_college_id,
+            selected_department=selected_department_id,
+            semester_sentiment_data=semester_sentiment_data,  
+            semester_labels=semester_labels,  
+            positive_data=positive_data,      
+            neutral_data=neutral_data,
+            negative_data=negative_data      
         )
 
-    return redirect(url_for('loading_screen', target=url_for('login')))
-
+    return redirect(url_for('login'))
 
 
 #   Evaluate 
@@ -221,7 +300,7 @@ def analys():
         query = db.session.query(Comment, Faculty, AY_SEM)\
             .join(Faculty, Comment.faculty_id == Faculty.faculty_id)\
             .join(AY_SEM, Comment.ay_id == AY_SEM.ay_id)\
-            .filter(Comment.category == 4) 
+            .filter(Comment.category == 3) 
 
         if search_query:
             query = query.filter(
@@ -374,25 +453,8 @@ def upload_comments():
 
 @app.route('/history')
 def history():
-    if 'username' in session:
-        username = session['username']
-
-        history_data = (db.session.query(Comment.semester_number, Comment.school_year,
-                                         db.func.count(SentimentComment.id).label('total_comments'),
-                                         db.func.sum(db.case((SentimentComment.category == 2, 1), else_=0)).label('positive'),
-                                         db.func.sum(db.case((SentimentComment.category == 0, 1), else_=0)).label('negative'),
-                                         db.func.sum(db.case((SentimentComment.category == 1, 1), else_=0)).label('neutral'))
-                        .join(SentimentComment, SentimentComment.comment_id == Comment.comment_id)
-                        .join(Faculty, Faculty.faculty_id == Comment.faculty_id)  
-                        .filter(Comment.status == 1)
-                        .group_by(Comment.semester_number, Comment.school_year) 
-                        
-                        .order_by(Comment.semester_number.desc()))
-                        
-
-        return render_template('history.html', username=username, history_data=history_data)
-
-    return redirect(url_for('loading_screen', target=url_for('login')))
+    # history view logic here
+    return render_template('history.html')
 
 #   Loading  History 
 @app.route('/loading_history')
@@ -458,40 +520,55 @@ def semester_comments(semester, year):
 
     return redirect(url_for('loading_screen', target=url_for('login')))
 
-#   Comments  || Sentiment Process
+
+# Comments
 @app.route('/comments', methods=['GET'])
 def comments():
     if 'username' in session:
         username = session['username']
-        search_query = request.args.get('search', '')
         page = request.args.get('page', 1, type=int)
         per_page = 5
 
-        
-        query = db.session.query(Comment, Faculty, AY_SEM).join(Faculty, Comment.faculty_id == Faculty.faculty_id)\
-        .join(AY_SEM, Comment.ay_id == AY_SEM.ay_id)\
-        .filter(Comment.category != 0)
+        # Get the selected semester from the query parameters or fallback to stored semester
+        selected_semester = request.args.get('semester', None)
 
-       
-        if search_query:
-            query = query.filter(
-                (Faculty.name.ilike(f'%{search_query}%')) | 
-                (Comment.comment.ilike(f'%{search_query}%'))
-            )
+        # If no semester in query params, try to get it from localStorage
+        if not selected_semester:
+            selected_semester = request.cookies.get('selectedSemester')
 
-       
+        if not selected_semester:
+            # Default to the first available semester if no selection in cookies or query params
+            selected_semester = AY_SEM.query.first().ay_id  # Default to the first semester
+
+        # Query to fetch all comments for the selected semester
+        query = db.session.query(Comment, Faculty, AY_SEM).join(Faculty, Comment.faculty_id == Faculty.faculty_id) \
+            .join(AY_SEM, Comment.ay_id == AY_SEM.ay_id).filter(Comment.category != 3)
+
+        # Filter comments by selected semester
+        query = query.filter(Comment.ay_id == selected_semester)
+
         comments_pagination = query.paginate(page=page, per_page=per_page, error_out=False)
 
-        
-        return render_template('comments.html', 
-                        username=username, 
-                        comments=comments_pagination.items,  
-                        comments_pagination=comments_pagination,
-                        search_query=search_query,  
-                        filter_category=request.args.get('category', ''), 
-                        filter_faculty=request.args.get('faculty', ''))
+        # Calculate start and end page for pagination
+        max_pages_to_show = 10
+        start_page = max(1, comments_pagination.page - 4)
+        end_page = min(comments_pagination.pages, comments_pagination.page + 5)
+
+        return render_template('comments.html',
+                               username=username,
+                               comments=comments_pagination.items,
+                               comments_pagination=comments_pagination,
+                               start_page=start_page,
+                               end_page=end_page,
+                               max_pages_to_show=max_pages_to_show,
+                               selected_semester=selected_semester,
+                               all_semesters=AY_SEM.query.all()
+                               )
 
     return redirect(url_for('loading_screen', target=url_for('comments')))
+
+
+
 
 
 
@@ -579,7 +656,18 @@ def view_user(user_id):
     return redirect(url_for('loading_screen', target=url_for('login')))
 
 
+# get Departments 
+@app.route('/get_departments', methods=['GET'])
+def get_departments():
+    college_id = request.args.get('college_id')
+    departments = Department.query.filter_by(college_id=college_id).all()  # Adjust according to your models
 
+    return jsonify({
+        'departments': [
+            {'department_id': dept.department_id, 'department_name': dept.department_name}
+            for dept in departments
+        ]
+    })
 
 #  Faculty 
 @app.route('/faculty', methods=['GET'])
@@ -587,25 +675,45 @@ def faculty():
     if 'username' in session:
         username = session['username']
         search_query = request.args.get('search', '')  
+        college_id = request.args.get('college')  
+        department_id = request.args.get('department')  # Get selected department from the request
         page = request.args.get('page', '1')  
 
-      
         if page.isdigit():
             page = int(page) 
         else:
             page = 1  
+
         query = Faculty.query
 
         if search_query:
             query = query.filter(
-                (Faculty.name.ilike(f'%{search_query}%')) |
+                (Faculty.lname.ilike(f'%{search_query}%')) |
+                (Faculty.fname.ilike(f'%{search_query}%')) |
                 (Faculty.email.ilike(f'%{search_query}%'))
             )
+
+        if college_id:
+            query = query.filter(Faculty.department.has(college_id=college_id))
+
+        if department_id:
+            query = query.filter(Faculty.department_id == department_id)  # Filter by department ID
+
         faculty_members = query.paginate(page=page, per_page=5, error_out=False)
 
-        return render_template('faculty.html', username=username, faculty_members=faculty_members)
+        # Limit the number of pages to 10 for display
+        total_pages = faculty_members.pages
+        max_pages = 10
+        start_page = max(1, page - max_pages // 2)  # Show a range of pages around the current page
+        end_page = min(start_page + max_pages - 1, total_pages)
+
+        colleges = College.query.all()
+        departments = Department.query.filter_by(college_id=college_id).all() if college_id else []  # Fetch departments for the selected college
+
+        return render_template('faculty.html', username=username, faculty_members=faculty_members, colleges=colleges, departments=departments, selected_college=college_id, start_page=start_page, end_page=end_page, total_pages=total_pages)
 
     return redirect(url_for('loading_screen', target=url_for('login')))
+
 
 
 # View Faculty
@@ -623,46 +731,77 @@ def view_faculty(faculty_id):
     return redirect(url_for('loading_screen', target=url_for('login')))
 
 
-# View Faculty Comments
-@app.route('/faculty/comments/<faculty_id>', methods=['GET'])  
+@app.route('/faculty/comments/<faculty_id>', methods=['GET'])
 def faculty_comments(faculty_id):
     if 'username' in session:
         username = session['username']
-        
-        faculty_member = Faculty.query.get(faculty_id)  
+
+        # Retrieve faculty member by ID and join with Department and College
+        faculty_member = (
+            db.session.query(Faculty)
+            .join(Department)
+            .join(College)
+            .filter(Faculty.faculty_id == faculty_id)
+            .first()
+        )
+
         if faculty_member is None:
             flash('Faculty member not found!', 'error')
             return redirect(url_for('faculty'))
 
+        # Get the college and department
+        college = faculty_member.department.college
+        department = faculty_member.department
+
+        # Pagination setup
         page = request.args.get('page', 1, type=int)
 
+        # Retrieve all semesters and determine the default semester
+        all_semesters = AY_SEM.query.all()
+        selected_semester = request.args.get('semester') or all_semesters[0].ay_id
+        default_semester = AY_SEM.query.filter_by(ay_id=selected_semester).first()
+
+        # Query comments specific to the selected faculty member, join AY_SEM, and filter by ay_id
         comments_query = (
-            db.session.query(Comment, SentimentComment)
-            .join(SentimentComment, Comment.comment_id == SentimentComment.comment_id)
+            db.session.query(Comment, AY_SEM)
             .filter(Comment.faculty_id == faculty_id)
+            .join(AY_SEM, Comment.ay_id == AY_SEM.ay_id)
+            .filter(Comment.category != 3)
+            .filter(Comment.ay_id == selected_semester)  # Filter by selected semester
         )
-        
-        sentiment_comments = comments_query.paginate(page=page, per_page=5)
 
-        total_comments = sentiment_comments.total
-        positive_comments = sum(1 for _, sentiment in sentiment_comments.items if sentiment.category == 2)
-        negative_comments = sum(1 for _, sentiment in sentiment_comments.items if sentiment.category == 0)
-        neutral_comments = sum(1 for _, sentiment in sentiment_comments.items if sentiment.category == 1)
+        # Paginate comments
+        comments_paginated = comments_query.paginate(page=page, per_page=5)
 
+        # Extract comments and their ay_sem associations
+        comments = [
+            {"comment": comment, "ay_sem": ay_sem} for comment, ay_sem in comments_paginated.items
+        ]
+
+        # Sentiment counts based on category in Comment model
+        total_comments = comments_paginated.total
+        positive_comments = comments_query.filter(Comment.category == 2).count()
+        negative_comments = comments_query.filter(Comment.category == 0).count()
+        neutral_comments = comments_query.filter(Comment.category == 1).count()
+
+        # Render template with comments and sentiment data
         return render_template(
             'Crud/faculty_comments.html',
             username=username,
             faculty=faculty_member,
-            comments=sentiment_comments.items,
+            college=college,
+            department=department,
+            comments=comments,
             total_comments=total_comments,
             positive_comments=positive_comments,
             negative_comments=negative_comments,
             neutral_comments=neutral_comments,
-            sentiment_comments=sentiment_comments
+            sentiment_comments=comments_paginated,
+            all_semesters=all_semesters,
+            default_semester=default_semester
         )
 
     return redirect(url_for('loading_screen', target=url_for('login')))
-
 
 
 # Profile 

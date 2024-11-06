@@ -1,9 +1,7 @@
 
 
-<div class="flex flex-1 h-screen">
-    <!-- Sidebar -->
-    <aside id="sidebar" class="fixed top-20 left-2 flex-col w-55 px-5 py-4 overflow-y-auto transition-width duration-300 h-[calc(100vh-4rem)] hidden md:flex">
 
+    <aside id="sidebar" class="fixed top-20 left-2 flex-col w-55 px-5 py-4 overflow-y-auto h-[calc(100vh-4rem)] hidden md:flex">
         <div class="flex flex-col justify-between flex-1 mt-1 text-green-900">
             <div class="flex justify-center">
                 <button id="toggle-button" class="mb-4 focus:outline-none">
@@ -11,14 +9,11 @@
                 </button>
             </div>
             
-
             <nav class="flex-1 mx-2 space-y-6">
                 <a class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('dashboard') %}active-link{% endif %}" href="{{ url_for('dashboard') }}">
                     <i class="ph ph-house-line w-5 h-5"></i>
                     <span class="mx-2 text-sm font-medium">Dashboard</span>
                 </a>
-                
-
                 <a class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('evaluate') %}active-link{% endif %}" href="{{ url_for('evaluate') }}">
                     <i class="ph ph-clipboard w-5 h-5"></i>
                     <span class="mx-2 text-sm font-medium">Evaluate</span>
@@ -27,32 +22,19 @@
                     <i class="ph ph-graph w-5 h-5"></i>
                     <span class="mx-2 text-sm font-medium">Analys</span>
                 </a>
-                                
-                <a class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('history') %}active-link{% endif %}" href="{{ url_for('history') }}">
-                    <i class="ph ph-clock w-5 h-5"></i>
-                    <span class="mx-2 text-sm font-medium">History</span>
-                </a>
-                
+
                 <a class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('comments') %}active-link{% endif %}" href="{{ url_for('comments') }}">
                     <i class="ph ph-chat w-5 h-5"></i>
                     <span class="mx-2 text-sm font-medium">Comments</span>
                 </a>
-                <!-- <a class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('account') %}active-link{% endif %}" href="{{ url_for('account') }}">
-                    <i class="ph ph-user w-5 h-5"></i>
-                    <span class="mx-2 text-sm font-medium">Staff</span> 
-                </a> -->
                 <a class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('faculty') %}active-link{% endif %}" href="{{ url_for('faculty') }}">
                     <i class="ph ph-users w-5 h-5"></i>
-                    <span class="mx-2 text-sm font-medium">Faculty</span> 
+                    <span class="mx-2 text-sm font-medium">Faculty</span>
                 </a>
-                
-
-            
-                
             </nav>
         </div>
     </aside>
-
+    
 
 
 

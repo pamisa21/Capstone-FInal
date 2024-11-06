@@ -11,33 +11,38 @@
 
                 <!-- Icon Section (left side) -->
                 <div class="flex items-center space-x-5 ml-auto">
-                    <div class="flex items-center space-x-5 ml-auto">
-                        <select id="semesterDropdown" name="semester" class="primary">
-                            {% for semester in all_semesters %}
-                                <option value="{{ semester.ay_id }}" {% if semester.ay_id == default_semester %}selected{% endif %}>
-                                    {{ semester.ay_name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    
-                    <script>
-                        document.addEventListener("DOMContentLoaded", function() {
-                            // Load the last selected semester from localStorage, if it exists
-                            const lastSelectedSemester = localStorage.getItem("selectedSemester");
-                            const dropdown = document.getElementById("semesterDropdown");
-                    
-                            if (lastSelectedSemester) {
-                                dropdown.value = lastSelectedSemester;
-                            }
-                    
-                            // Update localStorage and refresh the page when a new semester is selected
-                            dropdown.addEventListener("change", function() {
-                                localStorage.setItem("selectedSemester", dropdown.value);
-                                location.reload(); // Refreshes the page
+                        <div class="flex items-center space-x-5 ml-auto">
+                            <select id="semesterDropdown" name="semester" class="primary">
+                                {% for semester in all_semesters %}
+                                    <option value="{{ semester.ay_id }}" {% if semester.ay_id == default_semester.ay_id %}selected{% endif %}>
+                                        {{ semester.ay_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function() {
+                                const dropdown = document.getElementById("semesterDropdown");
+                                const savedSemester = localStorage.getItem("selectedSemester");
+                        
+                                // If a semester is saved in localStorage, set it as the default
+                                if (savedSemester) {
+                                    dropdown.value = savedSemester;
+                                }
+                        
+                                // On change, store the selected semester in localStorage and update dashboard dropdown
+                                dropdown.addEventListener("change", function() {
+                                    const selectedSemester = dropdown.value;
+                                    localStorage.setItem("selectedSemester", selectedSemester);
+                                    document.cookie = `selectedSemester=${selectedSemester}; path=/`; // Store in cookie
+                                    window.location.href = `${window.location.pathname}?semester=${selectedSemester}`;  // Reload the page with selected semester
+                                });
                             });
-                        });
-                    </script>
+                        </script>
+                    
+                    
+                    
                     
                     
                     <!-- Notification dropdown -->

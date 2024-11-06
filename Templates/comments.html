@@ -19,141 +19,94 @@
         <!-- Main Content Container -->
         <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60">  
 
-            <div id="Comments" class="w-100 h-100 mx-auto bg-white rounded-lg shadow-lg p-6">
-                <!-- Filter and Search Section -->
-                <form method="get" action="{{ url_for('comments') }}" class="flex flex-col mb-3 gap-4">
-                    <h1 class="text-2xl font-bold">Comments Credentials</h1>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Search Input -->
-                        <div class="flex items-center">
-                            <div class="flex items-center w-full">
-                                <input type="text" name="search" placeholder="Search comments..." class="border rounded-md  focus:ring-green-500 transition duration-150 ease-in-out  px-4 py-2 text-sm w-full" id="searchComments" value="{{ search_query }}">
-                            </div>
-                        </div>
-
-                        <!-- Filter Options -->
-                        <div class="flex flex-col md:flex-row gap-4">
-                            <!-- Filter by Category -->
-                            <select name="category" id="filterCategory" class="border z rounded-md px-4 py-2 text-sm w-full">
-                                <option value="">Filter by Category</option>
-                                <option value="Positive" {% if filter_category == 'Positive' %}selected{% endif %}>Positive</option>
-                                <option value="Negative" {% if filter_category == 'Negative' %}selected{% endif %}>Negative</option>
-                                <option value="Neutral" {% if filter_category == 'Neutral' %}selected{% endif %}>Neutral</option>
-                            </select>
-
-                            <!-- Filter by Faculty -->
-                 
-                            <select name="faculty" id="filterFaculty" class="border rounded-md px-4 py-2 text-sm w-full">
-                                <option value="">Filter by Faculty</option>
-                                {% for faculty in all_faculty %}
-                                    <option value="{{ faculty.name }}" {% if filter_faculty == faculty.name %}selected{% endif %}>
-                                        {{ faculty.name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-
-
-                                <!-- Filter by College -->
-                                <!-- <select name="college" id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full">
-                                    <option value="">Select College</option> 
-                                    {% for college in all_colleges %}
-                                        <option value="{{ college[0] }}" {% if filter_college == college[0] %}selected{% endif %}>
-                                            {{ college[0] }}
-                                        </option>
-                                    {% endfor %}
-                                </select> -->
-
-
-                        </div>
-                    </div>
-
-                    <button type="submit" class="px-4 py-2  setdf border rounded-md  text-white">Apply Filters</button>
-                </form>
-
+            <div id="Comments" class="w-100 h-100 mx-auto bg-white rounded-lg shadow-lg p-2">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-2">
+                    <h1 class="text-2xl font-bold">List of Comments</h1>
+                    
+                </div>
                 <!-- Table Section -->
-            
-               <div class="table-container">
-                <div class="overflow-x-auto">
-                    <div class="table-wrapper">
-                        <div class="table-border">
-                            <table class="data-table">
-                                <thead class="table-header">
-                                    <tr>
-                                        <th class="table-cell">No.</th>
-                                        <th class="table-cell">Comment</th>
-                                        <th class="table-cell">Faculty Name</th>
-                                        <th class="table-cell text-center">Semester</th>
-                                        <th class="table-cell">Category</th>
-                                        <th class="table-cell hidden md:table-cell">Status</th>
-                                        <th class="table-cell hidden md:table-cell">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="table-body" id="commentsTableBody">
-                                    {% for comment, faculty, ay_sem in comments %}
-                                    <tr>
-                                        <td class="table-cell">{{ loop.index + (comments_pagination.page - 1) * comments_pagination.per_page }}</td>
-                                        <td class="table-cell">{{ comment.comment }}</td>
-                                        <td class="table-cell">{{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}</td>
-                                        <td class="table-cell text-center">{{ ay_sem.ay_name }}</td>
-                                        <td class="table-cell text-center">
-                                            {% if comment.category == 1 %}
-                                                Neutral
-                                            {% elif comment.category == 0 %}
-                                                Negative
-                                            {% elif comment.category == 2 %}
-                                                Positive
-                                            {% endif %}
-                                        </td>
-                                        
-            
-                                        <td class="table-cell hidden md:table-cell">
-                                            {% if comment.publish == 1 %}
-                                                Published
-                                            {% else %}
-                                                Unpublished
-                                            {% endif %}
-                                        </td>
-                                        <td class="px-4 py-4 text-sm whitespace-nowrap hidden md:table-cell">
-                                            <div class="flex space-x-2">
-                                                <a href="{{ url_for('view_comment', comment_id=comment.comment_id) }}" title="View" class="secondary hover:underline">View</a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                    
-                                </tbody>
-                            </table>
+                <div class="table-container">
+                    <div class="overflow-x-auto">
+                        <div class="table-wrapper">
+                            <div class="table-border">
+                                <table class="data-table">
+                                    <thead class="table-header">
+                                        <tr>
+                                            <th class="table-cell">No.</th>
+                                            <th class="table-cell">Comment</th>
+                                            <th class="table-cell">Faculty Name</th>
+                                            <th class="table-cell text-center">Semester</th>
+                                            <th class="table-cell">Category</th>
+                                            <th class="table-cell hidden md:table-cell">Status</th>
+                                            <th class="table-cell hidden md:table-cell">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="table-body" id="commentsTableBody">
+                                        {% for comment, faculty, ay_sem in comments %}
+                                            <tr>
+                                                <td class="table-cell">{{ loop.index + (comments_pagination.page - 1) * comments_pagination.per_page }}</td>
+                                                <td class="table-cell">{{ comment.comment }}</td>
+                                                <td class="table-cell">{{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}</td>
+                                                <td class="table-cell text-center">{{ ay_sem.ay_name }}</td>
+                                                <td class="table-cell text-center">
+                                                    {% if comment.category == 1 %} Neutral
+                                                    {% elif comment.category == 0 %} Negative
+                                                    {% elif comment.category == 2 %} Positive
+                                                    {% endif %}
+                                                </td>
+                                                <td class="table-cell hidden md:table-cell">
+                                                    {% if comment.publish == 1 %} Published {% else %} Unpublished {% endif %}
+                                                </td>
+                                                <td class="px-4 py-4 text-sm whitespace-nowrap hidden md:table-cell">
+                                                    <div class="flex space-x-2">
+                                                        <a href="{{ url_for('view_comment', comment_id=comment.comment_id) }}" title="View" class="secondary hover:underline">View</a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {% if comments_pagination.has_prev %}
-            <a href="{{ url_for('comments', page=comments_pagination.prev_num, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="flex items-center px-5 py-2 text-sm text-gray-700 bg-white border rounded-md gap-x-2 hover:bg-gray-100">
-                <span>Previous</span>
-            </a>
-        {% endif %}
-        
-        <div class="items-center hidden md:flex gap-x-3">
-            {% for page_num in range(1, comments_pagination.pages + 1) %}
-                {% if page_num == comments_pagination.page %}
-                    <a href="#" class="px-2 py-1 text-sm text-white bg-green-800 rounded-md">{{ page_num }}</a>
-                {% else %}
-                    <a href="{{ url_for('comments', page=page_num, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">{{ page_num }}</a>
+
+            
+            <div class="items-center hidden md:flex gap-x-3">
+
+                {% if comments_pagination.has_prev %}
+                <a href="{{ url_for('comments', page=comments_pagination.prev_num, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="inline-flex items-center px-3 py-1 text-sm text-gray-700 bg-white border rounded-md gap-x-2 hover:bg-gray-100">
+                    <span>Previous</span>
+                </a>
+            {% endif %}
+            
+                {% if start_page > 1 %}
+                    <a href="{{ url_for('comments', page=1, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">1</a>
+                    <span class="px-2 py-1 text-sm text-gray-500">...</span>
                 {% endif %}
-            {% endfor %}
-        </div>
-        
-        {% if comments_pagination.has_next %}
-            <a href="{{ url_for('comments', page=comments_pagination.next_num, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="flex items-center px-5 py-2 text-sm text-yellow-700 bg-white border rounded-md gap-x-2 hover:bg-yellow-400">
-                <span>Next</span>
-            </a>
-        {% endif %}
-        
-
-            </div>
-
+                
+                {% for page_num in range(start_page, end_page + 1) %}
+                    {% if page_num == comments_pagination.page %}
+                        <a href="#" class="px-2 py-1 text-sm text-white bg-green-800 rounded-md">{{ page_num }}</a>
+                    {% else %}
+                        <a href="{{ url_for('comments', page=page_num, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">{{ page_num }}</a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if end_page < comments_pagination.pages %}
+                    <span class="px-2 py-1 text-sm text-gray-500">...</span>
+                    <a href="{{ url_for('comments', page=comments_pagination.pages, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">{{ comments_pagination.pages }}</a>
+                {% endif %}
+            
+            
+                        {% if comments_pagination.has_next %}
+                        <a href="{{ url_for('comments', page=comments_pagination.next_num, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="inline-flex items-center px-3 py-1 text-sm primary bg-white border rounded-md gap-x-2 hover:bg-yellow-400">
+                            <span>Next</span>
+                        </a>
+                    {% endif %}
+                </div>
+            
         </main>
     </div>
 

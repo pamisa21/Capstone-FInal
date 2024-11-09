@@ -11,16 +11,16 @@
 
                 <!-- Icon Section (left side) -->
                 <div class="flex items-center space-x-5 ml-auto">
-                        <div class="flex items-center space-x-5 ml-auto">
-                            <select id="semesterDropdown" name="semester" class="primary">
-                                {% for semester in all_semesters %}
-                                    <option value="{{ semester.ay_id }}" {% if semester.ay_id == default_semester.ay_id %}selected{% endif %}>
-                                        {{ semester.ay_name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        
+                    <div class="flex items-center space-x-5 ml-auto">
+                        <select id="semesterDropdown" name="semester" class=" appearance-none" disabled>
+                            {% for semester in all_semesters %}
+                                <option value="{{ semester.ay_id }}" {% if semester.ay_id == default_semester.ay_id %}selected{% endif %}>
+                                    {{ semester.ay_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
                         <script>
                             document.addEventListener("DOMContentLoaded", function() {
                                 const dropdown = document.getElementById("semesterDropdown");

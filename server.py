@@ -26,6 +26,7 @@ app.config['LOADING_GIF'] = '/static/img/Orange and Purple Vibrant Colorful Geom
 db.init_app(app)
 
 # server.py
+
 @app.context_processor
 def inject_default_semester():
     """Inject all academic years and semesters into all templates."""
@@ -33,17 +34,12 @@ def inject_default_semester():
     all_semesters = AY_SEM.query.order_by(AY_SEM.ay_id.desc()).all()
     latest_semester = all_semesters[0] if all_semesters else None
 
-    # Set the latest semester as the default if no semester is in localStorage
-    default_semester = latest_semester.ay_id if latest_semester else None   
-    default_school_year = latest_semester.ay_name if latest_semester else None
+    # Set the latest semester as the default if no semester is in localStorage or passed in URL
+    default_semester = latest_semester.ay_id if latest_semester else None
+    
+    return dict(all_semesters=all_semesters, default_semester=default_semester)
 
-    return {
-        'all_semesters': all_semesters,
-        'default_semester': default_semester,
-        'default_school_year': default_school_year
-    }
 
-    # Import the routes from routes.py
 with app.app_context():
     from routes import *
     db.create_all()  

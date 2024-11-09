@@ -26,30 +26,40 @@
                     </button>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0 mb-5  ">
-                    <div class="flex flex-col  ">
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0 mb-5">
+                    <div class="flex flex-col">
                         <select id="dashboardSemesterDropdown" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black">
-                            {% for semester in semesters %}
-                                <option value="{{ semester.ay_id }}" {% if semester.ay_id == default_semester %} selected {% endif %}>
+                            {% for semester in all_semesters %}
+                                <option value="{{ semester.ay_id }}" {% if semester.ay_id == selected_semester %} selected {% endif %}>
                                     {{ semester.ay_name }}
                                 </option>
                             {% endfor %}
                         </select>
                     </div>
+                
                     <script>
                         document.addEventListener("DOMContentLoaded", function() {
                             const dashboardDropdown = document.getElementById("dashboardSemesterDropdown");
-                            const savedSemester = localStorage.getItem("selectedDashboardSemester");
-
-                            // If saved semester exists in localStorage, set it as the default
-                            if (savedSemester) {
-                                dashboardDropdown.value = savedSemester;
+                            let selectedSemester = localStorage.getItem("selectedSemester");  // From localStorage
+                            
+                            // If there's no value in localStorage, check the URL query parameter
+                            if (!selectedSemester) {
+                                const urlParams = new URLSearchParams(window.location.search);
+                                selectedSemester = urlParams.get('ay_id');
                             }
-
-                            // On change, store the selected semester in localStorage and update the dashboard
+                
+                            // If there's a selected semester, set it in both localStorage and the dropdown
+                            if (selectedSemester) {
+                                dashboardDropdown.value = selectedSemester;
+                                localStorage.setItem("selectedSemester", selectedSemester);  // Save it to localStorage
+                            }
+                
+                            // On change, update localStorage and reload the page with the selected semester
                             dashboardDropdown.addEventListener("change", function() {
-                                localStorage.setItem("selectedDashboardSemester", dashboardDropdown.value);
-                                window.location.href = `/dashboard?ay_id=${dashboardDropdown.value}`;  // Reload the page with selected semester
+                                const selectedSemester = dashboardDropdown.value;
+                                localStorage.setItem("selectedSemester", selectedSemester);  // Save to localStorage
+                                document.cookie = `selectedSemester=${selectedSemester}; path=/`;  // Store in cookie
+                                window.location.href = `/dashboard?ay_id=${selectedSemester}`;  // Reload the page with selected semester
                             });
                         });
                     </script>

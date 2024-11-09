@@ -16,473 +16,284 @@
     <div class="flex flex-1">
         {% include "includes/sidebar.html" %}
 
-        <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60">
-            <div id="dashboard" class="p-6">
-                <!-- Dashboard Header with Filter Section -->
-                <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-                    <h1 class="text-2xl font-bold">Dashboard</h1>
-                    <button class="border border-gray-300 rounded-md px-4 py-2 text-sm bg-white text-black shadow-lg transition-all duration-300 transform hover:bg-green-100 hover:shadow-2xl focus:outline-none">
-                        Print Results
-                    </button>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-4 mt-4 md:mt-0 mb-10 ">
-                    <div class="flex flex-col">
-                        <select id="dashboardSemesterDropdown" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black">
-                            {% for semester in semesters %}
-                                <option value="{{ semester.ay_id }}" {% if semester.ay_id == default_semester %} selected {% endif %}>
-                                    {{ semester.ay_name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <script>
-                        document.addEventListener("DOMContentLoaded", function() {
-                            const dashboardDropdown = document.getElementById("dashboardSemesterDropdown");
-                            const savedSemester = localStorage.getItem("selectedSemester");
-
-                            // Load last selected semester if available
-                            if (savedSemester) {
-                                dashboardDropdown.value = savedSemester;
-                            }
-
-                            // Save selected semester to localStorage and refresh the page on change
-                            dashboardDropdown.addEventListener("change", function() {
-                                localStorage.setItem("selectedSemester", dashboardDropdown.value);
-                                window.location.href = `/dashboard?ay_id=${dashboardDropdown.value}`; // Reload with ay_id
-                            });
-                        });
-                    </script>
-
-                    <div class="flex flex-wrap items-center gap-4 mt-4 md:mt-0 ">
-                        <div class="flex items-center">
-                            <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg transition-all duration-300 transform hover:shadow-2xl focus:outline-none bg-white text-black" onchange="updateDashboard()">
-                                <option value="">Select College</option>
-                                {% for college in colleges %}
-                                    <option value="{{ college.college_id }}" {% if college.college_id == selected_college %}selected{% endif %}>{{ college.college_name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <!-- Other filters like department and faculty -->
-                    </div>
-
-                    <script>
-                        function updateDashboard() {
-                            const collegeSelect = document.getElementById('filterCollege');
-                            const selectedCollegeId = collegeSelect.value;
-                            const selectedSemester = document.getElementById("dashboardSemesterDropdown").value;
-                            
-                            // Redirect to dashboard with selected college and semester
-                            window.location.href = `/dashboard?college_id=${selectedCollegeId}&ay_id=${selectedSemester}`;
-                        }
-                    </script>
-
-                    
-                    <div class="flex items-center">
-                        <select id="filterDepartment" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg transition-all duration-300 transform hover:shadow-2xl focus:outline-none bg-white text-black hidden">
-                            <option value="">Select Department</option>
-                        </select>
-                    </div>
-
-                    <div class="flex items-center">
-                        <select id="filterFaculty" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg transition-all duration-300 transform hover:shadow-2xl focus:outline-none bg-white text-black hidden">
-                            <option value="">Select Faculty</option>
-                        </select>
-                    </div>
-
-                    <script>
-                        // Departments and faculties data from backend
-                        const departmentsByCollege = {{ departments_by_college | tojson }};
-                        const facultiesByDepartment = {{ faculties_by_department | tojson }};
-                    
-                        function updateDepartments() {
-                            const collegeSelect = document.getElementById('filterCollege');
-                            const departmentSelect = document.getElementById('filterDepartment');
-                            const selectedCollegeId = collegeSelect.value;
-                    
-                            departmentSelect.innerHTML = '<option value="">Select Department</option>';
-                    
-                            if (selectedCollegeId && departmentsByCollege[selectedCollegeId]) {
-                                departmentsByCollege[selectedCollegeId].forEach(department => {
-                                    const option = document.createElement('option');
-                                    option.value = department.department_id;
-                                    option.textContent = department.department_name;
-                                    departmentSelect.appendChild(option);
-                                });
-                                departmentSelect.classList.remove('hidden');
-                            } else {
-                                departmentSelect.classList.add('hidden');
-                            }
-
-                            // Reset faculty dropdown
-                            document.getElementById('filterFaculty').classList.add('hidden');
-                        }
-                    
-                        function updateFaculties() {
-                            const departmentSelect = document.getElementById('filterDepartment');
-                            const facultySelect = document.getElementById('filterFaculty');
-                            const selectedDepartmentId = departmentSelect.value;
-                    
-                            facultySelect.innerHTML = '<option value="">Select Faculty</option>';
-                    
-                            if (selectedDepartmentId && facultiesByDepartment[selectedDepartmentId]) {
-                                facultiesByDepartment[selectedDepartmentId].forEach(faculty => {
-                                    const option = document.createElement('option');
-                                    option.value = faculty.faculty_id;
-                                    option.textContent = faculty.faculty_name;
-                                    facultySelect.appendChild(option);
-                                });
-                                facultySelect.classList.remove('hidden');
-                            } else {
-                                facultySelect.classList.add('hidden');
-                            }
-                        }
-
-                        // Add event listeners for dropdown changes
-                        document.getElementById('filterCollege').addEventListener('change', updateDepartments);
-                        document.getElementById('filterDepartment').addEventListener('change', updateFaculties);
-                    </script>
-                </div>
-
-                <!-- Total Comments and Sentiment Count Row -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <!-- Total Comments Card -->
-                    <div class="bg-white rounded-lg shadow-md p-8 flex flex-col relative col-span-1 md:col-span-2">
-                        <h2 class="text-lg font-semibold">Total Comments</h2>
-                        <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
-                        <a href="/comments" class="text-sm absolute top-0 right-0 mt-4 mr-2">View Comments!</a>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 col-span-1 md:col-span-2">
-                        <div class="bg-green-100 rounded-lg shadow-md p-6 flex flex-col items-center">
-                            <span class="material-icons primary">thumb_up</span>
-                            <h3 class="text-xl font-semibold mt-2">Positive</h3>
-                            <p class="text-3xl font-bold">{{ positive_count }}</p>
-                        </div>
-
-                        <div class="bg-gray-100 rounded-lg shadow-md p-6 flex flex-col items-center">
-                            <span class="material-icons primary">more_horiz</span>
-                            <h3 class="text-xl font-semibold mt-2">Neutral</h3>
-                            <p class="text-3xl font-bold">{{ neutral_count }}</p>
-                        </div>
-
-                        <div class="bg-red-100 rounded-lg shadow-md p-6 flex flex-col items-center">
-                            <span class="material-icons text-red-500">thumb_down</span>
-                            <h3 class="text-xl font-semibold mt-2">Negative</h3>
-                            <p class="text-3xl font-bold">{{ negative_count }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sentiment Analysis Card (Percentage) -->
-                <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col md:flex-row mt-6">
-                    <div class="flex-grow">
-                        <h2 class="text-lg font-semibold mb-4">Sentiment Analysis</h2>
-                        
-                        <!-- Positive Sentiment -->
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center">
-                                <span class="material-icons text-green-500">thumb_up</span>
-                                <span class="ml-2">Positive</span>
-                            </div>
-                            <p class="text-3xl font-bold">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full mt-2">
-                            <div class="bg-green-500 h-2 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                        </div>
-
-                        <!-- Neutral Sentiment -->
-                        <div class="flex items-center justify-between mb-2 mt-4">
-                            <div class="flex items-center">
-                                <span class="material-icons text-gray-500">more_horiz</span>
-                                <span class="ml-2">Neutral</span>
-                            </div>
-                            <p class="text-3xl font-bold">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full mt-2">
-                            <div class="bg-gray-400 h-2 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                        </div>
-
-                        <!-- Negative Sentiment -->
-                        <div class="flex items-center justify-between mb-2 mt-4">
-                            <div class="flex items-center">
-                                <span class="material-icons text-red-500">thumb_down</span>
-                                <span class="ml-2">Negative</span>
-                            </div>
-                            <p class="text-3xl font-bold">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full mt-2">
-                            <div class="bg-red-500 h-2 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Comment List -->
-                <div class="bg-white rounded-lg shadow-md p-5">
-                    <h2 class="text-lg font-semibold mb-4">Comments List</h2>
-                    <table class="min-w-full bg-white">
-                        <thead>
-                            <tr>
-                                <th class="py-2 px-4 border-b">Comment</th>
-                                <th class="py-2 px-4 border-b">Sentiment</th>
-                                <th class="py-2 px-4 border-b">Date Added</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for comment in comments %}
-                            <tr>
-                                <td class="py-2 px-4 border-b">{{ comment.comment_text }}</td>
-                                <td class="py-2 px-4 border-b">{{ comment.sentiment }}</td>
-                                <td class="py-2 px-4 border-b">{{ comment.date_added.strftime('%Y-%m-%d') }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </main>
-    </div>
-</div>
-{% endblock content %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{% extends "layout/base.html" %}
-
-{% block css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/variable.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-{% endblock css %}
-
-{% block content %}
-<div class="flex flex-col h-screen">
-    <header>
-        {% include "includes/navbar.html" %}
-    </header>
-    
-    <div class="flex flex-1">
-        {% include "includes/sidebar.html" %}
-
-        <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60">
+        <main class="flex-1 p-4 mx-5 mt-20 ml-2 md:ml-60">
             <div id="dashboard" class="p-6">
                 <!-- Dashboard Header with Filter Section -->
                 <div class="flex flex-col md:flex-row justify-between items-center mb-2">
                     <h1 class="text-2xl font-bold">Dashboard</h1>
-                    <button class="border border-gray-300 rounded-md px-4 py-2 text-sm bg-white text-black shadow-lg transition-all duration-300 transform hover:bg-green-100 hover:shadow-2xl focus:outline-none">
+                    <button class="border border-gray-300 rounded-md px-4 py-2 text-sm  hvr-underline-from-center focus:outline-none">
                         Print Results
                     </button>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0 mb-3">
-                    <!-- Semester Dropdown -->
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0 mb-5  ">
                     <div class="flex flex-col">
                         <select id="dashboardSemesterDropdown" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black">
-                            {% for semester in semesters %}
+                            {% for semester in all_semesters %}
                                 <option value="{{ semester.ay_id }}" {% if semester.ay_id == default_semester %} selected {% endif %}>
-                                    {{ semester.ay_name }}
+                                    {{ semester.ay_name }}  <!-- Display only the semester value -->
                                 </option>
                             {% endfor %}
                         </select>
                     </div>
-                
+                    
+                    
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            const dashboardDropdown = document.getElementById("dashboardSemesterDropdown");
+                            let selectedSemester = localStorage.getItem("selectedSemester"); // From localStorage
+                            
+                            // If there's no value in localStorage, check the URL query parameter
+                            if (!selectedSemester) {
+                                const urlParams = new URLSearchParams(window.location.search);
+                                selectedSemester = urlParams.get('ay_id');
+                            }
+                    
+                            // If there's a selected semester, set it in both localStorage and the dropdown
+                            if (selectedSemester) {
+                                dashboardDropdown.value = selectedSemester;
+                                localStorage.setItem("selectedSemester", selectedSemester);  // Save it to localStorage
+                            }
+                    
+                            // On change, update localStorage and reload the page with the selected semester
+                            dashboardDropdown.addEventListener("change", function() {
+                                const selectedSemester = dashboardDropdown.value;
+                                localStorage.setItem("selectedSemester", selectedSemester);  // Save to localStorage
+                                window.location.href = `/dashboard?ay_id=${selectedSemester}`;  // Reload the page with selected semester
+                            });
+                        });
+                    </script>
+                    
+                    
+                    
+
                     <!-- College Dropdown -->
-                    <div class="flex items-center">
-                        <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black" onchange="updateDropdowns()">
+                    <div class="flex items-center   ">
+                        <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black" onchange="updateDashboard()">
                             <option value="">Select College</option>
                             {% for college in colleges %}
-                                <option value="{{ college.college_id }}" {% if college.college_id == selected_college %}selected{% endif %}>
-                                    {{ college.college_name }}
+                                <option value="{{ college.college_id }}" {% if college.college_id == selected_college %}selected{% endif %}>{{ college.college_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="flex items-center   r">
+                        <select id="filterDepartment" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black" onchange="updateDashboard()">
+                            <option value="">Select Department</option>
+                            {% for department in selected_departments %}
+                                <option value="{{ department.department_id }}" {% if department.department_id == selected_department %}selected{% endif %}>
+                                    {{ department.department_name }}
                                 </option>
                             {% endfor %}
                         </select>
                     </div>
+                   
+                </div>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        const departmentDropdown = document.getElementById("filterDepartment");
+                        const savedDepartment = localStorage.getItem("selectedDepartment");
                 
-                    <!-- Department Dropdown -->
-                    <div class="flex items-center">
-                        <select id="filterDepartment" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black hidden" onchange="updateFacultyDropdown()">
-                            <option value="">Select Department</option>
-                        </select>
-                    </div>
+                        // Load last selected department if available
+                        if (savedDepartment) {
+                            departmentDropdown.value = savedDepartment;
+                        }
                 
-                    <!-- Faculty Dropdown -->
-                    <div class="flex items-center">
-                        <select id="filterFaculty" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black hidden">
-                            <option value="">Select Faculty</option>
-                        </select>
+                        // Save selected department to localStorage and refresh the page on change
+                        departmentDropdown.addEventListener("change", function() {
+                            localStorage.setItem("selectedDepartment", departmentDropdown.value);
+                            updateDashboard(); // Call the function to update the dashboard with the selected department
+                        });
+                    });
+                
+                    function updateDashboard() {
+                        const selectedCollegeId = document.getElementById("filterCollege").value;
+                        const selectedSemester = document.getElementById("dashboardSemesterDropdown").value;
+                        const selectedDepartmentId = document.getElementById("filterDepartment").value;
+                
+                        window.location.href = `/dashboard?college_id=${selectedCollegeId}&ay_id=${selectedSemester}&department_id=${selectedDepartmentId}`; // Reload with college_id, ay_id, and department_id
+                    }
+                </script>
+
+                            <!-- Total Comments and Sentiment Count Row -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- Total Comments Card -->
+                <div class="bg-white rounded-lg shadow-md p-8 flex flex-col relative col-span-1 md:col-span-2   ">
+                    <h2 class="text-lg font-semibold">Total Comments</h2>
+                    <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
+                    <a href="/comments" class="text-sm absolute top-0 right-0 mt-4 mr-2">View Comments!</a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 col-span-1 md:col-span-2  ">
+                    <div class="bg-green-100 rounded-lg shadow-md p-6 flex flex-col items-center hvr-grow">
+                        <span class="material-icons primary">thumb_up</span>
+                        <h3 class="text-xl font-semibold mt-2">Positive</h3>
+                        <p class="text-3xl font-bold">{{ positive_count }}</p>
                     </div>
+
+                    <div class="bg-gray-100 rounded-lg shadow-md p-6 flex flex-col items-center hvr-grow">
+                        <span class="material-icons primary">more_horiz</span>
+                        <h3 class="text-xl font-semibold mt-2">Neutral</h3>
+                        <p class="text-3xl font-bold">{{ neutral_count }}</p>
+                    </div>
+
+                    <div class="bg-[#F1BE48] bg-opacity-10 rounded-lg shadow-md p-6 flex flex-col items-center hvr-grow">
+                        <span class="material-icons text-[#F1BE48]">thumb_down</span>
+                        <h3 class="text-xl font-semibold mt-2 text-[#F1BE48]">Negative</h3>
+                        <p class="text-3xl font-bold">{{ negative_count }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sentiment Analysis Card (Percentage) -->
+            <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col md:flex-row mt-6">
+                <div class="flex-grow">
+                    <h2 class="text-lg font-semibold mb-4">Sentiment Analysis this semester</h2>
+                    
+                    <!-- Positive Sentiment -->
+                                     <!-- Positive Sentiment -->
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <span class="material-icons text-[#083B0A]">thumb_up</span>
+                            <span class="ml-2">Positive</span>
+                        </div>
+                        <p class="text-3xl font-bold">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full mt-2">
+                        <div class="bg-[#083B0A] h-2 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                    </div>
+
+                    <!-- Neutral Sentiment -->
+                    <div class="flex items-center justify-between mb-2 mt-4">
+                        <div class="flex items-center">
+                            <span class="material-icons text-gray-500">more_horiz</span>
+                            <span class="ml-2">Neutral</span>
+                        </div>
+                        <p class="text-3xl font-bold">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full mt-2">
+                        <div class="bg-gray-400 h-2 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                    </div>
+
+                    <!-- Negative Sentiment -->
+                    <div class="flex items-center justify-between mb-2 mt-4">
+                        <div class="flex items-center">
+                            <span class="material-icons text-[#F1BE48]">thumb_down</span>
+                            <span class="ml-2">Negative</span>
+                        </div>
+                        <p class="text-3xl font-bold">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full mt-2">
+                        <div class="bg-[#F1BE48] h-2 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                    </div>
+
+                    
+                </div>
+                  <!-- Pie Chart -->
+                  <div class="mt-4 md:mt-0 md:ml-6">
+                    <canvas id="sentimentPieChart" width="200" height="200"></canvas>
                 </div>
                 
                 <script>
-                    document.addEventListener("DOMContentLoaded", function() {
-                        const dashboardDropdown = document.getElementById("dashboardSemesterDropdown");
-                        const savedSemester = localStorage.getItem("selectedSemester");
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const ctx = document.getElementById('sentimentPieChart');
+                        if (ctx) {
+                            // Check if there are any comments
+                            const totalComments = {{ total_comments }};
+                            let chartData, chartColors, chartLabels;
                 
-                        // Load last selected semester if available
-                        if (savedSemester) {
-                            dashboardDropdown.value = savedSemester;
+                            if (totalComments === 0) {
+                                // Show "No Data" message in blue
+                                chartData = [1]; // single segment for "No Data"
+                                chartColors = ['#3182ce']; // blue color
+                                chartLabels = ['No Data'];
+                            } else {
+                                // Use actual sentiment data
+                                chartData = [
+                                    {{ positive_count }},
+                                    {{ neutral_count }},
+                                    {{ negative_count }}
+                                ];
+                                chartColors = ['#083B0A', '#a0aec0', '#F1BE48'];
+                                chartLabels = ['Positive', 'Neutral', 'Negative'];
+                            }
+                
+                            // Initialize Chart.js pie chart with the computed data
+                            new Chart(ctx.getContext('2d'), {
+                                type: 'pie',
+                                data: {
+                                    labels: chartLabels,
+                                    datasets: [{
+                                        data: chartData,
+                                        backgroundColor: chartColors,
+                                        hoverOffset: 4
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            display: true,
+                                            position: 'top',
+                                        }
+                                    }
+                                }
+                            });
                         }
-                
-                        // Save selected semester to localStorage and refresh the page on change
-                        dashboardDropdown.addEventListener("change", function() {
-                            localStorage.setItem("selectedSemester", dashboardDropdown.value);
-                            window.location.href = `/dashboard?ay_id=${dashboardDropdown.value}`;
-                        });
-                
-                        // Initialize dropdowns with saved values or default
-                        updateDropdowns();
                     });
-                
-                    function updateDropdowns() {
-                        const collegeSelect = document.getElementById('filterCollege');
-                        const departmentSelect = document.getElementById('filterDepartment');
-                        const facultySelect = document.getElementById('filterFaculty');
-                        const selectedCollegeId = collegeSelect.value;
-                
-                        departmentSelect.innerHTML = '<option value="">Select Department</option>';
-                        facultySelect.innerHTML = '<option value="">Select Faculty</option>';
-                
-                        // Populate department dropdown based on selected college
-                        {% for department in all_departments %}
-                            if (selectedCollegeId === "{{ department.college_id }}") {
-                                const option = document.createElement("option");
-                                option.value = "{{ department.department_id }}";
-                                option.textContent = "{{ department.department_name }}";
-                                departmentSelect.appendChild(option);
-                            }
-                        {% endfor %}
-                
-                        // Toggle visibility of department dropdown
-                        departmentSelect.classList.toggle('hidden', selectedCollegeId === "");
-                
-                        // Clear and hide faculty dropdown until a department is selected
-                        facultySelect.classList.add('hidden');
-                    }
-                
-                    function updateFacultyDropdown() {
-                        const departmentSelect = document.getElementById('filterDepartment');
-                        const facultySelect = document.getElementById('filterFaculty');
-                        const selectedDepartmentId = departmentSelect.value;
-                
-                        facultySelect.innerHTML = '<option value="">Select Faculty</option>';
-                
-                        // Populate faculty dropdown based on selected department
-                        {% for department_id, faculties in faculties_by_department.items() %}
-                            if (selectedDepartmentId === "{{ department_id }}") {
-                                {% for faculty in faculties %}
-                                    const option = document.createElement("option");
-                                    option.value = "{{ faculty.faculty_id }}";
-                                    option.textContent = "{{ faculty.faculty_name }}";
-                                    facultySelect.appendChild(option);
-                                {% endfor %}
-                            }
-                        {% endfor %}
-                
-                        // Show faculty dropdown if there are faculties in the selected department
-                        facultySelect.classList.toggle('hidden', selectedDepartmentId === "");
-                    }
                 </script>
                 
-
-                <!-- Total Comments and Sentiment Count Row -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <!-- Total Comments Card -->
-                    <div class="bg-white rounded-lg shadow-md p-8 flex flex-col relative col-span-1 md:col-span-2">
-                        <h2 class="text-lg font-semibold">Total Comments</h2>
-                        <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
-                        <a href="/comments" class="text-sm absolute top-0 right-0 mt-4 mr-2">View Comments!</a>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 col-span-1 md:col-span-2">
-                        <div class="bg-green-100 rounded-lg shadow-md p-6 flex flex-col items-center">
-                            <span class="material-icons primary">thumb_up</span>
-                            <h3 class="text-xl font-semibold mt-2">Positive</h3>
-                            <p class="text-3xl font-bold">{{ positive_count }}</p>
-                        </div>
-
-                        <div class="bg-gray-100 rounded-lg shadow-md p-6 flex flex-col items-center">
-                            <span class="material-icons primary">more_horiz</span>
-                            <h3 class="text-xl font-semibold mt-2">Neutral</h3>
-                            <p class="text-3xl font-bold">{{ neutral_count }}</p>
-                        </div>
-
-                        <div class="bg-red-100 rounded-lg shadow-md p-6 flex flex-col items-center">
-                            <span class="material-icons text-red-500">thumb_down</span>
-                            <h3 class="text-xl font-semibold mt-2">Negative</h3>
-                            <p class="text-3xl font-bold">{{ negative_count }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sentiment Analysis Card (Percentage) -->
-                <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col md:flex-row mt-6">
-                    <div class="flex-grow">
-                        <h2 class="text-lg font-semibold mb-4">Sentiment Analysis</h2>
-                        
-                        <!-- Positive Sentiment -->
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center">
-                                <span class="material-icons text-green-500">thumb_up</span>
-                                <span class="ml-2">Positive</span>
-                            </div>
-                            <p class="text-3xl font-bold">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full mt-2">
-                            <div class="bg-green-500 h-2 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                        </div>
-
-                        <!-- Neutral Sentiment -->
-                        <div class="flex items-center justify-between mb-2 mt-4">
-                            <div class="flex items-center">
-                                <span class="material-icons text-gray-500">more_horiz</span>
-                                <span class="ml-2">Neutral</span>
-                            </div>
-                            <p class="text-3xl font-bold">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full mt-2">
-                            <div class="bg-gray-400 h-2 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                        </div>
-
-                        <!-- Negative Sentiment -->
-                        <div class="flex items-center justify-between mb-2 mt-4">
-                            <div class="flex items-center">
-                                <span class="material-icons text-red-500">thumb_down</span>
-                                <span class="ml-2">Negative</span>
-                            </div>
-                            <p class="text-3xl font-bold">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full mt-2">
-                            <div class="bg-red-500 h-2 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                        </div>
-                    </div>
-                </div>
-
-
-     
-
-            
             </div>
+              <!-- Sentiment Bar Chart -->
+              <div class="bg-white rounded-lg shadow-md mt-8 p-8">
+                <h2 class="text-xl font-semibold mb-6">Sentiment Analysis </h2>
+                <canvas id="sentimentBarChart" width="400" height="200"></canvas>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const ctxBar = document.getElementById('sentimentBarChart');
+                        if (ctxBar) {
+                            const semesterLabels = {{ semester_labels | tojson }};
+                            const positiveData = {{ positive_data | tojson }};
+                            const negativeData = {{ negative_data | tojson }};
+                            
+                            new Chart(ctxBar, {
+                                type: 'bar',
+                                data: {
+                                    labels: semesterLabels,
+                                    datasets: [
+                                        {
+                                            label: 'Positive Sentiment',
+                                            data: positiveData,
+                                            backgroundColor: '#083B0A',
+                                        },
+                                        {
+                                            label: 'Negative Sentiment',
+                                            data: negativeData,
+                                            backgroundColor: '#F1BE48',
+                                        }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    scales: {
+                                        x: { 
+                                            beginAtZero: true 
+                                        },
+                                        y: {
+                                            beginAtZero: true
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    });
+                </script>
+            </div>
+            
+            
+            
+            
         </main>
     </div>
 </div>

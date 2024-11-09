@@ -529,15 +529,15 @@ def comments():
         page = request.args.get('page', 1, type=int)
         per_page = 5
 
-        # Get the selected semester from the query parameters or fallback to stored semester
-        selected_semester = request.args.get('semester', None)
+        # Get the selected semester from the query parameters or fallback to stored semester in cookies
+        selected_semester = request.args.get('ay_id', None)  # Get 'ay_id' from the URL query params
 
-        # If no semester in query params, try to get it from localStorage
+        # If no semester is in the query params, check the cookies
         if not selected_semester:
             selected_semester = request.cookies.get('selectedSemester')
 
+        # If no semester in cookies or query params, default to the first available semester
         if not selected_semester:
-            # Default to the first available semester if no selection in cookies or query params
             selected_semester = AY_SEM.query.first().ay_id  # Default to the first semester
 
         # Query to fetch all comments for the selected semester
@@ -566,7 +566,6 @@ def comments():
                                )
 
     return redirect(url_for('loading_screen', target=url_for('comments')))
-
 
 
 

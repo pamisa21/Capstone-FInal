@@ -7,7 +7,7 @@ body {
     letter-spacing: 0.5px; 
 }
 .active {
-    color: var(--maze);
+    color: var(--primary);
     font-weight: semibold;
     
 }
@@ -15,14 +15,14 @@ body {
     font-family: 'poppins'; 
 }
 #home-section h2 {
-    color: var(--maze);
+    color: var(--secondary);
     letter-spacing: 0.5px; 
  
     
 }
 
 #home-section h2 span {
-    color: var(--green6);
+    color: var(--primary);
     text-align: center;
 }
 #home-section p {
@@ -32,7 +32,7 @@ body {
 }
 
 .btn {
-    background-color: var(--green6);
+    background-color: var(--primary);
     color: white; 
     font-weight: 600; 
     padding: 0.5rem 1rem; 
@@ -41,8 +41,8 @@ body {
 }
 
 .btn:hover {
-    background-color: var(--maze); 
-    color: var(--green6); 
+    background-color: var(--secondary); 
+    color: var(--primary); 
 }
 
 
@@ -78,7 +78,7 @@ body {
 }
 
 .custom-hover:hover {
-    background-color: var(--maze);
+    background-color: var(--secondary);
     color: white; /* Change to your desired hover background color */
 }
 
@@ -87,7 +87,7 @@ body {
 }
 
 input:checked ~ .toggle-bg {
-    background-color: var(--green6); /* Change to your desired toggle on color */
+    background-color: var(--primary); /* Change to your desired toggle on color */
 }
 
 input:checked ~ .toggle-dot {
@@ -103,52 +103,52 @@ input:checked ~ .toggle-dot {
 /* Team Section */
 
 .team_name{
-    color: var(--maze);
+    color: var(--secondary);
     text-transform: capitalize;
 }
 
 .team_title{
-    color: var(--green6);
+    color: var(--primary);
 }
 .fb_icon {
-    color: var(--green6)
+    color: var(--primary)
      
 }
 
 .fb_icon:hover {
-    color:var(--maze);
+    color:var(--secondary);
 }
 
 
 /* Contact Section */
 
 .Contact h1 {
-    color: var(--green6);
+    color: var(--primary);
     
 }
 .sub{
-    color: var(--maze);
+    color: var(--secondary);
 }
 
 
 
 /*Login */
 .Login ,  .register{
-color: var(--green6);
+color: var(--primary);
 }
 .Login h2, .register h2 {
-    color: var(--green6); 
+    color: var(--primary); 
 
 }
 
 
 .loginbutton {
-    background-color: var(--green6);
+    background-color: var(--primary);
     color:white;
     font-weight: lighter;
 }
 .loginbutton:hover{
-    background-color: var(--maze);
+    background-color: var(--secondary);
 }
 
 /* side bar */
@@ -218,25 +218,25 @@ input:checked + .toggle-bg + .toggle-dot {
 
 .filterCategory
 {
-    background-color: var(--green6);
+    background-color: var(--primary);
 }
 
 
 #dashboard h1 {
-    color: var(--green6);
+    color: var(--primary);
 }
 
 #evaluate button {
-    background-color: var(--green6);
+    background-color: var(--primary);
     color: white;
 }
 #evaluate button:hover {
-    background-color: var(--maze);
-    color: var(--green6);
+    background-color: var(--secondary);
+    color: white;
   
 }
 .active-link {
-    background-color: var(--green6);
+    background-color: var(--primary);
     color: white; 
     border-radius: 2px;
 }
@@ -248,28 +248,28 @@ input:checked + .toggle-bg + .toggle-dot {
 /* Dashboard */
 
 #dashboard h2{
-    color: var(--maze);
+    color: var(--primary);
     margin-bottom: 20px;
 }
 #dashboard  h4{
-    color: var(--green7);
+    color: var(--secondary);
     margin-bottom: 20px;
 }
 #dashboard  h3{
-    color: var(--green6);
+   
     margin-bottom: 20px;
 }
 
 
 /* accounts css */
 #accounts button{
-    background-color:var(--green6);
+    background-color:var(--primary);
     color: white;
    
 }
 #accounts button:hover{
-    background-color:var(--maze);
-    color: var(--green6);
+    background-color:var(--secondary);
+    color: var(--primary);
     font-weight:bold;
 }
 
@@ -318,7 +318,7 @@ input:checked + .toggle-bg + .toggle-dot {
     padding: 1rem 1rem; /* py-3.5 px-4 */
     text-align: left; /* text-left */
     font-size: 0.875rem; /* text-sm */
-    color:var(--green6);
+    color:var(--secondary);
     
 }
 
@@ -332,7 +332,7 @@ input:checked + .toggle-bg + .toggle-dot {
     font-size: 0.875rem;
     font-weight: normal;
     color: white; ;
-    background-color:var(--maze);
+    background-color:var(--secondary);
     border-radius: 9999px; 
    
 }
@@ -342,7 +342,7 @@ input:checked + .toggle-bg + .toggle-dot {
     font-size: 0.875rem;
     font-weight: normal;
     color: white; ;
-    background-color:var(--green6);
+    background-color:var(--primary);
     border-radius: 9999px; 
    
 }
@@ -357,7 +357,7 @@ input:checked + .toggle-bg + .toggle-dot {
     font-size: 0.875rem;
     font-weight: normal;
     color: white; ;
-    background-color:var(--green6);
+    background-color:var(--primary);
     border-radius: 9999px; 
 }
 
@@ -415,7 +415,7 @@ input:checked + .toggle-bg + .toggle-dot {
         border-radius: 4px;
     }
     .profile-header img {
-        border: 3px solid var(--green6);
+        border: 3px solid var(--primary);
     }
     .btn-save {
         width: 100%;
@@ -424,7 +424,7 @@ input:checked + .toggle-bg + .toggle-dot {
     }
     .btn-save:hover {
         width: 100%;
-        background-color: var(--maze);
+        background-color: var(--secondary);
     }
 
     .btn-back:hover {
@@ -434,7 +434,7 @@ input:checked + .toggle-bg + .toggle-dot {
 
     .btn-back {
         width: 100%;
-        background-color: var(--maze);
+        background-color: var(--secondary);
         text-align: center;
     }
 
@@ -446,21 +446,21 @@ input:checked + .toggle-bg + .toggle-dot {
 
     .Semester {
         color: white;
-        background-color: var(--green6);
+        background-color: var(--primary);
         border-radius: 5px;
     }
     .card_results h2{
-        color: var(--green6);
+        color: var(--primary);
         
     }
     .card_link{
-        color: var(--green6);
+        color: var(--primary);
     }
   
 
 
     .green{
-        color: var(--green6);
+        color: var(--primary);
     }
     .green:hover{
     
@@ -471,15 +471,15 @@ input:checked + .toggle-bg + .toggle-dot {
 
 
     .start {
-        color: var(--green6);
-        background-color: var(--maze);
+        color: white;
+        background-color: var(--primary);
         font-weight: 600;
         border-radius: 5px;
         transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
     }
     
     .start:hover {
-        background-color: var(--green6);
+        background-color: var(--secondary);
         color: white;
     }
     
@@ -502,11 +502,11 @@ input:checked + .toggle-bg + .toggle-dot {
 
     #close-modal {
         
-        color:var(--green6);
+        color:var(--primary);
     }
     #close-modal:hover {
       
-        color:var(--maze);
+        color:var(--secondary);
     }
 
 
@@ -514,23 +514,23 @@ input:checked + .toggle-bg + .toggle-dot {
 
     /* Set Default */
     .setdf{
-        background-color: var(--green6);
+        background-color: var(--primary);
         color: white;
         transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
     }
     .setdf:hover{
-        background-color: var(--maze);
+        background-color: var(--secondary);
         color: black;
         transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
     }
 
     .cancel{
-        background-color: var(--maze);
+        background-color: var(--secondary);
         color: black;
         transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
     }
     .cancel:hover{
-        background-color: var(--green6);
+        background-color: var(--primary);
         color: white;
         transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
     }
@@ -543,7 +543,7 @@ input:checked + .toggle-bg + .toggle-dot {
     transform: perspective(1px) translateZ(0);
     box-shadow: 0 0 1px rgba(0, 0, 0, 0);
     position: relative;
-    background-color: var(--maze);
+    background-color: var(--secondary);
     -webkit-transition-property: color;
     transition-property: color;
     -webkit-transition-duration: 0.3s;
@@ -557,7 +557,7 @@ input:checked + .toggle-bg + .toggle-dot {
     bottom: 0;
     left: 0;
     right: 0;
-    background: var(--green6);
+    background: var(--primary);
     border-radius: 5px;
     -webkit-transform: scaleX(0);
     transform: scaleX(0);
@@ -587,7 +587,7 @@ input:checked + .toggle-bg + .toggle-dot {
     transform: perspective(1px) translateZ(0);
     box-shadow: 0 0 1px rgba(0, 0, 0, 0);
     position: relative;
-    background-color: var(--maze);
+    background-color: var(--secondary);
     -webkit-transition-property: color;
     transition-property: color;
     -webkit-transition-duration: 0.3s;
@@ -604,7 +604,7 @@ input:checked + .toggle-bg + .toggle-dot {
     left: 0;
     right: 0;
     
-    background-color: var(--green6);
+    background-color: var(--hover);
     -webkit-transform: scaleX(1);
     transform: scaleX(1);
     -webkit-transform-origin: 50%;
@@ -617,7 +617,7 @@ input:checked + .toggle-bg + .toggle-dot {
     transition-timing-function: ease-out;
   }
   .hvr-shutter-in-horizontal:hover, .hvr-shutter-in-horizontal:focus, .hvr-shutter-in-horizontal:active {
-    color: var(--green6);
+    color: var(--hover);
   }
   .hvr-shutter-in-horizontal:hover:before, .hvr-shutter-in-horizontal:focus:before, .hvr-shutter-in-horizontal:active:before {
     -webkit-transform: scaleX(0);
@@ -642,7 +642,7 @@ input:checked + .toggle-bg + .toggle-dot {
         left: 51%;
         right: 51%;
         bottom: 0;
-        background:var(--maze);
+        background:var(--hover);
         height: 4px;
         -webkit-transition-property: left, right;
         transition-property: left, right;
@@ -735,3 +735,70 @@ input:checked + .toggle-bg + .toggle-dot {
     transform: scale(0.9);
   }
   
+
+
+  /*Printing  */ 
+
+
+@media print {
+
+
+    /* Hide the print button and faculty results heading when printing */
+    .print-button, .faculty-results-heading {
+        display: none;
+    }
+};
+
+
+
+
+.header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 20px 60px;
+    text-align: center;
+    background: #f1f1f1;
+    font-size: 14px;
+    border-bottom: 2px solid #333;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.header-content h1 {
+    margin: 0;
+    font-size: 16px;
+    color: #222;
+    font-weight: bold;
+}
+
+.header-content p {
+    margin: 5px 0 0;
+    font-size: 12px;
+    color:var(--primary)
+}
+
+
+
+
+.header:before {
+    top: 40px;
+    left: calc(50% - 150px);
+}
+
+
+
+.comments-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.comments-table thead {
+    display: table-header-group; /* Ensure header shows on all pages */
+    background-color: #f0f0f0; /* Optional for header styling */
+}
+.comments-table th, .comments-table td {
+    padding: 8px; /* Adjust padding for readability */
+    border: 1px solid #ddd; /* Adds borders to each cell */
+    text-align: left;
+}
+.comments-table th {
+    font-weight: bold;
+}

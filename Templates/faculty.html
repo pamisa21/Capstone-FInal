@@ -128,33 +128,33 @@
                 <!-- Pagination Controls -->
                 <div class="flex items-center justify-between mt-4 p-2">
                     {% if faculty_members.has_prev %}
-                        <a href="{{ url_for('faculty', page=faculty_members.prev_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-4 py-2 text-sm text-gray-700 bg-white border rounded-md hover:bg-gray-100">
+                        <a href="{{ url_for('faculty', page=faculty_members.prev_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-4 py-2 text-sm text-gray-700 bg-white border rounded-md hover:bg-[#023047] hover:text-white">
                             Previous
                         </a>
                     {% endif %}
 
                     <div class="flex items-center gap-x-3">
                         {% if start_page > 1 %}
-                            <a href="{{ url_for('faculty', page=1, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">1</a>
+                            <a href="{{ url_for('faculty', page=1, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-[#023047] hover:text-white rounded-md">1</a>
                             <span class="text-gray-500">...</span>
                         {% endif %}
 
                         {% for page_num in range(start_page, end_page + 1) %}
                             {% if page_num == faculty_members.page %}
-                                <a href="#" class="px-2 py-1 text-sm text-white bg-green-800 rounded-md">{{ page_num }}</a>
+                                <a href="#" class="px-2 py-1 text-sm text-white bg-[#00B4D8] rounded-md">{{ page_num }}</a>
                             {% else %}
-                                <a href="{{ url_for('faculty', page=page_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">{{ page_num }}</a>
+                                <a href="{{ url_for('faculty', page=page_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-[#023047] hover:text-white rounded-md">{{ page_num }}</a>
                             {% endif %}
                         {% endfor %}
 
                         {% if end_page < total_pages %}
                             <span class="text-gray-500">...</span>
-                            <a href="{{ url_for('faculty', page=total_pages, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">{{ total_pages }}</a>
+                            <a href="{{ url_for('faculty', page=total_pages, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-[#023047] rounded-md hover:text-white">{{ total_pages }}</a>
                         {% endif %}
                     </div>
 
                     {% if faculty_members.has_next %}
-                        <a href="{{ url_for('faculty', page=faculty_members.next_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-4 py-2 text-sm text-gray-700 bg-white border rounded-md hover:bg-gray-100">
+                        <a href="{{ url_for('faculty', page=faculty_members.next_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-4 py-2 text-sm text-gray-700 bg-white border rounded-md hover:bg-[#023047] hover:text-white">
                             Next
                         </a>
                     {% endif %}

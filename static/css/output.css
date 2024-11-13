@@ -4,25 +4,29 @@
 
 
 .primary{
-    color: var(--green6);
+    color: var(--primary);
      
    }
-   .primary:hover{
-    text-decoration: underline;
-     
-   }
+
 
 
 .secondary{
-    color: var(--maze);
+    color: var(--secondary);
 }
 .green1{
-    color: var(--green6);
+    color: var(--secondary);
 }
 .maze{
-    color: var(--maze);
+    color: var(--secondary);
 }
 
-    .secondary:hover{
-        text-decoration: underline;
-    }
+
+.positive {
+    color: var(--positive);
+}
+.negative {
+    color: var(--negative);
+}
+.neutral {
+    color: var(--neutral);
+}

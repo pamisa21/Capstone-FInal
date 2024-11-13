@@ -21,7 +21,7 @@
 
             <div id="Comments" class="w-100 h-100 mx-auto bg-white rounded-lg shadow-lg p-2">
                 <div class="flex flex-col md:flex-row justify-between items-center mb-2">
-                    <h1 class="text-2xl font-bold">List of Comments</h1>
+                    <h1 class="text-2xl font-bold primary">List of Comments</h1>
                     
                 </div>
                 <!-- Table Section -->
@@ -37,7 +37,7 @@
                                             <th class="table-cell">Faculty Name</th>
                                             <th class="table-cell text-center">Semester</th>
                                             <th class="table-cell">Category</th>
-                                            <th class="table-cell hidden md:table-cell">Status</th>
+                                            <!-- <th class="table-cell hidden md:table-cell">Status</th> -->
                                             <th class="table-cell hidden md:table-cell">Actions</th>
                                         </tr>
                                     </thead>
@@ -54,12 +54,12 @@
                                                     {% elif comment.category == 2 %} Positive
                                                     {% endif %}
                                                 </td>
-                                                <td class="table-cell hidden md:table-cell">
+                                                <!-- <td class="table-cell hidden md:table-cell">
                                                     {% if comment.publish == 1 %} Published {% else %} Unpublished {% endif %}
-                                                </td>
+                                                </td> -->
                                                 <td class="px-4 py-4 text-sm whitespace-nowrap hidden md:table-cell">
                                                     <div class="flex space-x-2">
-                                                        <a href="{{ url_for('view_comment', comment_id=comment.comment_id) }}" title="View" class="secondary hover:underline">View</a>
+                                                        <a href="{{ url_for('view_comment', comment_id=comment.comment_id) }}" title="View" class="primary hover:underline">View</a>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -88,7 +88,7 @@
                 
                 {% for page_num in range(start_page, end_page + 1) %}
                     {% if page_num == comments_pagination.page %}
-                        <a href="#" class="px-2 py-1 text-sm text-white bg-green-800 rounded-md">{{ page_num }}</a>
+                        <a href="#" class="px-2 py-1 text-sm text-white bg-[#00B4D8] rounded-md">{{ page_num }}</a>
                     {% else %}
                         <a href="{{ url_for('comments', page=page_num, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">{{ page_num }}</a>
                     {% endif %}
@@ -99,9 +99,9 @@
                     <a href="{{ url_for('comments', page=comments_pagination.pages, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">{{ comments_pagination.pages }}</a>
                 {% endif %}
             
-            
+                
                         {% if comments_pagination.has_next %}
-                        <a href="{{ url_for('comments', page=comments_pagination.next_num, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="inline-flex items-center px-3 py-1 text-sm primary bg-white border rounded-md gap-x-2 hover:bg-yellow-400">
+                        <a href="{{ url_for('comments', page=comments_pagination.next_num, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="inline-flex items-center px-3 py-1 text-sm primary bg-white border rounded-md gap-x-2 ">
                             <span>Next</span>
                         </a>
                     {% endif %}

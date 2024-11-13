@@ -68,27 +68,27 @@
                             <!-- Total Comments Card -->
                             <div class="bg-white rounded-lg shadow-md p-8 flex flex-col relative border-2">
                                 <h2 class="text-lg font-semibold">Total Comments</h2>
-                                <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
+                                <h4 class="text-3xl font-bold text-center text-[#023047]">{{ total_comments }} <span class="ml-2 text-sm text-[#00B4D8]">Comments</span></h4>
                                 <a href="/comments" class="text-sm absolute top-0 right-0 mt-4 mr-2">View Comments!</a>
                             </div>
                             
                             <!-- Positive, Neutral, and Negative Cards -->
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 rounded-lg">
-                                <div class="bg-green-100 rounded-lg shadow-md p-6 flex flex-col items-center">
-                                    <span class="material-icons primary">thumb_up</span>
-                                    <h3 class="text-xl font-semibold mt-2">Positive</h3>
+                                <div class="bg-[#A1D99B] rounded-lg shadow-md p-6 flex flex-col items-center secondary ">
+                                    <span class="material-icons ">thumb_up</span>
+                                    <h3 class="text-xl font-semibold mt-2 ">Positive</h3>
                                     <p class="text-3xl font-bold">{{ positive_count }}</p>
                                 </div>
                                 
-                                <div class="bg-gray-100 rounded-lg shadow-md p-6 flex flex-col items-center">
-                                    <span class="material-icons primary">more_horiz</span>
-                                    <h3 class="text-xl font-semibold mt-2">Neutral</h3>
+                                <div class="bg-[#A8D8F0] rounded-lg shadow-md p-6 flex flex-col items-center secondary">
+                                    <span class="material-icons ">more_horiz</span>
+                                    <h3 class="text-xl font-semibold mt-2 ">Neutral</h3>
                                     <p class="text-3xl font-bold">{{ neutral_count }}</p>
                                 </div>
                                 
-                                <div class="bg-[#F1BE48] bg-opacity-10 rounded-lg shadow-md p-6 flex flex-col items-center">
-                                    <span class="material-icons text-[#F1BE48]">thumb_down</span>
-                                    <h3 class="text-xl font-semibold mt-2 text-[#F1BE48]">Negative</h3>
+                                <div class="bg-[#FF6B6B]  rounded-lg shadow-md p-6 flex flex-col items-center secondary">
+                                    <span class="material-icons ">thumb_down</span>
+                                    <h3 class="text-xl font-semibold mt-2 ">Negative</h3>
                                     <p class="text-3xl font-bold">{{ negative_count }}</p>
                                 </div>
                             </div>
@@ -98,39 +98,39 @@
                                         
                                         <!-- Positive Sentiment -->
                                         
-                                        <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center justify-between mb-2  primary">
                                             <div class="flex items-center">
-                                                <span class="material-icons text-[#083B0A]">thumb_up</span>
-                                                <span class="ml-2">Positive</span>
+                                                <span class="material-icons primary">thumb_up</span>
+                                                <span class="ml-2 primary">Positive</span>
                                             </div>
                                             <p class="text-3xl font-bold">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                                         </div>
                                         <div class="w-full bg-gray-200 rounded-full mt-2">
-                                            <div class="bg-[#083B0A] h-2 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                                            <div class="bg-[#A1D99B] h-2 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
                                         </div>
                     
                                         <!-- Neutral Sentiment -->
-                                        <div class="flex items-center justify-between mb-2 mt-4">
+                                        <div class="flex items-center justify-between mb-2 mt-4 primary">
                                             <div class="flex items-center">
-                                                <span class="material-icons text-gray-500">more_horiz</span>
+                                                <span class="material-icons">more_horiz</span>
                                                 <span class="ml-2">Neutral</span>
                                             </div>
-                                            <p class="text-3xl font-bold">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                                            <p class=" text-3xl font-bold">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                                         </div>
                                         <div class="w-full bg-gray-200 rounded-full mt-2">
-                                            <div class="bg-gray-400 h-2 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                                            <div class="bg-[#A8D8F0] h-2 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
                                         </div>
                     
                                         <!-- Negative Sentiment -->
-                                        <div class="flex items-center justify-between mb-2 mt-4">
+                                        <div class="flex items-center justify-between mb-2 mt-4 primary">
                                             <div class="flex items-center">
-                                                <span class="material-icons text-[#F1BE48]">thumb_down</span>
+                                                <span class="material-icons ">thumb_down</span>
                                                 <span class="ml-2">Negative</span>
                                             </div>
                                             <p class="text-3xl font-bold">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                                         </div>
                                         <div class="w-full bg-gray-200 rounded-full mt-2">
-                                            <div class="bg-[#F1BE48] h-2 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                                            <div class="bg-[#FF6B6B] h-2 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
                                         </div>
                                         
                                         
@@ -152,7 +152,7 @@
                                             if (totalComments === 0) {
                                                 // Show "No Data" message in blue
                                                 chartData = [1]; // single segment for "No Data"
-                                                chartColors = ['#3182ce']; // blue color
+                                                chartColors = ['#00B4D8']; // blue color
                                                 chartLabels = ['No Data'];
                                             } else {
                                                 // Use actual sentiment data
@@ -161,7 +161,7 @@
                                                     {{ neutral_count }},
                                                     {{ negative_count }}
                                                 ];
-                                                chartColors = ['#083B0A', '#a0aec0', '#F1BE48'];
+                                                chartColors = ['#A1D99B', '#A8D8F0', '#FF6B6B'];
                                                 chartLabels = ['Positive', 'Neutral', 'Negative'];
                                             }
                                 
@@ -244,8 +244,8 @@
                         <!-- Column 2: Sentiment Analysis Chart -->
                         <div>
                             
-                            <div class="bg-white p-1  border-2 shadow-md rounded-lg ">
-                                <h2 class="primary text-lg font-semibold p-2 "> Cmu  Overall Results</h2>
+                            <div class="bg-white p-1  border-2 shadow-md rounded-lg  ">
+                                <h2 class=" text-lg font-semibold p-2  "> CMU Sentiment Overview</h2>
                                 <div class="flex justify-center items-center   ">
                                     <canvas  id="sentimentDoughnutChart"></canvas>
                                 </div>
@@ -259,9 +259,32 @@
                                     <canvas id="sentimentBarChart" width="200px" height="200px"></canvas>
                                 </div>
                             </div>
+                           
+                            
+                            
+                            
                         </div>
                         
-                        
+                        <script>
+                            const newCommentsChart = new Chart(document.getElementById("newCommentsChart"), {
+                                type: 'doughnut',  // You can change this to 'pie', 'bar', etc.
+                                data: {
+                                    labels: ['Positive', 'Negative'],
+                                    datasets: [{
+                                        data: [60, 40],  // Adjust data as needed
+                                        backgroundColor: ['#4CAF50', '#F44336'],  // Color for positive and negative
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        legend: {
+                                            position: 'top',
+                                        },
+                                    },
+                                }
+                            });
+                        </script>
                         <script>
                             document.addEventListener('DOMContentLoaded', () => {
                                 const ctx = document.getElementById('sentimentDoughnutChart').getContext('2d');
@@ -278,9 +301,9 @@
                                         label: 'Sentiment Breakdown',
                                         data: [overallPositiveCount, overallNegativeCount, overallNeutralCount],
                                         backgroundColor: [
-                                            'rgb(34, 193, 195)',    // Positive - teal
-                                            'rgb(255, 99, 132)',    // Negative - red
-                                            'rgb(255, 205, 86)'     // Neutral - yellow
+                                            '#A1D99B',    // Positive - teal
+                                            '#FF6B6B',   // Negative - red
+                                            '#A8D8F0',     // Neutral - yellow
                                         ],
                                         hoverOffset: 4
                                     }]
@@ -330,17 +353,17 @@
                                                 {
                                                     label: 'Positive Sentiment',
                                                     data: limitedPositiveData,
-                                                    backgroundColor: '#083B0A',
+                                                    backgroundColor: '#A1D99B',
                                                 },
                                                 {
                                                     label: 'Negative Sentiment',
                                                     data: limitedNegativeData,
-                                                    backgroundColor: '#F1BE48',
+                                                    backgroundColor: '#FF6B6B',
                                                 },
                                                 {
                                                     label: 'Neutral Sentiment',
                                                     data: limitedNeutralData,
-                                                    backgroundColor: '#08302',
+                                                    backgroundColor: '#A8D8F0',
                                                 }
                                             ]
                                         },

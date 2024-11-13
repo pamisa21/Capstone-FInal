@@ -851,6 +851,7 @@ def view_faculty(faculty_id):
     return redirect(url_for('loading_screen', target=url_for('login')))
 
 
+
 @app.route('/faculty/comments/<faculty_id>', methods=['GET'])
 def faculty_comments(faculty_id):
     if 'username' in session:
@@ -873,12 +874,9 @@ def faculty_comments(faculty_id):
         college = faculty_member.department.college
         department = faculty_member.department
 
-        # Pagination setup
-        page = request.args.get('page', 1, type=int)
-
         # Retrieve all semesters
         all_semesters = AY_SEM.query.order_by(AY_SEM.ay_id.desc()).all()
-        
+
         # Determine the default semester: URL parameter, cookie, or latest in the database
         selected_semester = (
             request.args.get('semester') or 
@@ -887,25 +885,35 @@ def faculty_comments(faculty_id):
         )
         default_semester_obj = AY_SEM.query.filter_by(ay_id=selected_semester).first()
 
-        # Query comments specific to the selected faculty member, join AY_SEM, and filter by ay_id
+        # Query comments specific to the selected faculty member, join AY_SEM and Subject, and filter by ay_id
         comments_query = (
-            db.session.query(Comment, AY_SEM)
+            db.session.query(Comment, AY_SEM, Subject)
             .filter(Comment.faculty_id == faculty_id)
             .join(AY_SEM, Comment.ay_id == AY_SEM.ay_id)
+            .join(Subject, Comment.subject_id == Subject.subject_id)
             .filter(Comment.category != 3)
             .filter(Comment.ay_id == selected_semester)  # Filter by selected semester
         )
 
-        # Paginate comments
-        comments_paginated = comments_query.paginate(page=page, per_page=5)
-
-        # Extract comments and their ay_sem associations
+        # Extract comments, their ay_sem associations, and related subject info
         comments = [
-            {"comment": comment, "ay_sem": ay_sem} for comment, ay_sem in comments_paginated.items
+            {"comment": comment, "ay_sem": ay_sem, "subject": subject} for comment, ay_sem, subject in comments_query.all()
         ]
 
+        # Group comments by subject_id to avoid duplicates and include student_num
+        subjects = {}
+        for item in comments:
+            subject_id = item["comment"].subject_id
+            if subject_id not in subjects:
+                subjects[subject_id] = {
+                    "subject_id": subject_id,
+                    "comments": [],
+                    "student_num": item["subject"].student_num  # Include student_num
+                }
+            subjects[subject_id]["comments"].append(item["comment"])
+
         # Sentiment counts based on category in Comment model
-        total_comments = comments_paginated.total
+        total_comments = comments_query.count()
         positive_comments = comments_query.filter(Comment.category == 2).count()
         negative_comments = comments_query.filter(Comment.category == 0).count()
         neutral_comments = comments_query.filter(Comment.category == 1).count()
@@ -918,11 +926,11 @@ def faculty_comments(faculty_id):
             college=college,
             department=department,
             comments=comments,
+            subjects=subjects,  # Pass the grouped subjects with student_num to the template
             total_comments=total_comments,
             positive_comments=positive_comments,
             negative_comments=negative_comments,
             neutral_comments=neutral_comments,
-            sentiment_comments=comments_paginated,
             all_semesters=all_semesters,
             default_semester=default_semester_obj
         )

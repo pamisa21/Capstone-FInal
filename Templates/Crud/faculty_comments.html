@@ -17,17 +17,28 @@
 
         <!-- Main Content Container -->
         <main class="flex-1 p-5 mx-5 mt-24 ml-2 md:ml-60">
-
             <div id="Comments">
                 <div class="flex flex-col md:flex-row justify-between items-center mb-2">
-                    <h2 class="text-lg font-bold maze">Faculty Results  </h2>
-                    <button class="border border-gray-300 rounded-md px-4 py-2 text-sm bg-white maze shadow-lg transition-all duration-300 transform hover:bg-green-100 hover:shadow-2xl focus:outline-none">
+                    <div class="faculty-results-heading">
+                        <h2 class="text-lg font-bold primary">Faculty Results</h2>
+                    </div>
+                    <button class="print-button border border-gray-300 rounded-md px-4 py-2 text-sm text-white bg-[#00B4D8] shadow-lg transition-all duration-300 transform hover:bg-[#023047] hover:text-white hover:shadow-2xl focus:outline-none" onclick="printFacultyResults()">
                         Print Results
                     </button>
                 </div>
 
+                <script>
+                    function printFacultyResults() {
+                      
+                        const printContent = document.getElementById('printLayout').innerHTML;
+                        const originalContent = document.body.innerHTML; 
+                        document.body.innerHTML = printContent;
+                        window.print();
+                        document.body.innerHTML = originalContent;
+                    }
+                </script>
+
                 <section class="p-3 mb-5">
-                    
                     <!-- Faculty Information Section -->
                     <div class="flex flex-col space-y-4 text-center mb-10 green1 text-lg ">
                         <div class="flex justify-center items-center space-x-2 ">
@@ -47,74 +58,95 @@
                             <span class="font-normal ">{{ default_semester.ay_name }}</span>
                         </div>
                     </div>
-
-                    
                 </section>
-                
+
                 <div class="p-2 text-lg font-bold maze">
-                    <h2>Sentiment Results</h2>
+                    <h2 class="primary">Sentiment Overview</h2>
                 </div>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                
-                <div class="bg-green-900 text-white rounded-lg shadow-md mb-5 p-8 flex flex-col hvr-grow">
-                    <h2 class="text-lg font-semibold">Total Comments</h2>
-                    <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
+                    <!-- Sentiment cards -->
+                    <div class="bg-[#00B4D8] text-white rounded-lg shadow-md mb-5 p-8 flex flex-col hvr-grow">
+                        <h2 class="text-lg font-semibold">Total Comments</h2>
+                        <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
+                    </div>
+                    <div class="bg-white border-l-4 border-green-500 rounded-lg shadow-md mb-5 p-8 flex flex-col hvr-grow">
+                        <h2 class="text-lg font-semibold positive">Positive</h2>
+                        <h4 class="text-3xl font-bold text-center positive">{{ positive_comments }} <span class="ml-2 text-sm primary">Comments</span></h4>
+                    </div>
+                    <div class="bg-white border-l-4 border-red-500 rounded-lg shadow-md mb-5 p-8 flex flex-col relative hvr-grow">
+                        <h2 class="text-lg font-semibold negative">Negative</h2>
+                        <h4 class="text-3xl font-bold text-center text-red-500">{{ negative_comments }} <span class="ml-2 text-sm primary">Comments</span></h4>
+                    </div>
+                    <div class="bg-white border-l-4 border-yellow-500 rounded-lg shadow-md mb-5 p-8 flex flex-col relative hvr-grow">
+                        <h2 class="text-lg font-semibold neutral">Neutral</h2>
+                        <h4 class="text-3xl font-bold text-center neutral">{{ neutral_comments }} <span class="ml-2 text-sm primary">Comments</span></h4>
+                    </div>
                 </div>
 
-                <!-- Positive Comments Card -->
-                <div class="bg-white border-l-4 border-green-500 rounded-lg shadow-md mb-5 p-8 flex flex-col hvr-grow">
-                    <h2 class="text-lg font-semibold green">Positive</h2>
-                    <h4 class="text-3xl font-bold text-center text-green-500">{{ positive_comments }} <span class="ml-2 text-sm">Comments</span></h4>
-                </div>
 
-                <!-- Negative Comments Card -->
-                <div class="bg-white border-l-4 border-red-500 rounded-lg shadow-md mb-5 p-8 flex flex-col relative hvr-grow">
-                    <h2 class="text-lg font-semibold text-red-500 green">Negative</h2>
-                    <h4 class="text-3xl font-bold text-center text-red-500">{{ negative_comments }} <span class="ml-2 text-sm">Comments</span></h4>
-                </div>
-
-                <!-- Neutral Comments Card -->
-                <div class="bg-white border-l-4 border-yellow-500 rounded-lg shadow-md mb-5 p-8 flex flex-col relative hvr-grow">
-                    <h2 class="text-lg font-semibold text-yellow-500 green">Neutral</h2>
-                    <h4 class="text-3xl font-bold text-center text-yellow-500">{{ neutral_comments }} <span class="ml-2 text-sm">Comments</span></h4>
-                </div>
-
-                </div>
                 <div class="mt-4">
-                    <h2 class="text-lg font-bold maze">Comments</h2>
+                    <h2 class="text-lg font-bold primary mb-2">Student Statistics Overview</h2>
+                    <div class="overflow-x-auto">
+                        <div class="table-border">
+                            <table class="data-table w-full border-collapse text-sm">
+                                <thead class="table-header bg-gray-100">
+                                    <tr>
+                                        <!-- <th class="table-cell">No</th> -->
+                                        <th class="table-cell px-2 py-1 border border-gray-300">Subject</th>
+                                        <th class="table-cell px-2 py-1 border border-gray-300">Total Student</th>
+                                        <th class="table-cell px-2 py-1 border border-gray-300">With Comments</th>
+                                        <th class="table-cell px-2 py-1 border border-gray-300">Without Comments</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-body">
+                                    {% for subject in subjects.values() %}
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <!-- <td class="table-cell px-2 py-1">{{ loop.index }}</td> -->
+                                        <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.subject_id }}</td>
+                                        <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.student_num }}</td>
+                                        <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.comments | length }}</td>
+                                        <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.student_num - (subject.comments | length) }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                
+
+                <div class="mt-4">
+                    <h2 class="text-lg font-bold primary mb-2">Comments</h2>
                     <div class="overflow-x-auto">
                         <div class="table-border">
                             <table class="data-table">
                                 <thead class="table-header">
                                     <tr>
                                         <th class="table-cell">No</th>
+                                        <th class="table-cell">Subject </th>
                                         <th class="table-cell">Comment</th>
                                         <th class="table-cell">Category</th>
-                                        <th class="table-cell">Semester Numbers</th>
-                                        <th class="table-cell">Date Added</th>
+                                        <!-- <th class="table-cell">Semester </th>
+                                        <th class="table-cell">Date Added</th> -->
                                     </tr>
                                 </thead>
                                 <tbody class="table-body">
                                     {% for item in comments %}
                                     <tr>
                                         <td class="table-cell">{{ loop.index }}</td>
+                                        <td class="table-cell">{{ item.comment.subject_id }}</td>
                                         <td class="table-cell">{{ item.comment.comment }}</td>
+                                       
                                         <td class="table-cell">
-                                            {% if item.comment.category == 1 %}
-                                                Neutral
-                                            {% elif item.comment.category == 2 %}
-                                                Positive
-                                            {% elif item.comment.category == 0 %}
-                                                Negative
-                                            {% else %}
-                                                Unknown
-                                            {% endif %}
+                                            {% if item.comment.category == 1 %} Neutral
+                                            {% elif item.comment.category == 2 %} Positive
+                                            {% elif item.comment.category == 0 %} Negative
+                                            {% else %} Unknown {% endif %}
                                         </td>
-                                        <td class="table-cell">
-                                            {{ item.ay_sem.ay_name }} <!-- Display semester name -->
-                                        </td>
-                                        <td class="table-cell">{{ item.comment.date_added.strftime('%B %d, %Y') }}</td>
+                                        <!-- <td class="table-cell">{{ item.ay_sem.ay_name }}</td>
+                                        <td class="table-cell">{{ item.comment.date_added.strftime('%B %d, %Y') }}</td> -->
                                     </tr>
                                     {% else %}
                                     <tr>
@@ -124,39 +156,103 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="flex items-center justify-between mt-6">
-                            {% if sentiment_comments.has_prev %}
-                                <a href="{{ url_for('faculty_comments', id=faculty.id, page=sentiment_comments.prev_num, semester=selected_semester) }}" class="flex items-center px-5 py-2 text-sm text-gray-700 bg-white border rounded-md gap-x-2 hover:bg-gray-100">
-                                    <span>Previous</span>
-                                </a>
-                            {% endif %}
-                
-                            <div class="items-center hidden md:flex gap-x-3">
-                                {% for page_num in range(1, sentiment_comments.pages + 1) %}
-                                    {% if page_num == sentiment_comments.page %}
-                                        <a href="#" class="px-2 py-1 text-sm text-white bg-green-800 rounded-md">{{ page_num }}</a>
-                                    {% else %}
-                                        <a href="{{ url_for('faculty_comments', id=faculty.id, page=page_num, semester=selected_semester) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">{{ page_num }}</a>
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-                
-                            {% if sentiment_comments.has_next %}
-                                <a href="{{ url_for('faculty_comments', id=faculty.id, page=sentiment_comments.next_num, semester=selected_semester) }}" class="flex items-center px-5 py-2 text-sm text-yellow-700 bg-white border rounded-md gap-x-2 hover:bg-yellow-400">
-                                    <span>Next</span>
-                                </a>
-                            {% endif %}
-                            <div class="text-right mt-4">
-                                <a href="{{ request.referrer }}" class="font-semibold text-green-600 hover:underline">Back</a>
-                            </div>
-                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hidden Print Layout -->
+            <div id="printLayout" style="display: none;">
+                <div class="header border-b-2 mb-5">
+                    <div class="header-content text-center p-4">
+                        <h1>ANALYZING AND VISUALIZING COMMENTS IN CMU FACULTY EVALUATION SYSTEM</h1>
+                        <p class="primary">Empowering insights for continuous improvement</p>
                     </div>
                 </div>
                 
+                <div class="content mb-5">
+                    <div class="faculty-info text-center mx-auto p-4">
+                        <h2 class="mb-2">Overall Results of Faculty Teaching Performance <br> {{ default_semester.ay_name }}</h2>
+                        <p class="mb-2">Full Name: {{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.</p>
+                        <p class="mb-2">College: {{ college.college_name }}</p>
+                        <p class="mb-2">Department: {{ department.department_name }}</p>
+                    </div>
+                    
+                    <div class="faculty-result mb-6 p-2 border-gray-200 rounded-lg shadow-sm">
+                        <h2 class="text-xl font-semibold primary mb-4">Sentiment Results</h2>
+                        <p class="secondary mb-2">Total Comments: <span class="font-medium">{{ total_comments }}</span> Comments</p>
+                        <p class="positive mb-2">Positive: <span class="font-medium">{{ positive_comments }}</span> Comments</p>
+                        <p class="negative mb-2">Negative: <span class="font-medium">{{ negative_comments }}</span> Comments</p>
+                        <p class="neutral mb-2">Neutral: <span class="font-medium">{{ neutral_comments }}</span> Comments</p>
+                    </div>
+
+
+                    <div class="mt-4 mb-5">
+                        <h2 class="text-lg font-bold primary mb-2">Student Statistics Overview</h2>
+                        <div class="overflow-x-auto">
+                            <div class="table-border">
+                                <table class="data-table w-full border-collapse text-sm">
+                                    <thead class="table-header bg-gray-100">
+                                        <tr>
+                                            <!-- <th class="table-cell">No</th> -->
+                                            <th class="table-cell px-2 py-1 border border-gray-300">Subject</th>
+                                            <th class="table-cell px-2 py-1 border border-gray-300">Total Student</th>
+                                            <th class="table-cell px-2 py-1 border border-gray-300">With Comments</th>
+                                            <th class="table-cell px-2 py-1 border border-gray-300">Without Comments</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="table-body">
+                                        {% for subject in subjects.values() %}
+                                        <tr class="odd:bg-white even:bg-gray-50">
+                                            <!-- <td class="table-cell px-2 py-1">{{ loop.index }}</td> -->
+                                            <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.subject_id }}</td>
+                                            <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.student_num }}</td>
+                                            <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.comments | length }}</td>
+                                            <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.student_num - (subject.comments | length) }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 mb-5">
+                        <h2 class="text-lg font-bold primary mb-2">Student Statistics Overview</h2>
+                        <table class="comments-table">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Comment</th>
+                                    <th>Category</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in comments %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td>{{ item.comment.comment }}</td>
+                                    <td>
+                                        {% if item.comment.category == 1 %} Neutral
+                                        {% elif item.comment.category == 2 %} Positive
+                                        {% elif item.comment.category == 0 %} Negative
+                                        {% else %} Unknown {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="3">No comments available for this semester.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
+            
+
+                
+         
         </main>
     </div>
-
-
 </div>
-{% endblock content %} 
+{% endblock %}

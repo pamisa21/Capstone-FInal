@@ -10,10 +10,29 @@
             </div>
             
             <nav class="flex-1 mx-2 space-y-6">
-                <a class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('dashboard') %}active-link{% endif %}" href="{{ url_for('dashboard') }}">
+                <a class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('dashboard') %}active-link{% endif %}" id="dashboardLink">
                     <i class="ph ph-house-line w-5 h-5"></i>
                     <span class="mx-2 text-sm font-medium">Dashboard</span>
                 </a>
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        const dashboardLink = document.getElementById("dashboardLink");
+                        
+                        // Get the selected values from localStorage or query parameters
+                        let selectedSemester = localStorage.getItem("selectedSemester") || new URLSearchParams(window.location.search).get('ay_id');
+                        let selectedCollege = localStorage.getItem("selectedCollege") || new URLSearchParams(window.location.search).get('college_id');
+                        let selectedDepartment = localStorage.getItem("selectedDepartment") || new URLSearchParams(window.location.search).get('department_id');
+                
+                        // Build the URL with query parameters
+                        let url = `/dashboard?ay_id=${selectedSemester || ''}&college_id=${selectedCollege || ''}&department_id=${selectedDepartment || ''}`;
+                        
+                        // Update the href of the dashboard link
+                        dashboardLink.href = url;
+                    });
+                </script>
+                
+                
+                
                 <a class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('evaluate') %}active-link{% endif %}" href="{{ url_for('evaluate') }}">
                     <i class="ph ph-clipboard w-5 h-5"></i>
                     <span class="mx-2 text-sm font-medium">Evaluate</span>

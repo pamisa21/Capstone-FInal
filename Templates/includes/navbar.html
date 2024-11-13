@@ -1,3 +1,4 @@
+
 <div>
     <section class="relative left-5">
         <!-- Navbar -->
@@ -11,35 +12,44 @@
 
                 <!-- Icon Section (left side) -->
                 <div class="flex items-center space-x-5 ml-auto">
-                    <div class="flex items-center space-x-5 ml-auto">
-                        <select id="semesterDropdown" name="semester" class=" appearance-none" disabled>
+                    <div class="flex items-center space-x-5 ml-auto  ">
+                        <select id="navbarsemesterDropdown" class="px-4 py-2 text-sm w-full  ">
                             {% for semester in all_semesters %}
-                                <option value="{{ semester.ay_id }}" {% if semester.ay_id == default_semester.ay_id %}selected{% endif %}>
+                                <option value="{{ semester.ay_id }}" {% if semester.ay_id == selected_semester %} selected {% endif %}>
                                     {{ semester.ay_name }}
                                 </option>
                             {% endfor %}
                         </select>
                     </div>
                     
-                        <script>
-                            document.addEventListener("DOMContentLoaded", function() {
-                                const dropdown = document.getElementById("semesterDropdown");
-                                const savedSemester = localStorage.getItem("selectedSemester");
-                        
-                                // If a semester is saved in localStorage, set it as the default
-                                if (savedSemester) {
-                                    dropdown.value = savedSemester;
-                                }
-                        
-                                // On change, store the selected semester in localStorage and update dashboard dropdown
-                                dropdown.addEventListener("change", function() {
-                                    const selectedSemester = dropdown.value;
-                                    localStorage.setItem("selectedSemester", selectedSemester);
-                                    document.cookie = `selectedSemester=${selectedSemester}; path=/`; // Store in cookie
-                                    window.location.href = `${window.location.pathname}?semester=${selectedSemester}`;  // Reload the page with selected semester
-                                });
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            const dashboardDropdown = document.getElementById("navbarsemesterDropdown");
+                            let selectedSemester = localStorage.getItem("selectedSemester");  // From localStorage
+                            
+                            // If there's no value in localStorage, check the URL query parameter
+                            if (!selectedSemester) {
+                                const urlParams = new URLSearchParams(window.location.search);
+                                selectedSemester = urlParams.get('ay_id');
+                            }
+                    
+                            // If there's a selected semester, set it in both localStorage and the dropdown
+                            if (selectedSemester) {
+                                dashboardDropdown.value = selectedSemester;
+                                localStorage.setItem("selectedSemester", selectedSemester);  // Save it to localStorage
+                            }
+                    
+                            // On change, update localStorage and reload the page with the selected semester
+                            dashboardDropdown.addEventListener("change", function() {
+                                const selectedSemester = dashboardDropdown.value;
+                                localStorage.setItem("selectedSemester", selectedSemester);  // Save to localStorage
+                                document.cookie = `selectedSemester=${selectedSemester}; path=/`;  // Store in cookie
+                                const currentPath = window.location.pathname;  // Get the current path
+                                window.location.href = `${currentPath}?ay_id=${selectedSemester}`;  // Reload with selected semester in query
                             });
-                        </script>
+                        });
+                    </script>
+                    
                     
                     
                     

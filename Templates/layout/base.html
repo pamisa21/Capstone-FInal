@@ -48,7 +48,8 @@
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="{{ url_for('static', filename='js/account.js') }}"></script>
+<script src="{{ url_for('static', filename='js/account.js') }}"></script>   
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const flashModal = document.getElementById('flash-modal');
@@ -56,13 +57,17 @@
 
         if (flashModal) {
             flashModal.classList.remove('hidden'); // Show modal when there are messages
+            
+            // Ensure closeModalButton exists before adding the event listener
+            if (closeModalButton) {
+                closeModalButton.addEventListener('click', function() {
+                    flashModal.classList.add('hidden'); // Hide modal on button click
+                });
+            }
         }
-
-        closeModalButton.addEventListener('click', function() {
-            flashModal.classList.add('hidden'); // Hide modal on button click
-        });
     });
 </script>
+
 {% block script %}
 <!-- Page-specific scripts go here -->  
 {% endblock script %}

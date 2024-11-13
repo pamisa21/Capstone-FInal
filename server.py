@@ -11,7 +11,10 @@ from models.student_model import Student
 from models.ay_model import AY_SEM
 from models.subject_model import Subject
 from models.extensions import db
+
 from datetime import datetime
+
+
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -24,6 +27,7 @@ app.config['LOADING_GIF'] = '/static/img/Orange and Purple Vibrant Colorful Geom
 
 # Initialize SQLAlchemy with the app
 db.init_app(app)
+
 
 # server.py
 

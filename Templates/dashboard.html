@@ -16,13 +16,14 @@
     <div class="flex flex-1">
         {% include "includes/sidebar.html" %}
 
-        <main class="flex-1 p-4 mx-5 mt-20 ml-2 md:ml-60">
+        <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60">  
             <div id="dashboard" class="p-6">
-                <!-- Dashboard Header with Filter Section -->
-                <div class="flex flex-col md:flex-row justify-between items-center mb-2">
+                <!-- Dashboard Header with Filter Section -->   
+                <div class="flex flex-col md:flex-row justify-between items-center mb-5 ">
                     <h1 class="text-2xl font-bold">Dashboard</h1>
-                    <button class="border border-gray-300 rounded-md px-4 py-2 text-sm  hvr-underline-from-center focus:outline-none">
-                        Print Results
+                    <!-- Download PDF button -->
+                    <button id="printButton" class="border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none">
+                        <a id="printLink" href="{{ url_for('print_dashboard') }}">Print Overall Results</a>
                     </button>
                 </div>
 
@@ -37,35 +38,6 @@
                         </select>
                     </div>
                 
-                    <script>
-                        document.addEventListener("DOMContentLoaded", function() {
-                            const dashboardDropdown = document.getElementById("dashboardSemesterDropdown");
-                            let selectedSemester = localStorage.getItem("selectedSemester");  // From localStorage
-                            
-                            // If there's no value in localStorage, check the URL query parameter
-                            if (!selectedSemester) {
-                                const urlParams = new URLSearchParams(window.location.search);
-                                selectedSemester = urlParams.get('ay_id');
-                            }
-                
-                            // If there's a selected semester, set it in both localStorage and the dropdown
-                            if (selectedSemester) {
-                                dashboardDropdown.value = selectedSemester;
-                                localStorage.setItem("selectedSemester", selectedSemester);  // Save it to localStorage
-                            }
-                
-                            // On change, update localStorage and reload the page with the selected semester
-                            dashboardDropdown.addEventListener("change", function() {
-                                const selectedSemester = dashboardDropdown.value;
-                                localStorage.setItem("selectedSemester", selectedSemester);  // Save to localStorage
-                                document.cookie = `selectedSemester=${selectedSemester}; path=/`;  // Store in cookie
-                                window.location.href = `/dashboard?ay_id=${selectedSemester}`;  // Reload the page with selected semester
-                            });
-                        });
-                    </script>
-                    
-                    
-
                     <!-- College Dropdown -->
                     <div class="flex items-center   ">
                         <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black" onchange="updateDashboard()">
@@ -88,210 +60,323 @@
                    
                 </div>
 
-                <script>
-                    document.addEventListener("DOMContentLoaded", function() {
-                        const departmentDropdown = document.getElementById("filterDepartment");
-                        const savedDepartment = localStorage.getItem("selectedDepartment");
-                
-                        // Load last selected department if available
-                        if (savedDepartment) {
-                            departmentDropdown.value = savedDepartment;
-                        }
-                
-                        // Save selected department to localStorage and refresh the page on change
-                        departmentDropdown.addEventListener("change", function() {
-                            localStorage.setItem("selectedDepartment", departmentDropdown.value);
-                            updateDashboard(); // Call the function to update the dashboard with the selected department
-                        });
-                    });
-                
-                    function updateDashboard() {
-                        const selectedCollegeId = document.getElementById("filterCollege").value;
-                        const selectedSemester = document.getElementById("dashboardSemesterDropdown").value;
-                        const selectedDepartmentId = document.getElementById("filterDepartment").value;
-                
-                        window.location.href = `/dashboard?college_id=${selectedCollegeId}&ay_id=${selectedSemester}&department_id=${selectedDepartmentId}`; // Reload with college_id, ay_id, and department_id
-                    }
-                </script>
-
-                            <!-- Total Comments and Sentiment Count Row -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <!-- Total Comments Card -->
-                <div class="bg-white rounded-lg shadow-md p-8 flex flex-col relative col-span-1 md:col-span-2   ">
-                    <h2 class="text-lg font-semibold">Total Comments</h2>
-                    <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
-                    <a href="/comments" class="text-sm absolute top-0 right-0 mt-4 mr-2">View Comments!</a>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 col-span-1 md:col-span-2  ">
-                    <div class="bg-green-100 rounded-lg shadow-md p-6 flex flex-col items-center hvr-grow">
-                        <span class="material-icons primary">thumb_up</span>
-                        <h3 class="text-xl font-semibold mt-2">Positive</h3>
-                        <p class="text-3xl font-bold">{{ positive_count }}</p>
-                    </div>
-
-                    <div class="bg-gray-100 rounded-lg shadow-md p-6 flex flex-col items-center hvr-grow">
-                        <span class="material-icons primary">more_horiz</span>
-                        <h3 class="text-xl font-semibold mt-2">Neutral</h3>
-                        <p class="text-3xl font-bold">{{ neutral_count }}</p>
-                    </div>
-
-                    <div class="bg-[#F1BE48] bg-opacity-10 rounded-lg shadow-md p-6 flex flex-col items-center hvr-grow">
-                        <span class="material-icons text-[#F1BE48]">thumb_down</span>
-                        <h3 class="text-xl font-semibold mt-2 text-[#F1BE48]">Negative</h3>
-                        <p class="text-3xl font-bold">{{ negative_count }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sentiment Analysis Card (Percentage) -->
-            <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col md:flex-row mt-6">
-                <div class="flex-grow">
-                    <h2 class="text-lg font-semibold mb-4">Sentiment Analysis this semester</h2>
+                <section>
+                    <div  class="grid grid-cols-1 md:grid-cols-[70%,30%] gap-8">
+                        
+                        <!-- Column 1: Comments Summary -->
+                        <div class="space-y-5 ">
+                            <!-- Total Comments Card -->
+                            <div class="bg-white rounded-lg shadow-md p-8 flex flex-col relative border-2">
+                                <h2 class="text-lg font-semibold">Total Comments</h2>
+                                <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
+                                <a href="/comments" class="text-sm absolute top-0 right-0 mt-4 mr-2">View Comments!</a>
+                            </div>
+                            
+                            <!-- Positive, Neutral, and Negative Cards -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 rounded-lg">
+                                <div class="bg-green-100 rounded-lg shadow-md p-6 flex flex-col items-center">
+                                    <span class="material-icons primary">thumb_up</span>
+                                    <h3 class="text-xl font-semibold mt-2">Positive</h3>
+                                    <p class="text-3xl font-bold">{{ positive_count }}</p>
+                                </div>
+                                
+                                <div class="bg-gray-100 rounded-lg shadow-md p-6 flex flex-col items-center">
+                                    <span class="material-icons primary">more_horiz</span>
+                                    <h3 class="text-xl font-semibold mt-2">Neutral</h3>
+                                    <p class="text-3xl font-bold">{{ neutral_count }}</p>
+                                </div>
+                                
+                                <div class="bg-[#F1BE48] bg-opacity-10 rounded-lg shadow-md p-6 flex flex-col items-center">
+                                    <span class="material-icons text-[#F1BE48]">thumb_down</span>
+                                    <h3 class="text-xl font-semibold mt-2 text-[#F1BE48]">Negative</h3>
+                                    <p class="text-3xl font-bold">{{ negative_count }}</p>
+                                </div>
+                            </div>
+                            <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col md:flex-row mt-6 border-2">
+                                    <div class="flex-grow">
+                                        <h2 class="text-lg font-semibold mb-4">Sentiment Analysis this semester</h2>
+                                        
+                                        <!-- Positive Sentiment -->
+                                        
+                                        <div class="flex items-center justify-between mb-2">
+                                            <div class="flex items-center">
+                                                <span class="material-icons text-[#083B0A]">thumb_up</span>
+                                                <span class="ml-2">Positive</span>
+                                            </div>
+                                            <p class="text-3xl font-bold">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full mt-2">
+                                            <div class="bg-[#083B0A] h-2 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                                        </div>
                     
-                    <!-- Positive Sentiment -->
-                                     <!-- Positive Sentiment -->
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="flex items-center">
-                            <span class="material-icons text-[#083B0A]">thumb_up</span>
-                            <span class="ml-2">Positive</span>
-                        </div>
-                        <p class="text-3xl font-bold">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full mt-2">
-                        <div class="bg-[#083B0A] h-2 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                    </div>
-
-                    <!-- Neutral Sentiment -->
-                    <div class="flex items-center justify-between mb-2 mt-4">
-                        <div class="flex items-center">
-                            <span class="material-icons text-gray-500">more_horiz</span>
-                            <span class="ml-2">Neutral</span>
-                        </div>
-                        <p class="text-3xl font-bold">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full mt-2">
-                        <div class="bg-gray-400 h-2 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                    </div>
-
-                    <!-- Negative Sentiment -->
-                    <div class="flex items-center justify-between mb-2 mt-4">
-                        <div class="flex items-center">
-                            <span class="material-icons text-[#F1BE48]">thumb_down</span>
-                            <span class="ml-2">Negative</span>
-                        </div>
-                        <p class="text-3xl font-bold">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full mt-2">
-                        <div class="bg-[#F1BE48] h-2 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                    </div>
-
+                                        <!-- Neutral Sentiment -->
+                                        <div class="flex items-center justify-between mb-2 mt-4">
+                                            <div class="flex items-center">
+                                                <span class="material-icons text-gray-500">more_horiz</span>
+                                                <span class="ml-2">Neutral</span>
+                                            </div>
+                                            <p class="text-3xl font-bold">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full mt-2">
+                                            <div class="bg-gray-400 h-2 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                                        </div>
                     
-                </div>
-                  <!-- Pie Chart -->
-                  <div class="mt-4 md:mt-0 md:ml-6">
-                    <canvas id="sentimentPieChart" width="200" height="200"></canvas>
-                </div>
-                
-                <script>
-                    document.addEventListener('DOMContentLoaded', () => {
-                        const ctx = document.getElementById('sentimentPieChart');
-                        if (ctx) {
-                            // Check if there are any comments
-                            const totalComments = {{ total_comments }};
-                            let chartData, chartColors, chartLabels;
-                
-                            if (totalComments === 0) {
-                                // Show "No Data" message in blue
-                                chartData = [1]; // single segment for "No Data"
-                                chartColors = ['#3182ce']; // blue color
-                                chartLabels = ['No Data'];
-                            } else {
-                                // Use actual sentiment data
-                                chartData = [
-                                    {{ positive_count }},
-                                    {{ neutral_count }},
-                                    {{ negative_count }}
-                                ];
-                                chartColors = ['#083B0A', '#a0aec0', '#F1BE48'];
-                                chartLabels = ['Positive', 'Neutral', 'Negative'];
-                            }
-                
-                            // Initialize Chart.js pie chart with the computed data
-                            new Chart(ctx.getContext('2d'), {
-                                type: 'pie',
-                                data: {
-                                    labels: chartLabels,
+                                        <!-- Negative Sentiment -->
+                                        <div class="flex items-center justify-between mb-2 mt-4">
+                                            <div class="flex items-center">
+                                                <span class="material-icons text-[#F1BE48]">thumb_down</span>
+                                                <span class="ml-2">Negative</span>
+                                            </div>
+                                            <p class="text-3xl font-bold">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full mt-2">
+                                            <div class="bg-[#F1BE48] h-2 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                                        </div>
+                                        
+                                        
+                                    </div>
+                                    
+                            
+                                <!-- Pie Chart -->
+                                <div class="mt-4 md:mt-0 md:ml-6">
+                                    <canvas id="sentimentPieChart" width="150" height="150"></canvas>
+                                </div>
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', () => {
+                                        const ctx = document.getElementById('sentimentPieChart');
+                                        if (ctx) {
+                                            // Check if there are any comments
+                                            const totalComments = {{ total_comments }};
+                                            let chartData, chartColors, chartLabels;
+                                
+                                            if (totalComments === 0) {
+                                                // Show "No Data" message in blue
+                                                chartData = [1]; // single segment for "No Data"
+                                                chartColors = ['#3182ce']; // blue color
+                                                chartLabels = ['No Data'];
+                                            } else {
+                                                // Use actual sentiment data
+                                                chartData = [
+                                                    {{ positive_count }},
+                                                    {{ neutral_count }},
+                                                    {{ negative_count }}
+                                                ];
+                                                chartColors = ['#083B0A', '#a0aec0', '#F1BE48'];
+                                                chartLabels = ['Positive', 'Neutral', 'Negative'];
+                                            }
+                                
+                                            // Initialize Chart.js pie chart with the computed data
+                                            new Chart(ctx.getContext('2d'), {
+                                                type: 'pie',
+                                                data: {
+                                                    labels: chartLabels,
+                                                    datasets: [{
+                                                        data: chartData,
+                                                        backgroundColor: chartColors,
+                                                        hoverOffset: 4
+                                                    }]
+                                                },
+                                                options: {
+                                                    responsive: true,
+                                                    maintainAspectRatio: false,
+                                                    plugins: {
+                                                        legend: {
+                                                            display: true,
+                                                            position: 'top',
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    });
+                                </script>
+                            </div>
+                            <section>
+                                <div id="faculty-list" class="hidden mt-4">
+                                    <h2 class="text-lg font-semibold mb-4">List of Faculty</h2>
+                                
+                                    <div class="overflow-x-auto">
+                                        <div class="table-wrapper">
+                                            <div class="table-border">
+                                                <table class="data-table w-full table-auto">
+                                                    <thead class="table-header bg-gray-100">
+                                                        <tr>
+                                                            <th class="table-cell px-4 py-2 text-left">&nbsp;</th>
+                                                            <th class="table-cell px-4 py-2 text-left">Faculty ID</th>
+                                                            <th class="table-cell px-4 py-2 text-left">Complete Name & Email</th>
+                                                            <th class="table-cell px-4 py-2 text-center">Department</th>
+                                                            <th class="table-cell px-4 py-2 text-center">College</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="table-body">
+                                                        {% for faculty in filtered_faculty %}
+                                                            <tr class="border-t">
+                                                                <td class="table-cell px-4 py-2 text-left">{{ loop.index }}</td> <!-- Count -->
+                                                                <td class="table-cell px-4 py-2">{{ faculty.faculty_id }}</td>
+                                                                <td class="table-cell px-4 py-2">
+                                                                    {{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.<br>
+                                                                    <span class="email text-sm text-gray-600">{{ faculty.email }}</span>
+                                                                </td>
+                                                                <td class="table-cell px-4 py-2 text-center">{{ faculty.department.department_name }}</td>
+                                                                <td class="table-cell px-4 py-2 text-center">{{ faculty.department.college_id }}</td>
+                                                                <td class="px-4 py-4 text-sm whitespace-nowrap">
+                                                                    <div class="flex space-x-2 ">
+                                                                        <a href="{{ url_for('view_faculty', faculty_id=faculty.faculty_id) }}" title="View" class="primary">View</a>
+                                                                        <a href="{{ url_for('faculty_comments', faculty_id=faculty.faculty_id) }}" title="Comments" class="secondary">Results</a>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        {% else %}
+                                                            <tr>
+                                                                <td colspan="4" class="text-center px-4 py-2">No Faculty Found</td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            
+                        </div>
+                        
+                        <!-- Column 2: Sentiment Analysis Chart -->
+                        <div>
+                            
+                            <div class="bg-white p-1  border-2 shadow-md rounded-lg ">
+                                <h2 class="primary text-lg font-semibold p-2 "> Cmu  Overall Results</h2>
+                                <div class="flex justify-center items-center   ">
+                                    <canvas  id="sentimentDoughnutChart"></canvas>
+                                </div>
+                            </div>
+                           
+                            
+                      
+                            <div class="bg-white rounded-lg shadow-md p-2 mt-5 border-2">
+                            
+                                <div class="flex justify-center items-center">
+                                    <canvas id="sentimentBarChart" width="200px" height="200px"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                        <script>
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const ctx = document.getElementById('sentimentDoughnutChart').getContext('2d');
+                                
+                                // Get the overall sentiment data from Flask template variables
+                                const overallPositiveCount = {{ overall_positive_count | tojson }};
+                                const overallNegativeCount = {{ overall_negative_count | tojson }};
+                                const overallNeutralCount = {{ overall_neutral_count | tojson }};
+                                
+                                // Doughnut chart data
+                                const data = {
+                                    labels: ['Positive', 'Negative', 'Neutral'],
                                     datasets: [{
-                                        data: chartData,
-                                        backgroundColor: chartColors,
+                                        label: 'Sentiment Breakdown',
+                                        data: [overallPositiveCount, overallNegativeCount, overallNeutralCount],
+                                        backgroundColor: [
+                                            'rgb(34, 193, 195)',    // Positive - teal
+                                            'rgb(255, 99, 132)',    // Negative - red
+                                            'rgb(255, 205, 86)'     // Neutral - yellow
+                                        ],
                                         hoverOffset: 4
                                     }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    plugins: {
-                                        legend: {
-                                            display: true,
-                                            position: 'top',
-                                        }
+                                };
+                        
+                                // Configuration for the doughnut chart
+                                const config = {
+                                    type: 'doughnut',
+                                    data: data,
+                                    options: {
+                                        responsive: false, // Disable responsiveness to keep the specified size
                                     }
+                                };
+                        
+                                // Render the doughnut chart
+                                new Chart(ctx, config);
+                            });
+                        </script>
+                        
+                        
+                        
+                        
+                        <script>
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const ctxBar = document.getElementById('sentimentBarChart');
+                                if (ctxBar) {
+                                    const semesterLabels = {{ semester_labels | tojson }};
+                                    const positiveData = {{ positive_data | tojson }};
+                                    const negativeData = {{ negative_data | tojson }};
+                                    const neutralData = {{ neutral_data | tojson }};
+                                    
+                                    // Limit the data to a maximum of 6
+                                    const maxDataPoints = 6;
+                                    const limitedSemesterLabels = semesterLabels.slice(-maxDataPoints);
+                                    const limitedPositiveData = positiveData.slice(-maxDataPoints);
+                                    const limitedNegativeData = negativeData.slice(-maxDataPoints);
+                                    const limitedNeutralData = neutralData.slice(-maxDataPoints);
+
+                                    // Check if the number of labels exceeds 6, and adjust the font size accordingly
+                                    const fontSize = limitedSemesterLabels.length > 6 ? 10 : 12;
+                        
+                                    new Chart(ctxBar, {
+                                        type: 'bar',
+                                        data: {
+                                            labels: limitedSemesterLabels,
+                                            datasets: [
+                                                {
+                                                    label: 'Positive Sentiment',
+                                                    data: limitedPositiveData,
+                                                    backgroundColor: '#083B0A',
+                                                },
+                                                {
+                                                    label: 'Negative Sentiment',
+                                                    data: limitedNegativeData,
+                                                    backgroundColor: '#F1BE48',
+                                                },
+                                                {
+                                                    label: 'Neutral Sentiment',
+                                                    data: limitedNeutralData,
+                                                    backgroundColor: '#08302',
+                                                }
+                                            ]
+                                        },
+                                        options: {
+                                            responsive: true,
+                                            scales: {
+                                                x: { 
+                                                    beginAtZero: true,
+                                                    ticks: {
+                                                        font: {
+                                                            size: fontSize, // Dynamically set font size for labels
+                                                        }
+                                                    }
+                                                },
+                                                y: {
+                                                    beginAtZero: true
+                                                }
+                                            }
+                                        }
+                                    });
                                 }
                             });
-                        }
-                    });
-                </script>
-                
-            </div>
-              <!-- Sentiment Bar Chart -->
-              <div class="bg-white rounded-lg shadow-md mt-8 p-8">
-                <h2 class="text-xl font-semibold mb-6">Sentiment Analysis </h2>
-                <canvas id="sentimentBarChart" width="400" height="200"></canvas>
-                <script>
-                    document.addEventListener('DOMContentLoaded', () => {
-                        const ctxBar = document.getElementById('sentimentBarChart');
-                        if (ctxBar) {
-                            const semesterLabels = {{ semester_labels | tojson }};
-                            const positiveData = {{ positive_data | tojson }};
-                            const negativeData = {{ negative_data | tojson }};
-                            
-                            new Chart(ctxBar, {
-                                type: 'bar',
-                                data: {
-                                    labels: semesterLabels,
-                                    datasets: [
-                                        {
-                                            label: 'Positive Sentiment',
-                                            data: positiveData,
-                                            backgroundColor: '#083B0A',
-                                        },
-                                        {
-                                            label: 'Negative Sentiment',
-                                            data: negativeData,
-                                            backgroundColor: '#F1BE48',
-                                        }
-                                    ]
-                                },
-                                options: {
-                                    responsive: true,
-                                    scales: {
-                                        x: { 
-                                            beginAtZero: true 
-                                        },
-                                        y: {
-                                            beginAtZero: true
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    });
-                </script>
+                        </script>
+                        
+                       
+                    </div>  
+                    
+                </section>                 
+
             </div>
             
             
             
+
+           
+           
             
         </main>
     </div>

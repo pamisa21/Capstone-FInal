@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Dashboard</title>
+    <style>
+        @media print {
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+            }
+            .container {
+                width: 100%;
+                padding: 20px;
+            }
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+            }
+            .table th, .table td {
+                padding: 8px;
+                border: 1px solid #ddd;
+            }
+            .table th {
+                background-color: #f4f4f4;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+    <!-- Include jsPDF library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Include jsPDF AutoTable plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.24/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Dashboard Report - Print Version</h1>
+        <h3>Total Comments: {{ total_comments }}</h3>
+        <h3>Positive Comments: {{ positive_count }}</h3>
+        <h3>Neutral Comments: {{ neutral_count }}</h3>
+        <h3>Negative Comments: {{ negative_count }}</h3>
+
+        <h3>Semester Sentiment Data:</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Semester</th>
+                    <th>Positive</th>
+                    <th>Neutral</th>
+                    <th>Negative</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in semester_sentiment_data %}
+                <tr>
+                    <td>{{ data.ay_name }}</td>
+                    <td>{{ data.positive }}</td>
+                    <td>{{ data.neutral }}</td>
+                    <td>{{ data.negative }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Download PDF button -->
+        <button onclick="downloadPDF()" class="border border-gray-300 rounded-md px-4 py-2 text-sm hvr-underline-from-center focus:outline-none">
+            Download PDF
+        </button>
+    </div>
+
+    <script>
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Set title and content
+            doc.text('Dashboard Report - Print Version', 20, 20);
+            doc.text('Total Comments: {{ total_comments }}', 20, 30);
+            doc.text('Positive Comments: {{ positive_count }}', 20, 40);
+            doc.text('Neutral Comments: {{ neutral_count }}', 20, 50);
+            doc.text('Negative Comments: {{ negative_count }}', 20, 60);
+
+            doc.text('Semester Sentiment Data:', 20, 70);
+
+            const tableData = [
+                {% for data in semester_sentiment_data %}
+                    ['{{ data.ay_name }}', '{{ data.positive }}', '{{ data.neutral }}', '{{ data.negative }}']{% if not loop.last %},{% endif %}
+                {% endfor %}
+            ];
+
+            doc.autoTable({
+                head: [['Semester', 'Positive', 'Neutral', 'Negative']],
+                body: tableData,
+                startY: 80
+            });
+
+            // Save the PDF
+            doc.save('dashboard_report.pdf');
+        }
+    </script>
+</body>
+</html> 

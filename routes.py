@@ -14,6 +14,7 @@ import string
 import re
 from sqlalchemy import func, case
 
+
 # Load model and tokenizer
 sentiment_pipeline = pipeline("sentiment-analysis", model="./ai_model/fine_tuned_twitter_xlm-roberta_model_bv2.3")
 
@@ -68,7 +69,7 @@ def start_sentiment():
     
     # Commit the changes to the database
     db.session.commit()
-    
+        
     flash('Sentiment analysis completed successfully.', 'success')
     return redirect(url_for('analys'))
 
@@ -170,20 +171,21 @@ def logout():
 
 
 # Dashboard
-#ssa
+#final
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
     # Check if the user is logged in
     if 'username' in session:
         username = session['username']
+        all_faculty = Faculty.query.all()  # Ensure this query works with your model
 
         # Get the selected ay_id, college_id, and department_id from query parameters
         selected_ay_id = request.args.get('ay_id')  # This will come from the navbar dropdown
         selected_college_id = request.args.get('college_id')
         selected_department_id = request.args.get('department_id')
 
-        # Base query for comments
+        # Base query for comments (with existing filters)
         query = (
             db.session.query(Comment)
             .join(Faculty)
@@ -204,11 +206,23 @@ def dashboard():
         if selected_department_id:
             query = query.filter(Department.department_id == selected_department_id)
 
-        # Count total comments and sentiment counts
+        # Count total comments and sentiment counts based on filters
         total_comments = query.count()
         positive_count = query.filter(Comment.category == 2).count()  # Count positive comments
         neutral_count = query.filter(Comment.category == 1).count()    # Count neutral comments
         negative_count = query.filter(Comment.category == 0).count()  # Count negative comments
+
+        # Overall sentiment counts (without filtering)
+        overall_query = (
+            db.session.query(Comment)
+            .join(Faculty)
+            .join(Department)
+            .join(College)
+            .filter(Comment.category != 3)  # Exclude comments with category 3
+        )
+        overall_positive_count = overall_query.filter(Comment.category == 2).count() if overall_query else 0  # Overall positive comments
+        overall_neutral_count = overall_query.filter(Comment.category == 1).count() if overall_query else 0   # Overall neutral comments
+        overall_negative_count = overall_query.filter(Comment.category == 0).count() if overall_query else 0  # Overall negative comments
 
         # Query sentiment data for each semester
         semester_sentiments = (
@@ -247,8 +261,16 @@ def dashboard():
         # Fetch departments based on selected college
         selected_departments = Department.query.filter_by(college_id=selected_college_id).all() if selected_college_id else []
 
+        # Filter faculty based on selected college and department
+        filtered_faculty = Faculty.query.join(Department).filter(
+            Department.department_id == selected_department_id,
+            Department.college_id == selected_college_id
+        ).all() if selected_college_id and selected_department_id else []
+
         return render_template(
             'dashboard.html',
+            all_faculty=all_faculty,
+            filtered_faculty=filtered_faculty,
             username=username,
             total_comments=total_comments,
             positive_count=positive_count,
@@ -260,15 +282,114 @@ def dashboard():
             default_semester=selected_ay_id,
             selected_college=selected_college_id,
             selected_department=selected_department_id,
-            semester_sentiment_data=semester_sentiment_data,  
-            semester_labels=semester_labels,  
-            positive_data=positive_data,      
+            semester_sentiment_data=semester_sentiment_data,
+            semester_labels=semester_labels,
+            positive_data=positive_data,
             neutral_data=neutral_data,
-            negative_data=negative_data      
+            negative_data=negative_data,
+            overall_positive_count=overall_positive_count,  # Overall positive count
+            overall_neutral_count=overall_neutral_count,    # Overall neutral count
+            overall_negative_count=overall_negative_count   # Overall negative count
         )
 
     return redirect(url_for('login'))
 
+
+
+@app.route('/print_dashboard', methods=['GET'])
+def print_dashboard():
+    # Check if the user is logged in
+    if 'username' in session:
+        username = session['username']
+        all_faculty = Faculty.query.all()
+
+        # Get the selected ay_id, college_id, and department_id from query parameters
+        selected_ay_id = request.args.get('ay_id')
+        selected_college_id = request.args.get('college_id')
+        selected_department_id = request.args.get('department_id')
+
+        # Base query for comments
+        query = (
+            db.session.query(Comment)
+            .join(Faculty)
+            .join(Department)
+            .join(College)
+            .filter(Comment.category != 3)  # Exclude comments with category 3
+        )
+
+        # Apply filters if provided
+        if selected_ay_id:
+            query = query.filter(Comment.ay_id == selected_ay_id)
+
+        if selected_college_id:
+            query = query.filter(College.college_id == selected_college_id)
+
+        if selected_department_id:
+            query = query.filter(Department.department_id == selected_department_id)
+
+        # Count total comments and sentiment counts
+        total_comments = query.count()
+        positive_count = query.filter(Comment.category == 2).count()  # Count positive comments
+        neutral_count = query.filter(Comment.category == 1).count()    # Count neutral comments
+        negative_count = query.filter(Comment.category == 0).count()  # Count negative comments
+
+        # Query sentiment data for each semester
+        semester_sentiments = (
+            db.session.query(
+                AY_SEM.ay_name,
+                func.count(case((Comment.category == 2, 1), else_=None)).label("positive"),
+                func.count(case((Comment.category == 1, 1), else_=None)).label("neutral"),
+                func.count(case((Comment.category == 0, 1), else_=None)).label("negative")
+            )
+            .join(Comment, Comment.ay_id == AY_SEM.ay_id)
+            .group_by(AY_SEM.ay_name)
+            .all()
+        )
+
+        # Prepare semester sentiment data
+        semester_sentiment_data = [
+            {
+                "ay_name": row.ay_name,
+                "positive": row.positive,
+                "neutral": row.neutral,
+                "negative": row.negative
+            }
+            for row in semester_sentiments
+        ]
+
+        # Fetch dropdown data
+        colleges = College.query.all()
+        semesters = AY_SEM.query.all()
+
+        # Fetch departments based on selected college
+        selected_departments = Department.query.filter_by(college_id=selected_college_id).all() if selected_college_id else []
+
+        # Filter faculty based on selected college and department
+        filtered_faculty = Faculty.query.join(Department).filter(
+            Department.department_id == selected_department_id,
+            Department.college_id == selected_college_id
+        ).all() if selected_college_id and selected_department_id else []
+
+        # Render the print version of the dashboard
+        return render_template(
+            'print/print_dashboard.html',  # Use a separate template for printing
+            all_faculty=all_faculty,
+            filtered_faculty=filtered_faculty,
+            username=username,
+            total_comments=total_comments,
+            positive_count=positive_count,
+            neutral_count=neutral_count,
+            negative_count=negative_count,
+            colleges=colleges,
+            selected_departments=selected_departments,
+            semesters=semesters,
+            default_semester=selected_ay_id,
+            selected_college=selected_college_id,
+            selected_department=selected_department_id,
+            semester_sentiment_data=semester_sentiment_data
+        )
+
+    return redirect(url_for('login'))
 
 #   Evaluate 
 @app.route('/evaluate', methods=['GET', 'POST'])
@@ -755,10 +876,16 @@ def faculty_comments(faculty_id):
         # Pagination setup
         page = request.args.get('page', 1, type=int)
 
-        # Retrieve all semesters and determine the default semester
-        all_semesters = AY_SEM.query.all()
-        selected_semester = request.args.get('semester') or all_semesters[0].ay_id
-        default_semester = AY_SEM.query.filter_by(ay_id=selected_semester).first()
+        # Retrieve all semesters
+        all_semesters = AY_SEM.query.order_by(AY_SEM.ay_id.desc()).all()
+        
+        # Determine the default semester: URL parameter, cookie, or latest in the database
+        selected_semester = (
+            request.args.get('semester') or 
+            request.cookies.get('selectedSemester') or 
+            (all_semesters[0].ay_id if all_semesters else None)
+        )
+        default_semester_obj = AY_SEM.query.filter_by(ay_id=selected_semester).first()
 
         # Query comments specific to the selected faculty member, join AY_SEM, and filter by ay_id
         comments_query = (
@@ -797,7 +924,7 @@ def faculty_comments(faculty_id):
             neutral_comments=neutral_comments,
             sentiment_comments=comments_paginated,
             all_semesters=all_semesters,
-            default_semester=default_semester
+            default_semester=default_semester_obj
         )
 
     return redirect(url_for('loading_screen', target=url_for('login')))

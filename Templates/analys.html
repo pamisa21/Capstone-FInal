@@ -16,70 +16,32 @@
     <div class="flex flex-1">
         {% include "includes/sidebar.html" %}
 
-        <!-- Main Content Container -->
-        <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60">
+        <!-- Main Content Container --> 
+        <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60">  
 
             <div id="Comments" class="w-100 h-100 mx-auto bg-white rounded-lg shadow-lg p-6"|>
                 <!-- Filter and Search Section -->
                 <div class="flex flex-col mb-3 gap-4">
                     <div class="flex items-center justify-between">
-                        <h1 class="text-2xl font-bold "> New Comments 
-                            <!-- <span class="text-xs text-yellow-500">    
-                            {% if default_semester.semester_number == 1 %}1st Semester
-                            {% elif default_semester.semester_number == 2 %}2nd Semester
-                            {% elif default_semester.semester_number == 3 %}Mid Semester
-                            {% else %}Unknown Semester
-                            {% endif %} {{ default_semester.school_year }}</span>  -->
+                                <h1 class="text-2xl font-bold "> New Comments 
                         </h1>
-                        <!-- <a >
-                            <div class="flex-shrink-0">
-                                <a href="{{ url_for('add_comment') }}" class="start p-2 rounded-md ">Add Comment</a>
-                            </div>
-                        </a> -->
-                        
-                    </div>
-
-                        
-                    <div class="flex flex-col md:flex-row items-center md:items-start gap-4">
-                        <!-- Search Input -->
-                        <div class="flex-grow">
-                            <form method="GET" action="{{ url_for('analys') }}" class="w-full">
-                                <input type="text" name="search" placeholder="Search comments..." 
-                                    class="border rounded-md px-4 py-2 text-sm w-full" 
-                                    id="searchComments" value="{{ request.args.get('search', '') }}">
+         
+                        <div class="flex-shrink-0">
+                            <form method="POST" action="{{ url_for('start_sentiment') }}" onsubmit="showLoadingScreen()">
+                                <button type="submit" class="start p-2 rounded-md">Start Sentiment Process</button>
                             </form>
-                            
-                            <form action="{{ url_for('upload_comments') }}" method="post" enctype="multipart/form-data">
-                                <label for="file">Upload Excel File:</label>
-                                <input type="file" name="file" accept=".xlsx" required>
-                                <input type="submit"  class="green p-1" value="Upload">
-                            </form>
-                            
                         </div>
-    <!-- Button -->
-
-
-<div class="flex-shrink-0">
-    <form method="POST" action="{{ url_for('start_sentiment') }}" onsubmit="showLoadingScreen()">
-        <button type="submit" class="start p-2 rounded-md">Start Sentiment Process</button>
-    </form>
-</div>
-
-<script>
-    function showLoadingScreen() {
-        // Show the loading screen when the form is submitted
-        document.getElementById('loadingScreen').style.display = 'flex';
-    }
-</script>
-
-                        
-                        
                     </div>
-                    
-                </div>
-                
 
-                <!-- Table Section -->
+                    <script>
+                        function showLoadingScreen() {
+                            // Show the loading screen when the form is submitted
+                            document.getElementById('loadingScreen').style.display = 'flex';
+                        }
+                    </script>
+       
+                </div>
+               
                 <div class="table-container">
                     <div class="overflow-x-auto">
                         <div class="table-wrapper">
@@ -91,7 +53,7 @@
                                             <th class="table-cell">Comment</th>
                                             <th class="table-cell">Faculty Name</th>
                                             <th class="table-cell hidden md:table-cell">Semester</th>
-                                            <th class="table-cell hidden md:table-cell">Date Created</th>
+                                            
                                             <th class="table-cell hidden md:table-cell">Actions</th>
                                         </tr>
                                     </thead>
@@ -105,7 +67,7 @@
                                                 {{ ay_sem.ay_name }}
                                              
                                             </td>
-                                            <td class="table-cell hidden md:table-cell">{{ comment.date_added.strftime('%Y-%m-%d') }}</td>
+                                            
                                             <td class="px-4 py-4 text-sm whitespace-nowrap hidden md:table-cell">
                                                 <div class="flex space-x-2">
                                                     <a href="{{ url_for('view_comment', comment_id=comment.comment_id) }}" title="View" class="text-blue-500 hover:text-blue-700">View</a>
@@ -163,9 +125,9 @@
 
             
             </div>
-        </div>
+        </main>
 
-    </main>
+    </div>
     
 </div>
 <div id="loadingScreen" style="display: none;" class="preloader fixed inset-0 flex items-center justify-center bg-transparent">

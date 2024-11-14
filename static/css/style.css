@@ -7,7 +7,7 @@ body {
     letter-spacing: 0.5px; 
 }
 .active {
-    color: var(--primary);
+    color: var(--secondary);
     font-weight: semibold;
     
 }
@@ -252,7 +252,7 @@ input:checked + .toggle-bg + .toggle-dot {
     margin-bottom: 20px;
 }
 #dashboard  h4{
-    color: var(--secondary);
+    color: var(--primary);
     margin-bottom: 20px;
 }
 #dashboard  h3{
@@ -318,7 +318,7 @@ input:checked + .toggle-bg + .toggle-dot {
     padding: 1rem 1rem; /* py-3.5 px-4 */
     text-align: left; /* text-left */
     font-size: 0.875rem; /* text-sm */
-    color:var(--secondary);
+    color:var(--primary);
     
 }
 
@@ -332,7 +332,7 @@ input:checked + .toggle-bg + .toggle-dot {
     font-size: 0.875rem;
     font-weight: normal;
     color: white; ;
-    background-color:var(--secondary);
+    background-color:var(--primary);
     border-radius: 9999px; 
    
 }

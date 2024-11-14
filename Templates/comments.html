@@ -23,6 +23,8 @@
                 <div class="flex flex-col md:flex-row justify-between items-center mb-2">
                     <h1 class="text-2xl font-bold primary">List of Comments</h1>
                     
+                    
+
                 </div>
                 <!-- Table Section -->
                 <div class="table-container">
@@ -37,12 +39,13 @@
                                             <th class="table-cell">Faculty Name</th>
                                             <th class="table-cell text-center">Semester</th>
                                             <th class="table-cell">Category</th>
-                                            <!-- <th class="table-cell hidden md:table-cell">Status</th> -->
+                                            <th class="table-cell">Department</th>
+                                            <th class="table-cell">College</th>
                                             <th class="table-cell hidden md:table-cell">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody class="table-body" id="commentsTableBody">
-                                        {% for comment, faculty, ay_sem in comments %}
+                                        {% for comment, faculty, ay_sem, department, college in comments %}
                                             <tr>
                                                 <td class="table-cell">{{ loop.index + (comments_pagination.page - 1) * comments_pagination.per_page }}</td>
                                                 <td class="table-cell">{{ comment.comment }}</td>
@@ -54,9 +57,8 @@
                                                     {% elif comment.category == 2 %} Positive
                                                     {% endif %}
                                                 </td>
-                                                <!-- <td class="table-cell hidden md:table-cell">
-                                                    {% if comment.publish == 1 %} Published {% else %} Unpublished {% endif %}
-                                                </td> -->
+                                                <td class="table-cell">{{ department.department_name }}</td>  <!-- Display department name -->
+                                                <td class="table-cell">{{ college.college_name }}</td>  <!-- Display college name -->
                                                 <td class="px-4 py-4 text-sm whitespace-nowrap hidden md:table-cell">
                                                     <div class="flex space-x-2">
                                                         <a href="{{ url_for('view_comment', comment_id=comment.comment_id) }}" title="View" class="primary hover:underline">View</a>
@@ -65,6 +67,7 @@
                                             </tr>
                                         {% endfor %}
                                     </tbody>
+                                    
                                 </table>
                             </div>
                         </div>

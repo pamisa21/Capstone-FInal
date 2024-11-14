@@ -13,6 +13,13 @@ import emoji
 import string
 import re
 from sqlalchemy import func, case
+from wordcloud import WordCloud
+from matplotlib import pyplot as plt
+from io import BytesIO
+import base64
+
+
+
 
 
 # Load model and tokenizer
@@ -178,12 +185,15 @@ def dashboard():
     # Check if the user is logged in
     if 'username' in session:
         username = session['username']
-        all_faculty = Faculty.query.all()  # Ensure this query works with your model
+        all_faculty = Faculty.query.all()
 
         # Get the selected ay_id, college_id, and department_id from query parameters
         selected_ay_id = request.args.get('ay_id')  # This will come from the navbar dropdown
         selected_college_id = request.args.get('college_id')
         selected_department_id = request.args.get('department_id')
+
+        # Call the function to generate the word cloud image
+        wordcloud_data = generate_wordcloud()
 
         # Base query for comments (with existing filters)
         query = (
@@ -208,9 +218,9 @@ def dashboard():
 
         # Count total comments and sentiment counts based on filters
         total_comments = query.count()
-        positive_count = query.filter(Comment.category == 2).count()  # Count positive comments
-        neutral_count = query.filter(Comment.category == 1).count()    # Count neutral comments
-        negative_count = query.filter(Comment.category == 0).count()  # Count negative comments
+        positive_count = query.filter(Comment.category == 2).count()  
+        neutral_count = query.filter(Comment.category == 1).count()    
+        negative_count = query.filter(Comment.category == 0).count() 
 
         # Overall sentiment counts (without filtering)
         overall_query = (
@@ -224,7 +234,7 @@ def dashboard():
         overall_neutral_count = overall_query.filter(Comment.category == 1).count() if overall_query else 0   # Overall neutral comments
         overall_negative_count = overall_query.filter(Comment.category == 0).count() if overall_query else 0  # Overall negative comments
 
-        # Query sentiment data for each semester
+        # Query sentiment data for each semester, filtered by selected department
         semester_sentiments = (
             db.session.query(
                 AY_SEM.ay_name,
@@ -233,11 +243,15 @@ def dashboard():
                 func.count(case((Comment.category == 0, 1), else_=None)).label("negative")
             )
             .join(Comment, Comment.ay_id == AY_SEM.ay_id)
-            .group_by(AY_SEM.ay_name)
+            .join(Faculty, Faculty.faculty_id == Comment.faculty_id)
+            .join(Department, Department.department_id == Faculty.department_id)
+            .filter(Department.department_id == selected_department_id if selected_department_id else True)
+            .group_by(AY_SEM.ay_id, AY_SEM.ay_name)  # Group by ay_id and ay_name to avoid error
+            .order_by(AY_SEM.ay_id.asc())            # Order by ay_id in ascending order
             .all()
         )
 
-        # Prepare semester sentiment data for the template
+        # Prepare data for the stacked bar chart
         semester_sentiment_data = [
             {
                 "ay_name": row.ay_name,
@@ -248,7 +262,6 @@ def dashboard():
             for row in semester_sentiments
         ]
 
-        # Prepare data for bar chart
         semester_labels = [data['ay_name'] for data in semester_sentiment_data]
         positive_data = [data['positive'] for data in semester_sentiment_data]
         neutral_data = [data['neutral'] for data in semester_sentiment_data]
@@ -287,12 +300,36 @@ def dashboard():
             positive_data=positive_data,
             neutral_data=neutral_data,
             negative_data=negative_data,
-            overall_positive_count=overall_positive_count,  # Overall positive count
-            overall_neutral_count=overall_neutral_count,    # Overall neutral count
-            overall_negative_count=overall_negative_count   # Overall negative count
+            overall_positive_count=overall_positive_count,  
+            overall_neutral_count=overall_neutral_count,   
+            overall_negative_count=overall_negative_count,
+            wordcloud_data=wordcloud_data
         )
 
     return redirect(url_for('login'))
+
+
+def generate_wordcloud():
+    # Fetch comments from the database (excluding category 3)
+    comments = Comment.query.filter(Comment.category != 3).all()
+    
+    # Combine all the comment texts
+    text = " ".join([comment.comment for comment in comments])
+    text = text.replace("Ma'am", "").replace("Sir", "")
+    # Generate the word cloud
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
+    
+    # Save the word cloud image to a BytesIO object
+    img = BytesIO()
+    wordcloud.to_image().save(img, format='PNG')
+    img.seek(0)
+
+    # Encode the image in base64
+    img_base64 = base64.b64encode(img.read()).decode('utf-8')
+    
+    return img_base64
+
+
 
 
 
@@ -642,38 +679,50 @@ def semester_comments(semester, year):
     return redirect(url_for('loading_screen', target=url_for('login')))
 
 
-# Comments
 @app.route('/comments', methods=['GET'])
 def comments():
     if 'username' in session:
         username = session['username']
         page = request.args.get('page', 1, type=int)
-        per_page = 5
+        per_page = 6
 
-        # Get the selected semester from the query parameters or fallback to stored semester in cookies
-        selected_semester = request.args.get('ay_id', None)  # Get 'ay_id' from the URL query params
+        # Get selected semester, college, and department
+        selected_semester = request.args.get('ay_id', None)
+        selected_college = request.args.get('college_id', None)
+        selected_department = request.args.get('department_id', None)
 
-        # If no semester is in the query params, check the cookies
+        # Default to the first available semester if not selected
         if not selected_semester:
             selected_semester = request.cookies.get('selectedSemester')
-
-        # If no semester in cookies or query params, default to the first available semester
         if not selected_semester:
-            selected_semester = AY_SEM.query.first().ay_id  # Default to the first semester
+            selected_semester = AY_SEM.query.first().ay_id
 
-        # Query to fetch all comments for the selected semester
-        query = db.session.query(Comment, Faculty, AY_SEM).join(Faculty, Comment.faculty_id == Faculty.faculty_id) \
-            .join(AY_SEM, Comment.ay_id == AY_SEM.ay_id).filter(Comment.category != 3)
+        # Query for comments, join Faculty, AY_SEM, Department, and College
+        query = db.session.query(Comment, Faculty, AY_SEM, Department, College) \
+            .join(Faculty, Comment.faculty_id == Faculty.faculty_id) \
+            .join(AY_SEM, Comment.ay_id == AY_SEM.ay_id) \
+            .join(Department, Faculty.department_id == Department.department_id) \
+            .join(College, Department.college_id == College.college_id) \
+            .filter(Comment.category != 3)
 
-        # Filter comments by selected semester
-        query = query.filter(Comment.ay_id == selected_semester)
+        # Filter by semester, college, and department if they are provided
+        if selected_semester:
+            query = query.filter(Comment.ay_id == selected_semester)
+        if selected_college:
+            query = query.filter(Department.college_id == selected_college)
+        if selected_department:
+            query = query.filter(Faculty.department_id == selected_department)
 
         comments_pagination = query.paginate(page=page, per_page=per_page, error_out=False)
 
-        # Calculate start and end page for pagination
+        # Calculate pagination and page numbers
         max_pages_to_show = 10
         start_page = max(1, comments_pagination.page - 4)
         end_page = min(comments_pagination.pages, comments_pagination.page + 5)
+
+        # Fetch all colleges and departments for the dropdowns
+        colleges = College.query.all()
+        selected_departments = Department.query.filter_by(college_id=selected_college).all() if selected_college else []
 
         return render_template('comments.html',
                                username=username,
@@ -683,7 +732,11 @@ def comments():
                                end_page=end_page,
                                max_pages_to_show=max_pages_to_show,
                                selected_semester=selected_semester,
-                               all_semesters=AY_SEM.query.all()
+                               all_semesters=AY_SEM.query.all(),
+                               colleges=colleges,
+                               selected_college=selected_college,
+                               selected_department=selected_department,
+                               selected_departments=selected_departments
                                )
 
     return redirect(url_for('loading_screen', target=url_for('comments')))

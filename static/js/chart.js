@@ -1,3 +1,5 @@
+// selected semester
+
 document.addEventListener("DOMContentLoaded", function() {
   const dashboardDropdown = document.getElementById("dashboardSemesterDropdown");
   const collegeDropdown = document.getElementById("filterCollege");
@@ -37,6 +39,9 @@ document.addEventListener("DOMContentLoaded", function() {
       localStorage.setItem("selectedDepartment", departmentDropdown.value);
       window.location.href = `/dashboard?ay_id=${dashboardDropdown.value}&college_id=${collegeDropdown.value}&department_id=${departmentDropdown.value}`;
   });
+
+
+
 
 
   //Update text Print 
@@ -92,22 +97,32 @@ function updateDashboard() {
 document.addEventListener("DOMContentLoaded", function() {
 const departmentDropdown = document.getElementById("filterDepartment");
 const facultyList = document.getElementById("faculty-list");
+const wordCloudSection = document.getElementById("wordCloudSection");
+const stockbar = document.getElementById("stockbar");
 
 // Initially, hide the faculty list
 facultyList.classList.add('hidden');
+wordCloudSection.classList.add('hidden');
+stockbar.classList.add('hidden');
 
 // Show or hide the faculty list when a department is selected
 departmentDropdown.addEventListener("change", function() {
   if (departmentDropdown.value) {
-      facultyList.classList.remove('hidden'); // Show faculty list when a department is selected
+      facultyList.classList.remove('hidden');
+      wordCloudSection.classList.remove('hidden');
+      stockbar.classList.remove('hidden'); // Show faculty list when a department is selected
   } else {
-      facultyList.classList.add('hidden'); // Hide faculty list when no department is selected
+      facultyList.classList.add('hidden'); 
+      wordCloudSection.classList.add('hidden');
+      stockbar.classList.add('hidden'); // Hide faculty list when no department is selected
   }   
 });
 
 // Check the current department on page load (in case there is a saved value in localStorage)
 if (departmentDropdown.value) {
   facultyList.classList.remove('hidden');
+  wordCloudSection.classList.remove('hidden');
+  stockbar.classList.remove('hidden');
 }
 });
 

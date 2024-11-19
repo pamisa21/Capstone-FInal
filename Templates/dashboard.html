@@ -19,16 +19,20 @@
         <main class="flex-1 p-5 mx-3 mt-20 ml-2 md:ml-60">  
             <div id="dashboard" class="p-6">
                 <!-- Dashboard Header with Filter Section -->   
-                <div class="flex flex-col md:flex-row justify-between items-center mb-5 ">
-                    <h1 class="text-2xl font-bold">Dashboard</h1>
+                <div class="flex flex-col md:flex-row justify-between items-center mb-5">
+                    <h1 class="text-2xl font-bold">
+                        Dashboard <span>{{ selected_semester_name or 'No Semester Selected' }}</span>
+                    </h1>
+                    
+                    
                     <!-- Download PDF button -->
-                    <button id="printButton" class="border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none">
+                    <button id="printButton" class="border border-gray-300  px-4 py-2 text-sm focus:outline-none start">
                         <a id="printLink" href="{{ url_for('print_dashboard') }}">Print Overall Results</a>
                     </button>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0 mb-5">
-                    <div class="flex flex-col">
+                    <div class="flex flex-col hidden ">
                         <select id="dashboardSemesterDropdown" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black">
                             {% for semester in all_semesters %}
                                 <option value="{{ semester.ay_id }}" {% if semester.ay_id == selected_semester %} selected {% endif %}>
@@ -177,9 +181,7 @@
                             </div>
                            
                             <div id="wordCloudSection" class="bg-white rounded-lg shadow-md mt-5 border-2">
-                                <div class="flex justify-center items-center">
-                                    <h1 class="text-left">Word Cloud</h1>
-                                </div>
+                                
                                 <div class="flex justify-center items-center">
                                     <img src="data:image/png;base64,{{ wordcloud_data }}" alt="Word Cloud" class="max-w-full h-80"/> <!-- Adjust height here -->
                                 </div>
@@ -190,37 +192,37 @@
                     </div>  
 
 
-                    <div  id="faculty-list" class="bg-white rounded-lg shadow-md  mt-5 p-2 border-2">
-
-                        <h2 class="text-lg font-semibold p-2">Department Faculty List </h2>
-                    
-                        <div class="overflow-x-auto">
+                    <div  id="faculty-list" class="bg-white rounded-lg shadow-md  mt-5  border-2">
+                        <div class="  p-1"> 
+                            <h2 class="text-lg font-semibold p-2"> Department Faculty List </h2>
+                        </div>
+                        <div class="overflow-x-auto max-w-full">
                             <div class="table-wrapper">
-                                <div class="table-border">
-                                    <table class="data-table w-full table-auto border border-gray-300">
-
-                                        <thead class="table-header ">
+                                <div class="table-border max-h-[500px] overflow-y-auto">
+                                    <table class="data-table w-full border-collapse text-sm p-5">
+                                        <thead class="table-header bg-gray-100">
                                             <tr>
-                                                <th class="table-cell px-4 py-2 text-left">&nbsp;</th>
-                                                <th class="table-cell px-4 py-2 text-left">ID</th>
-                                                <th class="table-cell px-4 py-2 text-left">Complete Name & Email</th>
-                                                <th class="table-cell px-4 py-2 text-center">Department</th>
-                                                <th class="table-cell px-4 py-2 text-center">College</th>
+                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10">&nbsp;</th>
+                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10">ID</th>
+                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10">Complete Name & Email</th>
+                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10">Department</th>
+                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10">College</th>
+                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10">&nbsp;</th>
                                             </tr>
                                         </thead>
                                         <tbody class="table-body">
                                             {% for faculty in filtered_faculty %}
                                                 <tr class="border-t">
-                                                    <td class="table-cell px-4 py-2 text-left">{{ loop.index }}</td> <!-- Count -->
-                                                    <td class="table-cell px-4 py-2">{{ faculty.faculty_id }}</td>
-                                                    <td class="table-cell px-4 py-2">
+                                                    <td class="table-cell px-4 py-2 text-left">{{ loop.index }}</td>
+                                                    <td class="table-cell px-2 py-1 border border-gray-300">{{ faculty.faculty_id }}</td>
+                                                    <td class="table-cell px-2 py-1 border border-gray-300">
                                                         {{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.<br>
                                                         <span class="email text-sm text-gray-600">{{ faculty.email }}</span>
                                                     </td>
-                                                    <td class="table-cell px-4 py-2 text-center">{{ faculty.department.department_name }}</td>
-                                                    <td class="table-cell px-4 py-2 text-center">{{ faculty.department.college_id }}</td>
+                                                    <td class="table-cell px-2 py-1 border border-gray-300">{{ faculty.department.department_name }}</td>
+                                                    <td class="table-cell px-2 py-1 border border-gray-300">{{ faculty.department.college_id }}</td>
                                                     <td class="px-4 py-4 text-sm whitespace-nowrap">
-                                                        <div class="flex space-x-2 ">
+                                                        <div class="flex space-x-2">
                                                             <a href="{{ url_for('view_faculty', faculty_id=faculty.faculty_id) }}" title="View" class="primary">View</a>
                                                             <a href="{{ url_for('faculty_comments', faculty_id=faculty.faculty_id) }}" title="Comments" class="secondary">Results</a>
                                                         </div>
@@ -228,7 +230,7 @@
                                                 </tr>
                                             {% else %}
                                                 <tr>
-                                                    <td colspan="4" class="text-center px-4 py-2">No Faculty Found</td>
+                                                    <td colspan="6" class="text-center px-4 py-2">No Faculty Found</td>
                                                 </tr>
                                             {% endfor %}
                                         </tbody>
@@ -236,6 +238,10 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        
+                       
+                        
                     </div>
 
 
@@ -300,56 +306,56 @@
     });
 </script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const ctxBar = document.getElementById('stackbarchart').getContext('2d');
-    
-        const labels = {{ semester_labels|tojson }};
-        const positiveData = {{ positive_data|tojson }};
-        const neutralData = {{ neutral_data|tojson }};
-        const negativeData = {{ negative_data|tojson }};
-    
-        const data = {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Positive',
-                    data: positiveData,
-                    backgroundColor: '#32de84',
-                },
-                {
-                    label: 'Neutral',
-                    data: neutralData,
-                    backgroundColor: '#FFEB3B',
-                },
-                {
-                    label: 'Negative',
-                    data: negativeData,
-                    backgroundColor: '#EF5350',
-                }
-            ]
-        };
-    
-        const config = {
-            type: 'bar',
-            data: data,
-            options: {
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Semester Comparison per Department'
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctxBar = document.getElementById('stackbarchart').getContext('2d');
+        
+            const labels = {{ semester_labels|tojson }};
+            const positiveData = {{ positive_data|tojson }};
+            const neutralData = {{ neutral_data|tojson }};
+            const negativeData = {{ negative_data|tojson }};
+        
+            const data = {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Positive',
+                        data: positiveData,
+                        backgroundColor: '#32de84',
                     },
-                },
-                responsive: false,
-                scales: {
-                    x: { stacked: true },
-                    y: { beginAtZero: true, stacked: true }
+                    {
+                        label: 'Neutral',
+                        data: neutralData,
+                        backgroundColor: '#FFEB3B',
+                    },
+                    {
+                        label: 'Negative',
+                        data: negativeData,
+                        backgroundColor: '#EF5350',
+                    }
+                ]
+            };
+        
+            const config = {
+                type: 'bar',
+                data: data,
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Semester Comparison per Department'
+                        },
+                    },
+                    responsive: false,
+                    scales: {
+                        x: { stacked: true },
+                        y: { beginAtZero: true, stacked: true }
+                    }
                 }
-            }
-        };
-    
-        new Chart(ctxBar, config);
-    });
+            };
+        
+            new Chart(ctxBar, config);
+        });
     </script>   
 
 
@@ -425,7 +431,7 @@
             
             // Limit the data to a maximum of 6
             const maxDataPoints = 6;
-            const limitedSemesterLabels = semesterLabels.slice(-maxDataPoints);
+            const limitedSemesterLabels = semesterLabels.slice(-maxDataPoints).map(label => label.slice(0, 15));  // Limit each label to 10 characters
             const limitedPositiveData = positiveData.slice(-maxDataPoints);
             const limitedNegativeData = negativeData.slice(-maxDataPoints);
             const limitedNeutralData = neutralData.slice(-maxDataPoints);
@@ -475,4 +481,5 @@
         }
     });
 </script>
+
 {% endblock content %}

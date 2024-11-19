@@ -46,25 +46,41 @@ document.addEventListener("DOMContentLoaded", function() {
 
   //Update text Print 
   function updatePrintButtonText() {
-      const selectedCollegeName = collegeDropdown.options[collegeDropdown.selectedIndex].text;
-      const selectedDepartmentName = departmentDropdown.options[departmentDropdown.selectedIndex].text;
-      
-      let buttonText = "Print Overall Results"; // Default text
+    const selectedCollegeId = collegeDropdown.value;
+    const selectedDepartmentId = departmentDropdown.value;
+    const selectedSemesterId = dashboardDropdown.value;
 
-      if (selectedCollegeName && selectedCollegeName !== "Select College") {
-          buttonText = `Print ${selectedCollegeName} Results`;
-      }
-      if (selectedDepartmentName && selectedDepartmentName !== "Select Department") {
-          buttonText = `Print ${selectedDepartmentName} Results`;
-      }
-      if (selectedCollegeName && selectedCollegeName !== "Select College" &&
-          selectedDepartmentName && selectedDepartmentName !== "Select Department") {
-          buttonText = `Print ${selectedCollegeName} - ${selectedDepartmentName} Results`;
-      }
+    const selectedCollegeName = collegeDropdown.options[collegeDropdown.selectedIndex]?.text || "Select College";
+    const selectedDepartmentName = departmentDropdown.options[departmentDropdown.selectedIndex]?.text || "Select Department";
 
-      printButton.innerHTML = `<a href="{{ url_for('print_dashboard', ay_id=selectedAyId, college_id=selectedCollegeId, department_id=selectedDepartmentId) }}">${buttonText}</a>`;
+    let buttonText = "Print Overall Results"; // Default button text
+    let route = "/print_dashboard"; // Default route
 
-  }
+    if (selectedCollegeId) {
+        buttonText = `Print ${selectedCollegeName} Results`;
+        route = `/print_colleges?college_id=${selectedCollegeId}&ay_id=${selectedSemesterId}`;
+    }
+    if (selectedDepartmentId) {
+        buttonText = `Print ${selectedDepartmentName} Results`;
+        route = `/print_department?department_id=${selectedDepartmentId}&ay_id=${selectedSemesterId}`;
+    }
+
+    if (selectedCollegeId && selectedDepartmentId) {
+        buttonText = `Prints ${selectedCollegeId} - ${selectedDepartmentName} Results`;
+        buttonText = buttonText.slice(0, 50);  // Trims the text to 20 characters
+        route = `/print_department?college_id=${selectedCollegeId}&department_id=${selectedDepartmentId}&ay_id=${selectedSemesterId}`;
+    }
+    
+    // If no semester selected, ensure the latest semester is passed as a parameter
+    if (!selectedSemesterId) {
+        // Fetch the latest semester (can be done via AJAX or pre-passing the data)
+        route += `&ay_id=${getLatestSemesterId()}`; // Add latest semester if none is selected
+    }
+
+    // Update the button's text and link
+    printButton.innerHTML = `<a href="${route}">${buttonText}</a>`;
+}
+
 });
         
 
@@ -129,4 +145,8 @@ if (departmentDropdown.value) {
 
 
 
- 
+// window.onbeforeunload = function() {
+//     localStorage.removeItem("selectedSemester");
+//     localStorage.removeItem("selectedCollege");
+//     localStorage.removeItem("selectedDepartment");
+// };

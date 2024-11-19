@@ -38,11 +38,10 @@ def inject_default_semester():
     all_semesters = AY_SEM.query.order_by(AY_SEM.ay_id.desc()).all()
     latest_semester = all_semesters[0] if all_semesters else None
 
-    # Set the latest semester as the default if no semester is in localStorage or passed in URL
+    # Set the latest semester as the default
     default_semester = latest_semester.ay_id if latest_semester else None
     
     return dict(all_semesters=all_semesters, default_semester=default_semester)
-
 
 with app.app_context():
     from routes import *

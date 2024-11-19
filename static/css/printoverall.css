@@ -1,0 +1,139 @@
+Default styles for screen
+.header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 20px 60px;
+    text-align: center;
+    background: #f1f1f1;
+    font-size: 14px;
+    border-bottom: 2px solid #333;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header-content h1 {
+    margin: 0;
+    font-size: 16px;
+    color: #222;
+    font-weight: bold;
+}
+
+.header-content p {
+    margin: 5px 0 0;
+    font-size: 12px;
+    color: var(--primary);
+}
+
+.header:before {
+    top: 40px;
+    left: calc(50% - 150px);
+}
+
+/* Progress bar styles */
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 4px;
+}
+
+.positive-fill {
+    background-color: #32de84; /* Green */
+}
+
+.neutral-fill {
+    background-color: #FFEB3B; /* Yellow */
+}
+
+.negative-fill {
+    background-color: #EF5350; /* Red */
+}
+
+/* Print styles */
+@media print {
+    /* Hide elements during printing */
+    .print-button, .faculty-results-heading {
+        display: none;
+    }
+
+    #printLayout, #printLayout * {
+        visibility: visible;
+    }
+
+    /* Progress bar colors for print */
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+    }
+
+    .positive-fill {
+        background-color: #32de84 !important; /* Force green color */
+        -webkit-print-color-adjust: exact; /* Ensure color printing */
+        color-adjust: exact;
+    }
+
+    .neutral-fill {
+        background-color: #FFEB3B !important; /* Force yellow color */
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+    }
+
+    .negative-fill {
+        background-color: #EF5350 !important; /* Force red color */
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+    }
+
+    /* Set text colors to ensure visibility on print */
+    .primary, .text-3xl {
+        color: #000; /* Black text for better contrast on print */
+    }
+
+   
+    .header {
+        position: static;
+        padding: 10px 30px;
+        background: #fff;
+        font-size: 14px;
+        box-shadow: none;
+    }
+
+    .header-content h1 {
+        font-size: 18px;
+        color: #222;
+    }
+
+    .header-content p {
+        font-size: 12px;
+        color: var(--primary);
+    }
+
+    .header:before {
+        top: 40px;
+        left: calc(50% - 150px);
+    }
+    
+
+    .comments-table {
+        width: 100%;
+        border-collapse: collapse;
+        padding: 5px;
+    }
+    .comments-table thead {
+        display: table-header-group; /* Ensure header shows on all pages */
+        background-color: #f0f0f0; /* Optional for header styling */
+    }
+    .comments-table th, .comments-table td {
+        padding: 8px; /* Adjust padding for readability */
+        border: 1px solid #ddd; /* Adds borders to each cell */
+        text-align: left;
+    }
+    .comments-table th {
+        font-weight: bold;
+    }
+
+}

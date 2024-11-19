@@ -199,3 +199,7 @@ function applyFilters() {
 
 //bar chart 
 
+//clear local storage 
+function clearLocalStorage() {
+    localStorage.clear(); // Clears all items from localStorage
+}

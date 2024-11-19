@@ -79,7 +79,8 @@ body {
 
 .custom-hover:hover {
     background-color: var(--secondary);
-    color: white; /* Change to your desired hover background color */
+    color: black;
+   
 }
 
 .toggle-bg {
@@ -474,13 +475,13 @@ input:checked + .toggle-bg + .toggle-dot {
         color: white;
         background-color: var(--primary);
         font-weight: 600;
-        border-radius: 5px;
+        border-radius: 10px;
         transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
     }
     
     .start:hover {
         background-color: var(--secondary);
-        color: white;
+        color: black;
     }
     
 
@@ -738,67 +739,22 @@ input:checked + .toggle-bg + .toggle-dot {
 
 
   /*Printing  */ 
-
-
-@media print {
-
-
-    /* Hide the print button and faculty results heading when printing */
-    .print-button, .faculty-results-heading {
-        display: none;
+  @media print {
+    #downloadPdf {
+        display: none !important; /* Hides the button during printing */
     }
-};
-
-
-
-
-.header {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    padding: 20px 60px;
-    text-align: center;
-    background: #f1f1f1;
-    font-size: 14px;
-    border-bottom: 2px solid #333;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-.header-content h1 {
-    margin: 0;
-    font-size: 16px;
-    color: #222;
-    font-weight: bold;
-}
-
-.header-content p {
-    margin: 5px 0 0;
-    font-size: 12px;
-    color:var(--primary)
+    
+    #hide {
+        display: none !important; /* Hides the entire element with id 'hide' during printing */
+    }
 }
 
 
 
 
-.header:before {
-    top: 40px;
-    left: calc(50% - 150px);
-}
 
 
 
-.comments-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-.comments-table thead {
-    display: table-header-group; /* Ensure header shows on all pages */
-    background-color: #f0f0f0; /* Optional for header styling */
-}
-.comments-table th, .comments-table td {
-    padding: 8px; /* Adjust padding for readability */
-    border: 1px solid #ddd; /* Adds borders to each cell */
-    text-align: left;
-}
-.comments-table th {
-    font-weight: bold;
-}
+
+
+    

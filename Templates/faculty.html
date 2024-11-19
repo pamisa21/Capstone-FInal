@@ -19,7 +19,7 @@
         <!-- Main Content Container -->
         <main class="flex-1 p-3 mx-5 mt-20 ml-2 md:ml-60">
            
-            <div id="Accounts" class="w-100 h-100 mx-auto bg-white rounded-lg shadow-lg p-4">
+            <div id="Accounts" class=" mx-auto bg-white rounded-lg shadow-lg p-4  h-[99%] mx-full w-100">
                
                 <div class="flex flex-col mb-2 gap-4"> <!-- Changed mb-4 to mb-2 -->
 
@@ -86,31 +86,35 @@
                 </div>
 
                 <!-- Table Section -->
-                <div class="table-container">
+                <div class="mt-4 mb-5 p-5">
+                    <h2 class="text-lg font-bold primary mb-2">Comments</h2>
                     <div class="overflow-x-auto">
-                        <div class="table-wrapper">
-                            <div class="table-border">
-                                <table class="data-table">
-                                    <thead class="table-header">
+                        <div class="table-border">
+                                 <table class="data-table w-full border-collapse text-sm p-5">
+                                    <table class="data-table w-full border-collapse text-sm p-5">
                                         <tr>
-                                            <th class="table-cell">Faculty ID</th>
-                                            <th class="table-cell">Complete Name & Email</th>
-                                            <th class="table-cell">College</th>
-                                            <th class="table-cell text-center">Department</th>
-                                            <th class="table-cell text-center">Actions</th>
+                                            <th class="table-cell px-2 py-1 border border-gray-300 p-10">Faculty ID</th>
+                                            <th class="table-cell px-2 py-1 border border-gray-300 p-10">Complete Name & Email</th>
+                                            <th class="table-cell px-2 py-1 border border-gray-300 p-10">College</th>
+                                            <th class="table-cell px-2 py-1 border border-gray-300 p-10">Department</th>
+                                            <th class="table-cell px-2 py-1 border border-gray-300 p-10">Actions</th>
                                         </tr>
                                     </thead>
                                    <tbody class="table-body" id="accountsTableBody">
                                         {% for member in faculty_members.items %}
                                         <tr>
-                                            <td class="table-cell">{{ member.faculty_id }}</td>
-                                            <td class="table-cell">
+                                            <td class="table-cell px-2 py-1 border border-gray-300">{{ member.faculty_id }}</td>
+                                            <td class="table-cell px-2 py-1 border border-gray-300">
                                                 {{ member.lname }} {{member.fname}} {{member.mi}}.<br>
                                                 <span class="email">{{ member.email }}</span>
                                             </td>
-                                            <td class="table-cell">{{ member.department.college_id }}</td>
-                                            <td class="table-cell text-center">{{ member.department.department_name }}</td>
-                                            <td class="px-4 py-4 text-sm whitespace-nowrap">
+                                            <td class="table-cell px-2 py-1 border border-gray-300">
+                                                {{ member.department.college_id }}
+                                            </td>
+                                            <td class="table-cell px-2 py-1 border border-gray-300">
+                                                {{ member.department.department_name }}
+                                            </td>
+                                            <td class="table-cell px-2 py-1 border border-gray-300  text-center   ">
                                                 <div class="flex space-x-2 ">
                                                     <a href="{{ url_for('view_faculty', faculty_id=member.faculty_id) }}" title="View" class="primary">View</a>
                                                     <a href="{{ url_for('faculty_comments', faculty_id=member.faculty_id) }}" title="Comments" class="secondary">Results</a>
@@ -123,12 +127,12 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                
 
                 <!-- Pagination Controls -->
-                <div class="flex items-center justify-between mt-4 p-2">
+                <div class="flex items-center justify-between mt-4 p-2">    
                     {% if faculty_members.has_prev %}
-                        <a href="{{ url_for('faculty', page=faculty_members.prev_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-4 py-2 text-sm text-gray-700 bg-white border rounded-md hover:bg-[#023047] hover:text-white">
+                        <a href="{{ url_for('faculty', page=faculty_members.prev_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-4 py-2 text-sm  bg-[#004526] text-white border rounded-md hover:bg-[#023047] hover:text-[#FF7043]">
                             Previous
                         </a>
                     {% endif %}
@@ -141,7 +145,7 @@
 
                         {% for page_num in range(start_page, end_page + 1) %}
                             {% if page_num == faculty_members.page %}
-                                <a href="#" class="px-2 py-1 text-sm text-white bg-[#00B4D8] rounded-md">{{ page_num }}</a>
+                                <a href="#" class="px-2 py-1 text-sm text-white bg-[#004526] rounded-md">{{ page_num }}</a>
                             {% else %}
                                 <a href="{{ url_for('faculty', page=page_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-[#023047] hover:text-white rounded-md">{{ page_num }}</a>
                             {% endif %}
@@ -154,7 +158,7 @@
                     </div>
 
                     {% if faculty_members.has_next %}
-                        <a href="{{ url_for('faculty', page=faculty_members.next_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-4 py-2 text-sm text-gray-700 bg-white border rounded-md hover:bg-[#023047] hover:text-white">
+                        <a href="{{ url_for('faculty', page=faculty_members.next_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-4 py-2 text-sm  bg-[#004526] text-white border rounded-md hover:bg-[#023047] hover:text-white">
                             Next
                         </a>
                     {% endif %}

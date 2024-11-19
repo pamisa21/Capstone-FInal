@@ -19,14 +19,14 @@
         <!-- Main Content Container --> 
         <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60">  
 
-            <div id="Comments" class="w-100 h-100 mx-auto bg-white rounded-lg shadow-lg p-6"|>
+            <div id="Comments" class="w-100 h-[100%] mx-full bg-white rounded-lg shadow-lg p-6"|>
                 <!-- Filter and Search Section -->
-                <div class="flex flex-col mb-3 gap-4">
+                <div class="flex flex-col mb-3 gap-4 ">
                     <div class="flex items-center justify-between">
                                 <h1 class="text-2xl font-bold "> New Comments 
                         </h1>
          
-                        <div class="flex-shrink-0">
+                        <div class="flex-shrink-0  ">
                             <form method="POST" action="{{ url_for('start_sentiment') }}" onsubmit="showLoadingScreen()">
                                 <button type="submit" class="start p-2 rounded-md">Start Sentiment Process</button>
                             </form>
@@ -46,31 +46,33 @@
                     <div class="overflow-x-auto">
                         <div class="table-wrapper">
                             <div class="table-border">
-                                <table class="data-table">
-                                    <thead class="table-header">
+                                <table class="data-table w-full border-collapse text-sm p-5">
+                                    <table class="data-table w-full border-collapse text-sm p-5">
                                         <tr>
-                                            <th class="table-cell">No.</th>
-                                            <th class="table-cell">Comment</th>
-                                            <th class="table-cell">Faculty Name</th>
-                                            <th class="table-cell hidden md:table-cell">Semester</th>
+                                            <th class="table-cell px-2 py-1 border border-gray-300 p-10">&nbsp;</th>
+                                            <th class="table-cell px-2 py-1 border border-gray-300 p-10">Comment</th>
+                                            <th class="table-cell px-2 py-1 border border-gray-300 p-10">Faculty Name</th>
+                                            <th class="table-cell px-2 py-1 border border-gray-300 p-10">Semester</th>
                                             
-                                            <th class="table-cell hidden md:table-cell">Actions</th>
+                                            <th class="table-cell px-2 py-1 border border-gray-300 p-10">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody class="table-body" id="commentsTableBody">
                                         {% for comment, faculty, ay_sem in comments.items %}
                                         <tr>
-                                            <td class="table-cell">{{ loop.index }}</td>
-                                            <td class="table-cell">{{ comment.comment }}</td>
-                                            <td class="table-cell">{{ faculty.lname }} {{faculty.fname}} {{faculty.mi}}</td>
-                                            <td class="table-cell hidden md:table-cell">
+                                            <td class="table-cell px-2 py-1 border border-gray-300">{{ loop.index }}</td>
+                                            <td class="table-cell px-2 py-1 border border-gray-300">
+                                                {{ comment.comment[:90] }}{% if comment.comment|length > 90 %}...{% endif %}
+                                            </td>
+                                            <td class="table-cell px-2 py-1 border border-gray-300">{{ faculty.lname }} {{faculty.fname}} {{faculty.mi}}</td>
+                                            <td class="table-cell px-2 py-1 border border-gray-300">
                                                 {{ ay_sem.ay_name }}
                                              
                                             </td>
                                             
-                                            <td class="px-4 py-4 text-sm whitespace-nowrap hidden md:table-cell">
+                                            <td class="table-cell px-2 py-1 border border-gray-300">
                                                 <div class="flex space-x-2">
-                                                    <a href="{{ url_for('view_comment', comment_id=comment.comment_id) }}" title="View" class="text-blue-500 hover:text-blue-700">View</a>
+                                                    <a href="{{ url_for('view_comment', comment_id=comment.comment_id) }}" title="View" class="secondary hover:text-green-800">View</a>
                                                 </div>
                                             </td>
                                         </tr>

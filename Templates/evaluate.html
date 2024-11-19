@@ -18,25 +18,37 @@
     <div class="flex flex-1">
         {% include "includes/sidebar.html" %}
 
-        <!-- Main Content Container -->
+     
         <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60">
             <h1 class="text-2xl font-bold mb-3 primary">Evaluation!</h1>
-            <div id="evaluate" class="w-100 h-100 mx-auto bg-white rounded-lg shadow-lg p-6">
+            <div id="evaluate" class="w-100 h-[93%] mx-auto bg-white rounded-lg shadow-lg p-6">
                 <h2 class="text-xl font-semibold text-center  mb-4">Sentiment Analysis</h2>
                 
                 <form method="POST" class="space-y-4">
                     <label for="comment" class="block text-sm font-medium label">Enter your comment:</label>
-                    <textarea id="comment" name="comment" rows="4" class="w-full h-24 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-150 ease-in-out" placeholder="Type your comment here..."></textarea>
+                    <textarea 
+                        id="comment" 
+                        name="comment" 
+                        rows="4" 
+                        class="w-full h-[60%] p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2
+                         focus:ring-green-500 transition duration-150 ease-in-out" 
+                        placeholder="Type your comment here..." 
+                        required></textarea>
                     
                     <div class="flex justify-between">
-                        <button type="submit" class="  w-full font-semibold py-2 rounded-md">Analyze Sentiment</button>
-                    
+                        <button 
+                            type="submit" 
+                            class="w-full font-semibold py-2 rounded-md bg-green-500 text-white hover:bg-green-600 transition">
+                            Analyze Sentiment
+                        </button>
                     </div>
                 </form>
+                
 
-                <!-- Display the sentiment result if available -->
                 {% if sentiment %}
-                    <h2 class="text-lg font-medium text-center text-green-600 mt-4">Predicted Sentiment: {{ sentiment }}</h2>
+                    <h2 class="text-lg font-medium text-center priamry mt-5">
+                        Predicted Sentiment:
+                         <span class="secondary underline font-bold ">  Interpreted  {{ sentiment }}</span></h2>
                 {% endif %}
                 
                 
@@ -47,7 +59,7 @@
     </div>
 </div>
 
-<!-- {% include "includes/footer_container.html" %} -->
+
 {% endblock content %}
 {% include "includes/public/footers.html" %}
 

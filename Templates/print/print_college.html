@@ -1,0 +1,345 @@
+{% extends "layout/base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/variable.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+{% endblock css %}
+
+{% block content %}
+
+<div class=" text-lg font-bold maze ml-5 ">
+    <h2 class="primary">Sentiment Overview</h2>
+    <div  class="flex flex-col md:flex-row justify-between items-center mb-2">
+     
+        <button id="downloadPdf" class=" hidden  print-button border border-gray-300 rounded-md px-4 py-2 text-sm text-white bg-[#004526]
+            shadow-lg transition-all duration-300 transform hover:bg-[#023047] hover:text-white hover:shadow-2xl focus:outline-none">
+            Download as Pdf
+        </button>
+    </div>
+    <script>
+        document.getElementById('downloadPdf').addEventListener('click', function () {
+            const element = document.body; 
+
+            const style = document.createElement('style');
+            style.innerHTML = 'body, * { font-family: Arial, sans-serif !important; }';
+            document.head.appendChild(style);
+            const collegeName = document.querySelector('.font-normal').innerText.trim();
+
+            const options = {
+                margin:       [10, 10, 10, 10],
+                filename:     `${collegeName}_Sentiment_Results.pdf`, 
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { dpi: 192, letterRendering: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+        
+            
+            setTimeout(function () {
+                
+                html2pdf().from(element).set(options).save().then(() => {
+                    
+                    setTimeout(() => {
+                        const previousUrl = document.referrer || "/dashboard"; 
+                        window.location.href = previousUrl;
+                    }, 1000); 
+                });
+            }, 1000); 
+        });
+
+        window.onload = function() {
+            document.getElementById('downloadPdf').click();
+        };
+    </script>
+    
+    
+</div>
+<div id="printLayout">
+    <div class="header border-b-2 mb-5">
+        <div class="header-content text-center p-4">
+            <h1>ANALYZING AND VISUALIZING COMMENTS IN CMU FACULTY EVALUATION SYSTEM</h1>
+            <p class="primary">Empowering insights for continuous improvement</p>
+        </div>
+    </div>
+
+    <div class="content mb-5">
+        <div class="faculty-info text-center mx-auto p-4">
+            <h2 class="mb-2">Overall Results of Faculty Teaching Performance <br> </h2>
+            <p class="mb-2">Central Mindanao University </p>
+            <div class="flex justify-center items-center mb-2">
+                <span class="font-normal">{{ college_name }}</span>  <!-- Display college name here -->
+            </div>
+            <div class="flex justify-center items-center mb-2">
+                <span class="font-normal">{{ selected_ay_name }}</span>  <!-- Display semester name here -->
+            </div>
+        </div>
+    </div>
+
+    <section class="mx-10">
+        <div class="text-lg font-bold maze ml-5">
+            <h2 class="primary">Sentiment Overview</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 p-5">
+                <!-- Total Comments Card -->
+                <div class="border border-gray-300 rounded-lg shadow-md p-8">
+                    <h2 class="text-lg font-semibold">Total Comments</h2>
+                    <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
+                </div>
+            
+                <!-- Positive Comments Card -->
+                <div class="border border-gray-300 rounded-lg shadow-md p-8">
+                    <h2 class="text-lg font-semibold positive">Positive</h2>
+                    <h4 class="text-3xl font-bold text-center">{{ positive_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
+                </div>
+            
+                <!-- Negative Comments Card -->
+                <div class="border border-gray-300 rounded-lg shadow-md p-8">
+                    <h2 class="text-lg font-semibold negative">Negative</h2>
+                    <h4 class="text-3xl font-bold text-center">{{ negative_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
+                </div>
+            
+                <!-- Neutral Comments Card -->
+                <div class="border border-gray-300 rounded-lg shadow-md p-8">
+                    <h2 class="text-lg font-semibold neutral">Neutral</h2>
+                    <h4 class="text-3xl font-bold text-center">{{ neutral_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+
+    <div class="mx-12  pl-8">
+        <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col md:flex-row mt-6 border-2">
+            <div class="flex-grow">
+                <h2 class="text-lg font-semibold mb-4">Sentiment Analysis this semester</h2>                  
+                <!-- Positive Sentiment -->
+                <div class="flex items-center justify-between mb-2  primary">
+                    <div class="flex items-center">
+                        <span class="material-icons primary"></span>
+                        <span class="ml-2 primary">Positive</span>
+                    </div>
+                    <p class="text-3xl font-bold">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full mt-2">
+                    <div class="bg-[#32de84] h-2 rounded-full" 
+                    style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;">
+                    </div>
+                </div>
+                <!-- Neutral Sentiment -->
+                <div class="flex items-center justify-between mb-2 mt-4 primary">
+                    <div class="flex items-center">
+                        <span class="material-icons"></span>
+                        <span class="ml-2">Neutral</span>
+                    </div>
+                    <p class=" text-3xl font-bold">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full mt-2">
+                    <div class="bg-[#FFEB3B] h-2 rounded-full" 
+                    style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                </div>
+                <!-- Negative Sentiment -->
+                <div class="flex items-center justify-between mb-2 mt-4 primary">
+                    <div class="flex items-center">
+                        <span class="material-icons "></span>
+                        <span class="ml-2">Negative</span>
+                    </div>
+                    <p class="text-3xl font-bold">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full mt-2">
+                    <div class="bg-[#EF5350] h-2 rounded-full" 
+                    style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                </div>
+
+            </div>
+            <!--Pie Chart -->
+            <div class="mt-4 md:mt-0 md:ml-6">
+                <canvas id="sentimentPieChart" width="150" height="250"></canvas>
+            </div>
+                
+        </div>
+    
+        <section>
+            <div class="flex flex-wrap justify-center gap-4 mt-10">
+                <!-- Left Column: Sentiment Bar Chart -->
+                <div class="w-full md:w-1/2 bg-white rounded-lg shadow-md p-4">
+                    <h2 class="text-lg font-bold primary mb-2 text-center">Sentiment Analysis Comparison Over Semesters</h2>
+                    <div class="flex justify-center items-center">
+                        <canvas id="sentimentBarChart" ></canvas>
+                    </div>
+                </div>
+        
+                <!-- Right Column: Stacked Bar Chart -->
+                <div class="w-full md:w-1/2 bg-white rounded-lg shadow-emerald-700 p-4">
+                    <h2 class="text-lg font-semibold mb-4 text-center">Semester Comparison</h2>
+                    <div class="flex justify-center items-center">
+                        <canvas id="stackbarchart" width="600px" height="300px"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        
+        <section>
+            <div class="bg-white rounded-lg shadow-md mt-10 border-2">
+                <h2 class="text-lg font-bold primary mb-2">Faculty Evaluation Sentiment Comparison</h2>
+                <div class="overflow-x-auto">
+                    <div class="table-border">
+                        <table class="data-table w-full border-collapse text-sm">
+                            <thead class="table-header bg-gray-100">
+                                <tr>
+                                    <th class="table-cell px-2 py-1 border border-gray-300">Semester</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300">Total Comments</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300">Positive</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300">Neutral</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300">Negative</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for semester in semester_counts %}
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="table-cell px-2 py-1 border border-gray-300">{{ semester.ay_name }}</td>
+                                        <td class="table-cell px-2 py-1 border border-gray-300">
+                                            {{ semester.comment_count }}
+                                        </td>
+                                        <td class="table-cell px-2 py-1 border border-gray-300">{{ semester.positive_count }}</td>
+                                        <td class="table-cell px-2 py-1 border border-gray-300">{{ semester.neutral_count }}</td>
+                                        <td class="table-cell px-2 py-1 border border-gray-300">{{ semester.negative_count }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        
+        
+        
+        
+    </div>
+    
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const semesterData = {{ semester_counts | tojson }};
+            
+            // Extract labels and data
+            const labels = semesterData.map(semester => semester.ay_name); // Semester names
+            const positiveData = semesterData.map(semester => semester.positive_count); // Positive comments
+            const neutralData = semesterData.map(semester => semester.neutral_count); // Neutral comments
+            const negativeData = semesterData.map(semester => semester.negative_count); // Negative comments
+            
+            // Regular Bar Chart
+            const ctxBar = document.getElementById('sentimentBarChart').getContext('2d');
+            new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Positive Comments',
+                            data: positiveData,
+                            backgroundColor: '#32de84'
+                        },
+                        {
+                            label: 'Neutral Comments',
+                            data: neutralData,
+                            backgroundColor: '#FFEB3B'
+                        },
+                        {
+                            label: 'Negative Comments',
+                            data: negativeData,
+                            backgroundColor: '#EF5350'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        title: { display: true, text: 'Sentiment Analysis by Semester (Bar Chart)' }
+                    },
+                    scales: {
+                        x: { beginAtZero: true },
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+    
+            // Stacked Bar Chart
+            const ctxStackBar = document.getElementById('stackbarchart').getContext('2d');
+            new Chart(ctxStackBar, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Positive Comments',
+                            data: positiveData,
+                            backgroundColor: '#32de84'
+                        },
+                        {
+                            label: 'Neutral Comments',
+                            data: neutralData,
+                            backgroundColor: '#FFEB3B'
+                        },
+                        {
+                            label: 'Negative Comments',
+                            data: negativeData,
+                            backgroundColor: '#EF5350'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: false   ,
+                    plugins: {
+                        legend: { position: 'top' },
+                        title: { display: true, text: 'Sentiment Analysis by Semester (Stacked Bar Chart)' }
+                    },
+                    scales: {
+                        x: { stacked: true }, // Enable stacking for x-axis
+                        y: { stacked: true, beginAtZero: true } // Enable stacking for y-axis
+                    }
+                }
+            });
+        });
+    </script>
+    
+    
+    
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {      
+            const ctxPie = document.getElementById('sentimentPieChart').getContext('2d');
+            new Chart(ctxPie, {
+                type: 'pie',
+                data: {
+                    labels: ['Positive', 'Neutral', 'Negative'],
+                    datasets: [{
+                        label: 'Sentiments',
+                        data: [
+                            {{ positive_count }},
+                            {{ neutral_count }},
+                            {{ negative_count }}
+                        ],
+                        backgroundColor: ['#32de84', '#FFEB3B', '#EF5350']
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    plugins: {
+                        legend: { position: 'top' }
+                    }
+                }
+            }); 
+        });
+    </script>
+
+{% endblock %}

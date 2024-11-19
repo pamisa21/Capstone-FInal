@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/variable.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/printoverall.css') }}">
 {% endblock css %}
 
 {% block content %}
@@ -20,9 +21,9 @@
             <div id="Comments">
                 <div class="flex flex-col md:flex-row justify-between items-center mb-2">
                     <div class="faculty-results-heading">
-                        <h2 class="text-lg font-bold primary">Faculty Results</h2>
+                        <h2 class="text-lg font-bold primary">Faculty Sentiment Results</h2>
                     </div>
-                    <button class="print-button border border-gray-300 rounded-md px-4 py-2 text-sm text-white bg-[#00B4D8] shadow-lg transition-all duration-300 transform hover:bg-[#023047] hover:text-white hover:shadow-2xl focus:outline-none" onclick="printFacultyResults()">
+                    <button class="print-button start border border-gray-300 rounded-md px-4 py-2 text-sm shadow-lg transition-all duration-300 transform " onclick="printFacultyResults()">
                         Print Results
                     </button>
                 </div>
@@ -40,7 +41,7 @@
 
                 <section class="p-3 mb-5">
                     <!-- Faculty Information Section -->
-                    <div class="flex flex-col space-y-4 text-center mb-10 green1 text-lg ">
+                    <div class="flex flex-col space-y-4 text-center mb-10  primary text-lg ">
                         <div class="flex justify-center items-center space-x-2 ">
                             <span class="font-bold">Full Name:</span>
                             <span class="font-normal">{{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.</span>
@@ -66,19 +67,19 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <!-- Sentiment cards -->
-                    <div class="bg-[#00B4D8] text-white rounded-lg shadow-md mb-5 p-8 flex flex-col hvr-grow">
+                    <div class="bg-[#004526] text-white rounded-lg shadow-md mb-5 p-8 flex flex-col hvr-grow">
                         <h2 class="text-lg font-semibold">Total Comments</h2>
                         <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
                     </div>
-                    <div class="bg-white border-l-4 border-green-500 rounded-lg shadow-md mb-5 p-8 flex flex-col hvr-grow">
+                    <div class="bg-[white] border-l-4 border-[#32de84] rounded-lg shadow-md mb-5 p-8 flex flex-col hvr-grow">
                         <h2 class="text-lg font-semibold positive">Positive</h2>
                         <h4 class="text-3xl font-bold text-center positive">{{ positive_comments }} <span class="ml-2 text-sm primary">Comments</span></h4>
                     </div>
-                    <div class="bg-white border-l-4 border-red-500 rounded-lg shadow-md mb-5 p-8 flex flex-col relative hvr-grow">
+                    <div class="bg-white border-l-4 border-[#EF5350] rounded-lg shadow-md mb-5 p-8 flex flex-col relative hvr-grow">
                         <h2 class="text-lg font-semibold negative">Negative</h2>
                         <h4 class="text-3xl font-bold text-center text-red-500">{{ negative_comments }} <span class="ml-2 text-sm primary">Comments</span></h4>
                     </div>
-                    <div class="bg-white border-l-4 border-yellow-500 rounded-lg shadow-md mb-5 p-8 flex flex-col relative hvr-grow">
+                    <div class="bg-white border-l-4 border-[#FFEB3B] rounded-lg shadow-md mb-5 p-8 flex flex-col relative hvr-grow">
                         <h2 class="text-lg font-semibold neutral">Neutral</h2>
                         <h4 class="text-3xl font-bold text-center neutral">{{ neutral_comments }} <span class="ml-2 text-sm primary">Comments</span></h4>
                     </div>
@@ -177,12 +178,12 @@
                         <p class="mb-2">Department: {{ department.department_name }}</p>
                     </div>
                     
-                    <div class="faculty-result mb-6 p-2 border-gray-200 rounded-lg shadow-sm">
+                    <div class="faculty-result mb-6 p-2 border-gray-200 rounded-lg shadow-sm primary mt-5">
                         <h2 class="text-xl font-semibold primary mb-4">Sentiment Results</h2>
-                        <p class="secondary mb-2">Total Comments: <span class="font-medium">{{ total_comments }}</span> Comments</p>
-                        <p class="positive mb-2">Positive: <span class="font-medium">{{ positive_comments }}</span> Comments</p>
-                        <p class="negative mb-2">Negative: <span class="font-medium">{{ negative_comments }}</span> Comments</p>
-                        <p class="neutral mb-2">Neutral: <span class="font-medium">{{ neutral_comments }}</span> Comments</p>
+                        <p class="primary mb-2">Total Comments: <span class="font-medium">{{ total_comments }}</span> Comments</p>
+                        <p class=" mb-2">Positive: <span class="font-medium">{{ positive_comments }}</span> Comments</p>
+                        <p class=" mb-2">Negative: <span class="font-medium">{{ negative_comments }}</span> Comments</p>
+                        <p class=" mb-2">Neutral: <span class="font-medium">{{ neutral_comments }}</span> Comments</p>
                     </div>
 
 

@@ -237,8 +237,8 @@ input:checked + .toggle-bg + .toggle-dot {
   
 }
 .active-link {
-    background-color: var(--primary);
-    color: white; 
+    color: var(--secondary);
+   
     border-radius: 2px;
 }
 
@@ -260,7 +260,20 @@ input:checked + .toggle-bg + .toggle-dot {
    
     margin-bottom: 20px;
 }
-
+@media (min-width: 768px) {
+    .adjust-top {
+      top: 7%;
+    }
+  }
+  @media (max-width: 768px) {
+    .center-getstarte {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto;
+    }
+  }
+    
 
 /* accounts css */
 #accounts button{
@@ -544,7 +557,7 @@ input:checked + .toggle-bg + .toggle-dot {
     transform: perspective(1px) translateZ(0);
     box-shadow: 0 0 1px rgba(0, 0, 0, 0);
     position: relative;
-    background-color: var(--secondary);
+    background-color: var(--primary);
     -webkit-transition-property: color;
     transition-property: color;
     -webkit-transition-duration: 0.3s;
@@ -558,7 +571,7 @@ input:checked + .toggle-bg + .toggle-dot {
     bottom: 0;
     left: 0;
     right: 0;
-    background: var(--primary);
+    background: var(--secondary);
     border-radius: 5px;
     -webkit-transform: scaleX(0);
     transform: scaleX(0);

@@ -51,8 +51,12 @@
       </a>
     </nav>
 
+
+
+
+
     <!-- Mobile Menu (Hidden by default) -->
-    <div class="hidden bg-white shadow-lg absolute right-0 top-0 z-[10000]" id="mobile-menu">
+    <div class="hidden bg-white shadow-lg absolute right-0 top-1 z-[10000]" id="mobile-menu">
       <!-- Exit button -->
       <button onclick="toggleMobileMenu()" class="absolute top-4 right-4 p-2 text-gray-600 hover:text-gray-800">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -61,33 +65,42 @@
       </button>
     
       <!-- Menu items -->
-      <ul class="px-4 pt-4 pb-4 font-semibold font-heading space-y-4 text-gray">
-        <li><a class="hover:text-gray-200" href="#" onclick="showSection('house')">house</a></li>
-        <li><a class="hover:text-gray-200" href="#" onclick="showSection('about')">Team</a></li>
-        <li><a class="hover:text-gray-200" href="#" onclick="showSection('contact')">Contact</a></li>
-      </ul>
+      <!-- Menu items -->
+<ul class="px-4 pt-4  mt-7 font-semibold font-heading space-y-4 text-gray">
+  <li><a class="hover:text-gray-200" href="#" onclick="showSection('home')">
+    <i class="ph ph-house mr-2"></i> Home</a></li>
+  <li><a class="hover:text-gray-200" href="#" onclick="showSection('about')">
+    <i class="ph ph-users mr-2"></i> Team</a></li>
+  <li><a class="hover:text-gray-200" href="#" onclick="showSection('contact')">
+    <i class="ph ph-envelope mr-2"></i> Contact</a></li>
+</ul>
 
-      {% if 'user_id' in session %}
-        <!-- Dashboard button on mobile view if logged in -->
-        <div class="flex space-x-4 mt-4 w-full h-auto p-6">
-          <a href="{{ url_for('dashboard') }}" class="flex items-center justify-center border rounded-md px-4 py-4 bg-black text-white w-full">
-            <i class="ph ph-house text-current"></i>
-            <span>Dashboard</span>
-          </a>
-        </div>
-      {% else %}
-        <!-- Login and Signup buttons on mobile view -->
-        <div class="flex space-x-4 mt-4 w-full h-auto p-6">
-          <a href="{{ url_for('login') }}" class="flex items-center justify-center border rounded-md px-4 py-4 bg-transparent text-black w-1/2">
-            <i class="ph ph-sign-in text-current"></i>
-            <span>Login</span>
-          </a>
-          <a href="{{ url_for('register') }}" class="flex items-center justify-center border rounded-md px-4 py-4 bg-black text-white w-1/2">
-            <i class="ph ph-user-plus text-current"></i>
-            <span>Sign up</span>
-          </a>
-        </div>
-      {% endif %}
+{% if 'user_id' in session %}
+  <!-- Dashboard button on mobile view if logged in -->
+  <ul class="mt-4 space-y-4 w-full h-auto p-6">
+    <li>
+      <a href="{{ url_for('dashboard') }}" class="flex items-center justify-center border rounded-md px-4 py-4 bg-black text-white w-full">
+        <i class="ph ph-house text-current"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+  </ul>
+{% else %}
+  <!-- Login and Signup buttons on mobile view -->
+  <ul class="space-y-4 w-full h-auto p-6">
+    <li>
+      <a href="{{ url_for('login') }}" class="flex items-center justify-center border rounded-md p-4 bg-transparent text-black w-full">
+        <span>Login</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('register') }}" class="flex items-center justify-center border rounded-md px-4 py-4 bg-black text-white w-full">
+        <span>Sign-up</span>
+      </a>
+    </li>
+  </ul>
+{% endif %}
+
     </div>
   </section>
 </div>

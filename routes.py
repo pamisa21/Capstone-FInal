@@ -769,15 +769,15 @@ def view_comment(comment_id):
 
 # History 
 
-@app.route('/history')
-def history():
-    # history view logic here
-    return render_template('history.html')
+# @app.route('/history')
+# def history():
+#     # history view logic here
+#     return render_template('history.html')
 
-#   Loading  History 
-@app.route('/loading_history')
-def loading_history():
-    return redirect(url_for("loading_screen", target=url_for("history")))
+# #   Loading  History 
+# @app.route('/loading_history')
+# def loading_history():
+#     return redirect(url_for("loading_screen", target=url_for("history")))
 
 
 # View Coments Sentiment Resutls Routes s
@@ -1076,6 +1076,7 @@ def view_faculty(faculty_id):
     return redirect(url_for('loading_screen', target=url_for('login')))
 
 
+# faculy resutls 
 
 @app.route('/faculty/comments/<faculty_id>', methods=['GET'])
 def faculty_comments(faculty_id):
@@ -1110,22 +1111,21 @@ def faculty_comments(faculty_id):
         )
         default_semester_obj = AY_SEM.query.filter_by(ay_id=selected_semester).first()
 
-        # Query comments specific to the selected faculty member, join AY_SEM and Subject, and filter by ay_id
+        # Query comments specific to the selected faculty member for the selected semester
         comments_query = (
             db.session.query(Comment, AY_SEM, Subject)
             .filter(Comment.faculty_id == faculty_id)
             .join(AY_SEM, Comment.ay_id == AY_SEM.ay_id)
             .join(Subject, Comment.subject_id == Subject.subject_id)
             .filter(Comment.category != 3)
-            .filter(Comment.ay_id == selected_semester)  # Filter by selected semester
+            .filter(Comment.ay_id == selected_semester)
         )
 
-        # Extract comments, their ay_sem associations, and related subject info
         comments = [
             {"comment": comment, "ay_sem": ay_sem, "subject": subject} for comment, ay_sem, subject in comments_query.all()
         ]
 
-        # Group comments by subject_id to avoid duplicates and include student_num
+        # Group comments by subject_id
         subjects = {}
         for item in comments:
             subject_id = item["comment"].subject_id
@@ -1133,17 +1133,37 @@ def faculty_comments(faculty_id):
                 subjects[subject_id] = {
                     "subject_id": subject_id,
                     "comments": [],
-                    "student_num": item["subject"].student_num  # Include student_num
+                    "student_num": item["subject"].student_num
                 }
             subjects[subject_id]["comments"].append(item["comment"])
 
-        # Sentiment counts based on category in Comment model
+        # Sentiment counts for the selected semester
         total_comments = comments_query.count()
-        positive_comments = comments_query.filter(Comment.category == 2).count()
-        negative_comments = comments_query.filter(Comment.category == 0).count()
-        neutral_comments = comments_query.filter(Comment.category == 1).count()
+        positive_count = comments_query.filter(Comment.category == 2).count()
+        neutral_count = comments_query.filter(Comment.category == 1).count()
+        negative_count = comments_query.filter(Comment.category == 0).count()
 
-        # Render template with comments and sentiment data
+        # Sentiment counts for all semesters
+        semester_sentiment_counts = {}
+        for semester in all_semesters:
+            sentiment_query = (
+                db.session.query(Comment)
+                .filter(Comment.faculty_id == faculty_id)
+                .filter(Comment.ay_id == semester.ay_id)
+                .filter(Comment.category != 3)
+            )
+            positive = sentiment_query.filter(Comment.category == 2).count()
+            neutral = sentiment_query.filter(Comment.category == 1).count()
+            negative = sentiment_query.filter(Comment.category == 0).count()
+
+            semester_sentiment_counts[semester.ay_id] = {
+                'semester_name': semester.ay_name,
+                'positive': positive,
+                'neutral': neutral,
+                'negative': negative
+            }
+
+        # Render template
         return render_template(
             'Crud/faculty_comments.html',
             username=username,
@@ -1151,16 +1171,18 @@ def faculty_comments(faculty_id):
             college=college,
             department=department,
             comments=comments,
-            subjects=subjects,  # Pass the grouped subjects with student_num to the template
+            subjects=subjects,
             total_comments=total_comments,
-            positive_comments=positive_comments,
-            negative_comments=negative_comments,
-            neutral_comments=neutral_comments,
+            positive_count=positive_count,
+            neutral_count=neutral_count,
+            negative_count=negative_count,
             all_semesters=all_semesters,
-            default_semester=default_semester_obj
+            default_semester=default_semester_obj,
+            semester_sentiment_counts=semester_sentiment_counts  # Pass sentiment counts for all semesters
         )
 
     return redirect(url_for('loading_screen', target=url_for('login')))
+
 
 
 # Profile 

@@ -7,20 +7,22 @@
                 <!-- Logo -->
                 <a href="#" class="flex items-center">
                     <img src="{{ url_for('static', filename='img/feslogo.png') }}" class="h-7 mr-1 w-auto">
-                    <span class="text-2xl font-bold font-heading primary">COM FES</span>
+                    <span class="text-2xl font-bold font-heading primary hidden sm:inline">COM FES</span>
                 </a>
+                
 
                 <!-- Icon Section (left side) -->
                 <div class="flex items-center space-x-5 ml-auto">
-                    <div class="flex items-center space-x-5 ml-auto  ">
-                        <select id="navbarsemesterDropdown" class="px-4 py-2 text-sm w-full  ">
+                    <div class="flex items-center space-x-5 ml-auto">
+                        <select id="navbarsemesterDropdown" class="px-4 py-2 text-sm w-full">
                             {% for semester in all_semesters %}
                                 <option value="{{ semester.ay_id }}" {% if semester.ay_id == selected_semester %} selected {% endif %}>
-                                    {{ semester.ay_name }}
+                                    <span class="sm:text-ellipsis sm:whitespace-nowrap sm:w-12">{{ semester.ay_name }}</span>
                                 </option>
                             {% endfor %}
                         </select>
                     </div>
+                    
                     
                     <script>
                         document.addEventListener("DOMContentLoaded", function() {
@@ -56,7 +58,7 @@
                     
                     
                     <!-- Notification dropdown -->
-                    <div class="relative">
+                    <div class="relative hidden sm:block">
                        
                         <input type="checkbox" id="notification-toggle" class="hidden peer" />
                         <label for="notification-toggle" class="flex items-center cursor-pointer" title="notification">
@@ -121,12 +123,16 @@
                                     <a class="hover:text-gray-600 transition-colors duration-200 {% if request.path == url_for('evaluate') %} active-link {% endif %}" href="{{ url_for('evaluate') }}">Evaluate</a>
                                 </li>
                                 <li>
-                                    <a class="hover:text-gray-600 transition-colors duration-200 {% if request.path == url_for('history') %} active-link {% endif %}" href="{{ url_for('history') }}">History</a>
+                                    <a class="hover:text-gray-600 transition-colors duration-200 {% if request.path == url_for('analys') %} active-link {% endif %}" href="{{ url_for('analys') }}">New Comments</a>
                                 </li>
                 
                                 <li>
                                     <a class="hover:text-gray-600 transition-colors duration-200 {% if request.path == url_for('comments') %} active-link {% endif %}" href="{{ url_for('comments') }}">Comments</a>
                                 </li>
+                                <li>
+                                    <a class="hover:text-gray-600 transition-colors duration-200 {% if request.path == url_for('faculty') %} active-link {% endif %}" href="{{ url_for('faculty') }}">Faculty</a>
+                                </li>
+                                
                             </ul>
                         </div>
                         

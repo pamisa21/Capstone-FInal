@@ -5,243 +5,171 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/printoverall.css') }}">
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+
+
 {% endblock css %}
 
 {% block content %}
-<div class="flex flex-col h-screen">
-    <header>
-        {% include "includes/navbar.html" %}
-    </header>
-
-    <div class="flex flex-1">
-        {% include "includes/sidebar.html" %}
-
-        <!-- Main Content Container -->
-        <main class="flex-1 p-5 mx-5 mt-24 ml-2 md:ml-60">
-            <div id="Comments">
-                <div class="flex flex-col md:flex-row justify-between items-center mb-2">
-                    <div class="faculty-results-heading">
-                        <h2 class="text-lg font-bold primary">Faculty Sentiment Results</h2>
-                    </div>
-                    <button class="print-button start border border-gray-300 rounded-md px-4 py-2 text-sm shadow-lg transition-all duration-300 transform " onclick="printFacultyResults()">
-                        Print Results
-                    </button>
-                </div>
-
-                <script>
-                    function printFacultyResults() {
-                      
-                        const printContent = document.getElementById('printLayout').innerHTML;
-                        const originalContent = document.body.innerHTML; 
-                        document.body.innerHTML = printContent;
-                        window.print();
-                        document.body.innerHTML = originalContent;
-                    }
-                </script>
-
-                <section class="p-3 mb-5">
-                    <!-- Faculty Information Section -->
-                    <div class="flex flex-col space-y-4 text-center mb-10  primary text-lg ">
-                        <div class="flex justify-center items-center space-x-2 ">
-                            <span class="font-bold">Full Name:</span>
-                            <span class="font-normal">{{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.</span>
-                        </div>
-                        <div class="flex justify-center items-center space-x-2  ">
-                            <span class="font-bold">College:</span>
-                            <span class="font-normal">{{ college.college_name }}</span>
-                        </div>
-                        <div class="flex justify-center items-center space-x-2  ">
-                            <span class="font-bold">Department:</span>
-                            <span class="font-normal">{{ department.department_name }}</span>
-                        </div>
-                        <div class="flex justify-center items-center space-x-2  ">
-                            <span class="font-bold ">Semester:</span>
-                            <span class="font-normal ">{{ default_semester.ay_name }}</span>
-                        </div>
-                    </div>
-                </section>
-
-                <div class="p-2 text-lg font-bold maze">
-                    <h2 class="primary">Sentiment Overview</h2>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <!-- Sentiment cards -->
-                    <div class="bg-[#004526] text-white rounded-lg shadow-md mb-5 p-8 flex flex-col hvr-grow">
-                        <h2 class="text-lg font-semibold">Total Comments</h2>
-                        <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
-                    </div>
-                    <div class="bg-[white] border-l-4 border-[#32de84] rounded-lg shadow-md mb-5 p-8 flex flex-col hvr-grow">
-                        <h2 class="text-lg font-semibold positive">Positive</h2>
-                        <h4 class="text-3xl font-bold text-center positive">{{ positive_comments }} <span class="ml-2 text-sm primary">Comments</span></h4>
-                    </div>
-                    <div class="bg-white border-l-4 border-[#EF5350] rounded-lg shadow-md mb-5 p-8 flex flex-col relative hvr-grow">
-                        <h2 class="text-lg font-semibold negative">Negative</h2>
-                        <h4 class="text-3xl font-bold text-center text-red-500">{{ negative_comments }} <span class="ml-2 text-sm primary">Comments</span></h4>
-                    </div>
-                    <div class="bg-white border-l-4 border-[#FFEB3B] rounded-lg shadow-md mb-5 p-8 flex flex-col relative hvr-grow">
-                        <h2 class="text-lg font-semibold neutral">Neutral</h2>
-                        <h4 class="text-3xl font-bold text-center neutral">{{ neutral_comments }} <span class="ml-2 text-sm primary">Comments</span></h4>
-                    </div>
-                </div>
 
 
-                <div class="mt-4">
-                    <h2 class="text-lg font-bold primary mb-2">Student Statistics Overview</h2>
-                    <div class="overflow-x-auto">
-                        <div class="table-border">
-                            <table class="data-table w-full border-collapse text-sm">
-                                <thead class="table-header bg-gray-100">
-                                    <tr>
-                                        <!-- <th class="table-cell">No</th> -->
-                                        <th class="table-cell px-2 py-1 border border-gray-300">Subject</th>
-                                        <th class="table-cell px-2 py-1 border border-gray-300">Total Student</th>
-                                        <th class="table-cell px-2 py-1 border border-gray-300">With Comments</th>
-                                        <th class="table-cell px-2 py-1 border border-gray-300">Without Comments</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="table-body">
-                                    {% for subject in subjects.values() %}
-                                    <tr class="odd:bg-white even:bg-gray-50">
-                                        <!-- <td class="table-cell px-2 py-1">{{ loop.index }}</td> -->
-                                        <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.subject_id }}</td>
-                                        <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.student_num }}</td>
-                                        <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.comments | length }}</td>
-                                        <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.student_num - (subject.comments | length) }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+<div >
+    <div class="header border-b-2 mb-5">
+        <div class="header-content text-center p-4">
+            <h1>ANALYZING AND VISUALIZING COMMENTS IN CMU FACULTY EVALUATION SYSTEM</h1>
+            <p class="primary">Empowering insights for continuous improvement</p>
+        </div>
+    </div>
+
+    <div class="content p-2">
+        <div class="flex justify-center items-center space-x-2 mb-1 ">
+            <span class="font-bold">Central Mindanao University</span>
+        </div>
+        <div class="flex justify-center items-center space-x-2 mb-1  ">
+            
+            <span class="font-bold">{{ college.college_name }}</span>
+        </div>
+        <div class="flex justify-center items-center space-x-2  mb-1 ">               
+            <span class="font-semibold">{{ department.department_name }}</span>
+        </div>
+        <div class="flex justify-center items-center space-x-2 mb-1 ">
+            
+            <span class="font-bold">{{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.</span>
+        </div>
+        
+        
+        <div class="flex justify-center items-center space-x-3  mb-1 ">
+            <span class="font-bold "></span>
+            <span class="font-normal ">{{ default_semester.ay_name }}</span>
+        </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row justify-between items-center  mx-12">
+        <div class="faculty-results-heading">
+            <h2 class="text-lg font-bold primary">Faculty Sentiment Results</h2>
+        </div>
+        <button class="print-button start border border-gray-300 rounded-md px-4 py-2 text-sm shadow-lg transition-all duration-300 transform" onclick="printFacultyResults()">
+            Print Results
+        </button>
+    </div>
+    
+    
+    
+
+
+    <section >
+        <div id="stockbar" class="mt-10 mb-2 flex flex-wrap mx-12 gap-6 items-start">
+            <!-- Sentiment Analysis Section -->
+            <div class="bg-white rounded-lg shadow-lg p-8 flex-1 border-2">
+                <h2 class="text-2xl font-semibold mb-6 text-gray-800">Sentiment Analysis This Semester</h2>
                 
-                
-
-                <div class="mt-4">
-                    <h2 class="text-lg font-bold primary mb-2">Comments</h2>
-                    <div class="overflow-x-auto">
-                        <div class="table-border">
-                            <table class="data-table">
-                                <thead class="table-header">
-                                    <tr>
-                                        <th class="table-cell">No</th>
-                                        <th class="table-cell">Subject </th>
-                                        <th class="table-cell">Comment</th>
-                                        <th class="table-cell">Category</th>
-                                        <!-- <th class="table-cell">Semester </th>
-                                        <th class="table-cell">Date Added</th> -->
-                                    </tr>
-                                </thead>
-                                <tbody class="table-body">
-                                    {% for item in comments %}
-                                    <tr>
-                                        <td class="table-cell">{{ loop.index }}</td>
-                                        <td class="table-cell">{{ item.comment.subject_id }}</td>
-                                        <td class="table-cell">{{ item.comment.comment }}</td>
-                                       
-                                        <td class="table-cell">
-                                            {% if item.comment.category == 1 %} Neutral
-                                            {% elif item.comment.category == 2 %} Positive
-                                            {% elif item.comment.category == 0 %} Negative
-                                            {% else %} Unknown {% endif %}
-                                        </td>
-                                        <!-- <td class="table-cell">{{ item.ay_sem.ay_name }}</td>
-                                        <td class="table-cell">{{ item.comment.date_added.strftime('%B %d, %Y') }}</td> -->
-                                    </tr>
-                                    {% else %}
-                                    <tr>
-                                        <td colspan="5" class="table-cell text-center">No comments available for this semester.</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                <!-- Positive Sentiment -->
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center">
+                        <span class="material-icons text-[#32de84]">thumb_up</span>
+                        <span class="ml-2 text-gray-700 font-medium">Positive</span>
                     </div>
+                    <p class="text-3xl font-bold text-gray-800">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-[#32de84] h-2 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                </div>
+        
+                <!-- Neutral Sentiment -->
+                <div class="flex items-center justify-between mb-4 mt-6">
+                    <div class="flex items-center">
+                        <span class="material-icons text-[#FFEB3B]">thumbs_up_down</span>
+                        <span class="ml-2 text-gray-700 font-medium">Neutral</span>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-800">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-[#FFEB3B] h-2 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                </div>
+        
+                <!-- Negative Sentiment -->
+                <div class="flex items-center justify-between mb-4 mt-6">
+                    <div class="flex items-center">
+                        <span class="material-icons text-[#EF5350]">thumb_down</span>
+                        <span class="ml-2 text-gray-700 font-medium">Negative</span>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-800">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-[#EF5350] h-2 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                
+            </div>
+                
+            </div>
+        
+            <!-- Semester Comparison Section -->
+            <div class="bg-white rounded-lg shadow-lg p-4 flex items-center justify-center flex-1 border-2">
+                <div class="text-center">
+                    <h2 class="text-2xl font-semibold mb-2 text-gray-800">Semester Comparison</h2>
+                    <canvas id="stackbarchart" width="250" height="250"></canvas>
                 </div>
             </div>
+        </div>
 
-            <!-- Hidden Print Layout -->
-            <div id="printLayout" style="display: none;">
-                <div class="header border-b-2 mb-5">
-                    <div class="header-content text-center p-4">
-                        <h1>ANALYZING AND VISUALIZING COMMENTS IN CMU FACULTY EVALUATION SYSTEM</h1>
-                        <p class="primary">Empowering insights for continuous improvement</p>
-                    </div>
-                </div>
-                
-                <div class="content mb-5">
-                    <div class="faculty-info text-center mx-auto p-4">
-                        <h2 class="mb-2">Overall Results of Faculty Teaching Performance <br> {{ default_semester.ay_name }}</h2>
-                        <p class="mb-2">Full Name: {{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.</p>
-                        <p class="mb-2">College: {{ college.college_name }}</p>
-                        <p class="mb-2">Department: {{ department.department_name }}</p>
-                    </div>
-                    
-                    <div class="faculty-result mb-6 p-2 border-gray-200 rounded-lg shadow-sm primary mt-5">
-                        <h2 class="text-xl font-semibold primary mb-4">Sentiment Results</h2>
-                        <p class="primary mb-2">Total Comments: <span class="font-medium">{{ total_comments }}</span> Comments</p>
-                        <p class=" mb-2">Positive: <span class="font-medium">{{ positive_comments }}</span> Comments</p>
-                        <p class=" mb-2">Negative: <span class="font-medium">{{ negative_comments }}</span> Comments</p>
-                        <p class=" mb-2">Neutral: <span class="font-medium">{{ neutral_comments }}</span> Comments</p>
-                    </div>
+    </section>
+
+    <section class="mx-12 mt-4">
+        <div class="p-2 text-lg font-bold maze">
+            <h2 class="primary">Sentiment Overview</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <!-- Sentiment cards -->
+            <div class="bg-[#004526] text-white rounded-lg shadow-md mb-5 p-8 flex flex-col hvr-grow">
+                <h2 class="text-lg font-semibold">Total Comments</h2>
+                <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
+            </div>
+            <div class="bg-[white] border-l-4 border-[#32de84] rounded-lg shadow-md mb-5 p-8 flex flex-col hvr-grow">
+                <h2 class="text-lg font-semibold positive">Positive</h2>
+                <h4 class="text-3xl font-bold text-center positive">{{ positive_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
+            </div>
+            <div class="bg-white border-l-4 border-[#EF5350] rounded-lg shadow-md mb-5 p-8 flex flex-col relative hvr-grow">
+                <h2 class="text-lg font-semibold negative">Negative</h2>
+                <h4 class="text-3xl font-bold text-center text-red-500">{{ negative_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
+            </div>
+            <div class="bg-white border-l-4 border-[#FFEB3B] rounded-lg shadow-md mb-5 p-8 flex flex-col relative hvr-grow">
+                <h2 class="text-lg font-semibold neutral">Neutral</h2>
+                <h4 class="text-3xl font-bold text-center neutral">{{ neutral_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
+            </div>
+        </div>
+    </section>
 
 
-                    <div class="mt-4 mb-5">
-                        <h2 class="text-lg font-bold primary mb-2">Student Statistics Overview</h2>
-                        <div class="overflow-x-auto">
-                            <div class="table-border">
-                                <table class="data-table w-full border-collapse text-sm">
-                                    <thead class="table-header bg-gray-100">
-                                        <tr>
-                                            <!-- <th class="table-cell">No</th> -->
-                                            <th class="table-cell px-2 py-1 border border-gray-300">Subject</th>
-                                            <th class="table-cell px-2 py-1 border border-gray-300">Total Student</th>
-                                            <th class="table-cell px-2 py-1 border border-gray-300">With Comments</th>
-                                            <th class="table-cell px-2 py-1 border border-gray-300">Without Comments</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="table-body">
-                                        {% for subject in subjects.values() %}
-                                        <tr class="odd:bg-white even:bg-gray-50">
-                                            <!-- <td class="table-cell px-2 py-1">{{ loop.index }}</td> -->
-                                            <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.subject_id }}</td>
-                                            <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.student_num }}</td>
-                                            <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.comments | length }}</td>
-                                            <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.student_num - (subject.comments | length) }}</td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-4 mb-5">
-                        <h2 class="text-lg font-bold primary mb-2">Student Statistics Overview</h2>
-                        <table class="comments-table">
-                            <thead>
+    <section class="mx-12 ">
+        
+
+        <div class="mt-4">
+                <h2 class="text-lg font-bold primary mb-2">Student Statistics Overview</h2>
+                <div class="overflow-x-auto">
+                    <div class="table-border">
+                        <table class="data-table w-full border-collapse text-sm">
+                            <thead class="table-header bg-gray-100">
                                 <tr>
-                                    <th>No</th>
-                                    <th>Comment</th>
-                                    <th>Category</th>
+                                    <!-- <th class="table-cell">No</th> -->
+                                    <th class="table-cell px-2 py-1 border border-gray-300">Subject</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300">Total Student</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300">With Comments</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300">Without Comments</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {% for item in comments %}
-                                <tr>
-                                    <td>{{ loop.index }}</td>
-                                    <td>{{ item.comment.comment }}</td>
-                                    <td>
-                                        {% if item.comment.category == 1 %} Neutral
-                                        {% elif item.comment.category == 2 %} Positive
-                                        {% elif item.comment.category == 0 %} Negative
-                                        {% else %} Unknown {% endif %}
-                                    </td>
-                                </tr>
-                                {% else %}
-                                <tr>
-                                    <td colspan="3">No comments available for this semester.</td>
+                            <tbody class="table-body">
+                                {% for subject in subjects.values() %}
+                                <tr class="odd:bg-white even:bg-gray-50">
+                                    <!-- <td class="table-cell px-2 py-1">{{ loop.index }}</td> -->
+                                    <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.subject_id }}</td>
+                                    <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.student_num }}</td>
+                                    <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.comments | length }}</td>
+                                    <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.student_num - (subject.comments | length) }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -250,10 +178,239 @@
                 </div>
             </div>
             
+           
+            <div class="mt-5">
+                <h2 class="text-lg font-bold primary mb-2 mt-2">Comments</h2>
+                <div class="overflow-x-auto">
+                    <div class="table-border">
+                        <table class="data-table">
+                            <thead class="table-header">
+                                <tr>
+                                    <th class="table-cell">No</th>
+                                    <th class="table-cell">Subject </th>
+                                    <th class="table-cell">Comment</th>
+                                    <th class="table-cell">Category</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-body">
+                                {% for item in comments %}
+                                <tr>
+                                    <td class="table-cell">{{ loop.index }}</td>
+                                    <td class="table-cell">{{ item.comment.subject_id }}</td>
+                                    <td class="table-cell">{{ item.comment.comment }}</td>
+                                   
+                                    <td class="table-cell">
+                                        {% if item.comment.category == 1 %} Neutral
+                                        {% elif item.comment.category == 2 %} Positive
+                                        {% elif item.comment.category == 0 %} Negative
+                                        {% else %} Unknown {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="table-cell text-center">No comments available for this semester.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-right mt-4 mx-12 p-4">
+            <a href="javascript:history.back()" class="font-semibold primary hover:underline">Back to previous page</a>
+        </div>
+    </section>               
+    
+</div>
 
-                
-         
-        </main>
+<!-- Hidden Print Layout -->
+<div id="printLayout" style="display: none;">
+    <div class="header border-b-2 mb-5">
+        <div class="header-content text-center p-4">
+            <h1>ANALYZING AND VISUALIZING COMMENTS IN CMU FACULTY EVALUATION SYSTEM</h1>
+            <p class="primary">Empowering insights for continuous improvement</p>
+        </div>
+    </div>
+    
+    <div class="content mb-5">
+        <div class="faculty-info text-center mx-auto p-4">
+            <h2 class="mb-2">Overall Results of Faculty Teaching Performance <br> {{ default_semester.ay_name }}</h2>
+            <p class="mb-2">Full Name: {{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.</p>
+            <p class="mb-2">College: {{ college.college_name }}</p>
+            <p class="mb-2">Department: {{ department.department_name }}</p>
+        </div>
+        
+        <div class="faculty-result mb-6 p-2 border-gray-200 rounded-lg shadow-sm primary mt-5">
+            <h2 class="text-xl font-semibold primary mb-4">Sentiment Results</h2>
+            <p class="primary mb-2">Total Comments: <span class="font-medium">{{ total_comments }}</span> Comments</p>
+            <p class=" mb-2">Positive: <span class="font-medium">{{ positive_comments }}</span> Comments</p>
+            <p class=" mb-2">Negative: <span class="font-medium">{{ negative_comments }}</span> Comments</p>
+            <p class=" mb-2">Neutral: <span class="font-medium">{{ neutral_comments }}</span> Comments</p>
+        </div>
+
+
+        <div class="mt-4 mb-5">
+            <h2 class="text-lg font-bold primary mb-2">Student Statistics Overview</h2>
+            <div class="overflow-x-auto">
+                <div class="table-border">
+                    <table class="data-table w-full border-collapse text-sm">
+                        <thead class="table-header bg-gray-100">
+                            <tr>
+                                <!-- <th class="table-cell">No</th> -->
+                                <th class="table-cell px-2 py-1 border border-gray-300">Subject</th>
+                                <th class="table-cell px-2 py-1 border border-gray-300">Total Student</th>
+                                <th class="table-cell px-2 py-1 border border-gray-300">With Comments</th>
+                                <th class="table-cell px-2 py-1 border border-gray-300">Without Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            {% for subject in subjects.values() %}
+                            <tr class="odd:bg-white even:bg-gray-50">
+                                <!-- <td class="table-cell px-2 py-1">{{ loop.index }}</td> -->
+                                <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.subject_id }}</td>
+                                <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.student_num }}</td>
+                                <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.comments | length }}</td>
+                                <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.student_num - (subject.comments | length) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4 mb-5">
+            <h2 class="text-lg font-bold primary mb-2">Student Statistics Overview</h2>
+            <table class="comments-table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Comment</th>
+                        <th>Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in comments %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ item.comment.comment }}</td>
+                        <td>
+                            {% if item.comment.category == 1 %} Neutral
+                            {% elif item.comment.category == 2 %} Positive
+                            {% elif item.comment.category == 0 %} Negative
+                            {% else %} Unknown {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3">No comments available for this semester.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
+
+
+
+
+
+
+<!-- Bar Graph-->
+<script>
+
+    const semesterData = {{ semester_sentiment_counts | tojson }};
+    
+
+    const labels = Object.values(semesterData).map(item => item.semester_name);
+    const positiveData = Object.values(semesterData).map(item => item.positive);
+    const neutralData = Object.values(semesterData).map(item => item.neutral);
+    const negativeData = Object.values(semesterData).map(item => item.negative);
+
+
+    const barData = {
+        labels: labels,  
+        datasets: [
+            {
+                label: 'Positive',
+                data: positiveData,
+                backgroundColor: '#32de84',
+            },
+            {
+                label: 'Negative',
+                data: negativeData,
+                backgroundColor: '#EF5350',
+            },
+            {
+                label: 'Neutral',
+                data: neutralData,
+                backgroundColor: '#FFEB3B',
+            },
+        ],
+    };
+
+    const barOptions = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Comments by Semester and Category',
+            },
+        },
+    };
+    const barCtx = document.getElementById('stackbarchart').getContext('2d');
+    new Chart(barCtx, {
+        type: 'bar',
+        data: barData,
+        options: barOptions,
+    });
+</script>
+
+
+<!-- Pie Chart-->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {      
+        const ctxPie = document.getElementById('sentimentPieChart').getContext('2d');
+        new Chart(ctxPie, {
+            type: 'pie',
+            data: {
+                labels: ['Positive', 'Neutral', 'Negative'],
+                datasets: [{
+                    label: 'Sentiments',
+                    data: [
+                        {{ positive_count }},
+                        {{ neutral_count }},
+                        {{ negative_count }}
+                    ],
+                    backgroundColor: ['#32de84', '#FFEB3B', '#EF5350']
+                }]
+            },
+            options: {
+                responsive: false,
+                plugins: {
+                    legend: { position: 'top' }
+                }
+            }
+        }); 
+    });
+</script>
+
+
+<!--Printing -->
+<script>
+    function printFacultyResults() {
+      
+        const printContent = document.getElementById('printLayout').innerHTML;
+        const originalContent = document.body.innerHTML; 
+        document.body.innerHTML = printContent;
+        window.print();
+        document.body.innerHTML = originalContent;
+    }
+</script>
+
 {% endblock %}

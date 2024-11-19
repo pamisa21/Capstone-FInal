@@ -8,19 +8,17 @@
 
 {% block content %}
 
-<div class="flex flex-col h-screen">
+<div class="flex flex-col h-screen overflow-x-hidden">
     <header>
         {% include "includes/navbar.html" %}
     </header>
 
-    <div class="flex flex-1">
+    <div class="flex flex-1 flex-col md:flex-row">
         {% include "includes/sidebar.html" %}
 
         <!-- Main Content Container -->
         <main class="flex-1 p-3 mx-5 mt-20 ml-2 md:ml-60">
-           
-            <div id="Accounts" class=" mx-auto bg-white rounded-lg shadow-lg p-4  h-[99%] mx-full w-100">
-               
+            <div id="Accounts" class="mx-auto bg-white rounded-lg shadow-lg p-4 h-[99%] max-w-full">
                 <div class="flex flex-col mb-2 gap-4"> <!-- Changed mb-4 to mb-2 -->
 
                     <!-- Search and Filter Section -->
@@ -28,17 +26,33 @@
                         <!-- College Dropdown -->
                         <div class="flex flex-col items-center space-y-4"> 
                             <form method="GET" action="{{ url_for('faculty') }}" class="w-full">
-                                <div class="flex flex-row space-x-4 w-full">
-                                    <div class="relative w-full"> 
-                                        <input type="text" name="search" placeholder="Search by name or email..." 
-                                            class="border rounded-md px-4 py-2 text-sm w-full pr-10" 
-                                            value="{{ request.args.get('search', '') }}">
-                                        <button type="button" onclick="document.querySelector('input[name=\'search\']').value='';" 
-                                            class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-900 focus:outline-none bg-transparent">
-                                            <i class="ph ph-x bg-white text-black  text-lg p-2 rounded transition"></i>
-                                        </button>
+                                <div class="flex flex-col sm:flex-row sm:space-x-4 sm:w-full space-y-4 sm:space-y-0">
+                                    <!-- Search Input -->
+                                    <div class="relative w-full sm:w-1/3">
+                                        <form action="{{ url_for('faculty') }}" method="get">
+                                            <input type="text" name="search" placeholder="Search by name or email..." 
+                                                class="border rounded-md px-4 py-2 text-sm w-full pr-10" 
+                                                value="{{ request.args.get('search', '') }}">
+                                            <button type="button" onclick="clearSearch()" 
+                                                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-900 focus:outline-none bg-transparent">
+                                                <i class="ph ph-x bg-white text-black text-lg p-2 rounded transition"></i>
+                                            </button>
+                                        </form>
                                     </div>
-                                    <div class="w-full">
+                                    
+                                    <script>
+                                        function clearSearch() {
+                                            // Clear the input field
+                                            document.querySelector('input[name="search"]').value = '';
+                                            
+                                            // Submit the form to refresh the filtering
+                                            document.querySelector('form').submit();
+                                        }
+                                    </script>
+                                    
+                            
+                                    <!-- College Dropdown -->
+                                    <div class="w-full sm:w-1/3">
                                         <select name="college" onchange="this.form.submit()" class="border rounded-md px-4 py-2 text-sm w-full">
                                             <option value="">Select College</option>
                                             {% for college in colleges %}
@@ -46,8 +60,9 @@
                                             {% endfor %}
                                         </select>
                                     </div>
+                            
                                     <!-- Department Dropdown -->
-                                    <div class="w-full">
+                                    <div class="w-full sm:w-1/3">
                                         <select id="departmentSelect" name="department" onchange="this.form.submit()" class="border rounded-md px-4 py-2 text-sm w-full">
                                             <option value="">Select Department</option>
                                             {% if selected_college %}
@@ -57,28 +72,29 @@
                                             {% endif %}
                                         </select>
                                     </div>
-
-                                    <script>
-                                        document.querySelector('select[name="college"]').addEventListener('change', function() {
-                                            const collegeId = this.value;
-                                            fetch(`/get_departments?college_id=${collegeId}`)
-                                                .then(response => response.json())
-                                                .then(data => {
-                                                    const departmentSelect = document.getElementById('departmentSelect');
-                                                    departmentSelect.innerHTML = '<option value="">Select Department</option>'; // Reset options
-                                                
-                                                    data.departments.forEach(department => {
-                                                        const option = document.createElement('option');
-                                                        option.value = department.department_id;
-                                                        option.textContent = department.department_name;
-                                                        departmentSelect.appendChild(option);
-                                                    });
-                                                });
-                                        });
-                                    </script>
-                                    
+                            
                                 </div>
+                            
+                                <script>
+                                    document.querySelector('select[name="college"]').addEventListener('change', function() {
+                                        const collegeId = this.value;
+                                        fetch(`/get_departments?college_id=${collegeId}`)
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                const departmentSelect = document.getElementById('departmentSelect');
+                                                departmentSelect.innerHTML = '<option value="">Select Department</option>'; // Reset options
+                                            
+                                                data.departments.forEach(department => {
+                                                    const option = document.createElement('option');
+                                                    option.value = department.department_id;
+                                                    option.textContent = department.department_name;
+                                                    departmentSelect.appendChild(option);
+                                                });
+                                            });
+                                    });
+                                </script>
                             </form>
+                            
                         </div>
                         
                     </div>
@@ -89,50 +105,48 @@
                 <div class="mt-4 mb-5 p-5">
                     <h2 class="text-lg font-bold primary mb-2">Comments</h2>
                     <div class="overflow-x-auto">
-                        <div class="table-border">
-                                 <table class="data-table w-full border-collapse text-sm p-5">
-                                    <table class="data-table w-full border-collapse text-sm p-5">
-                                        <tr>
-                                            <th class="table-cell px-2 py-1 border border-gray-300 p-10">Faculty ID</th>
-                                            <th class="table-cell px-2 py-1 border border-gray-300 p-10">Complete Name & Email</th>
-                                            <th class="table-cell px-2 py-1 border border-gray-300 p-10">College</th>
-                                            <th class="table-cell px-2 py-1 border border-gray-300 p-10">Department</th>
-                                            <th class="table-cell px-2 py-1 border border-gray-300 p-10">Actions</th>
-                                        </tr>
-                                    </thead>
-                                   <tbody class="table-body" id="accountsTableBody">
-                                        {% for member in faculty_members.items %}
-                                        <tr>
-                                            <td class="table-cell px-2 py-1 border border-gray-300">{{ member.faculty_id }}</td>
-                                            <td class="table-cell px-2 py-1 border border-gray-300">
-                                                {{ member.lname }} {{member.fname}} {{member.mi}}.<br>
-                                                <span class="email">{{ member.email }}</span>
-                                            </td>
-                                            <td class="table-cell px-2 py-1 border border-gray-300">
-                                                {{ member.department.college_id }}
-                                            </td>
-                                            <td class="table-cell px-2 py-1 border border-gray-300">
-                                                {{ member.department.department_name }}
-                                            </td>
-                                            <td class="table-cell px-2 py-1 border border-gray-300  text-center   ">
-                                                <div class="flex space-x-2 ">
-                                                    <a href="{{ url_for('view_faculty', faculty_id=member.faculty_id) }}" title="View" class="primary">View</a>
-                                                    <a href="{{ url_for('faculty_comments', faculty_id=member.faculty_id) }}" title="Comments" class="secondary">Results</a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                        <table class="data-table w-full border-collapse text-sm p-5">
+                            <thead>
+                                <tr>
+                                    <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden md:table-cell">Faculty ID</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300 p-10">Complete Name & Email</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden md:table-cell">College</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden md:table-cell">Department</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300 p-10">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-body" id="accountsTableBody">
+                                {% for member in faculty_members.items %}
+                                    <tr>
+                                        <td class="table-cell px-2 py-1 border border-gray-300 hidden md:table-cell">{{ member.faculty_id }}</td>
+                                        <td class="table-cell px-2 py-1 border border-gray-300">
+                                            {{ member.lname }} {{ member.fname }} {{ member.mi }}.<br>
+                                            <span class="email">{{ member.email }}</span>
+                                        </td>
+                                        <td class="table-cell px-2 py-1 border border-gray-300 hidden md:table-cell">
+                                            {{ member.department.college_id }}
+                                        </td>
+                                        <td class="table-cell px-2 py-1 border border-gray-300 hidden md:table-cell">
+                                            {{ member.department.department_name }}
+                                        </td>
+                                        <td class="table-cell px-2 py-1 border border-gray-300 text-center">
+                                            <div class="flex space-x-2">
+                                                <a href="{{ url_for('view_faculty', faculty_id=member.faculty_id) }}" title="View" class="primary">View</a>
+                                                <a href="{{ url_for('faculty_comments', faculty_id=member.faculty_id) }}" title="Comments" class="secondary">Results</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        
                     </div>
-                
+                </div>
 
                 <!-- Pagination Controls -->
-                <div class="flex items-center justify-between mt-4 p-2">    
+                <div class="flex items-center justify-between mt-4 p-2">
                     {% if faculty_members.has_prev %}
-                        <a href="{{ url_for('faculty', page=faculty_members.prev_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-4 py-2 text-sm  bg-[#004526] text-white border rounded-md hover:bg-[#023047] hover:text-[#FF7043]">
+                        <a href="{{ url_for('faculty', page=faculty_members.prev_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-4 py-2 text-sm bg-[#004526] text-white border rounded-md hover:bg-[#023047] hover:text-[#FF7043]">
                             Previous
                         </a>
                     {% endif %}
@@ -158,12 +172,11 @@
                     </div>
 
                     {% if faculty_members.has_next %}
-                        <a href="{{ url_for('faculty', page=faculty_members.next_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-4 py-2 text-sm  bg-[#004526] text-white border rounded-md hover:bg-[#023047] hover:text-white">
+                        <a href="{{ url_for('faculty', page=faculty_members.next_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-4 py-2 text-sm bg-[#004526] text-white border rounded-md hover:bg-[#023047] hover:text-white">
                             Next
                         </a>
                     {% endif %}
                 </div>
-
             </div>
         </main>
     </div>
@@ -172,3 +185,4 @@
 
 {% endblock content %}
 {% include "includes/public/footers.html" %}
+    

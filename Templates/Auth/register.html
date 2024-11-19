@@ -7,7 +7,7 @@
 {% endblock css %}
 
 {% block content %}
-<div class="bg-bg text-gs-10 border border-border p-8 rounded-lg max-w-lg mx-auto mt-12 shadow-lg">
+<div class="bg-bg text-gs-10 border border-border p-8 rounded-lg max-w-lg mx-auto mt-20 shadow-lg">
     <div class="register text-center">
         <h2 class="text-3xl">Register to ComFES!</h2>
     </div>
@@ -62,8 +62,12 @@
     <div class="text-right mt-4">
         <p class="text-sm">Already have an account? 
             <a href="{{ url_for('login') }}" class="font-semibold text-green-600 hover:underline">Log in</a>
+            | <a href="{{ url_for('main') }}" class="font-semibold primary hover:underline">Back</a></p>
+
         </p>
     </div>
+
+    
 </div>
 {% endblock content %}
 

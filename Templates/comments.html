@@ -12,16 +12,20 @@
         {% include "includes/navbar.html" %}
     </header>
 
-    <div class="flex flex-1">
+    <div class="flex flex-col md:flex-row flex-1">
         {% include "includes/sidebar.html" %}
 
-        <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60 ">
-            <div class="w-full bg-white rounded-lg shadow-lg p-5 h-[100%] mx-full">
-                <h1 class="text-2xl font-bold primary mb-4">Comments in: <span>{{ selected_semester_name }}</span></h1>
-
+        <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60">
+            <div class="w-full bg-white rounded-lg shadow-lg p-5 h-full mx-full">
+                
+                <div class="flex flex-col md:flex-row justify-between items-center mb-5">
+                    <h1 class="text-2xl font-bold">
+                        Comments in: <span>{{ selected_semester_name or 'No Semester Selected' }}</span>
+                    </h1>
+                </div>
 
                 <!-- Filter Dropdowns -->
-                <div class="flex flex-wrap gap-4 mt-2 md:mt-0 mb-5">
+                <div class="flex flex-col md:flex-row gap-4 mt-2 md:mt-0 mb-5">
                     <!-- College Dropdown (First Column) -->
                     <div class="flex-1">
                         <select 
@@ -56,36 +60,34 @@
                 </div>
                 
 
-                <div class="mt-4 mb-5 p-5  ">
+                <div class="mt-4 mb-5 p-5">
                     <h2 class="text-lg font-bold primary mb-2">Comments</h2>
                     <div class="overflow-x-auto">
                         <div class="table-border">
-                
                             <table class="data-table w-full border-collapse text-sm p-5">
                                 <thead class="table-header bg-gray-100">
-                                    <tr class="p-2 text-center ml-2">
-                                        <th class="table-cell px-2 py-1 border border-gray-300 p-10">No</th>
-                                        <th class="table-cell px-2 py-1 border border-gray-300 p-10">Comment</th>
-                                        <th class="table-cell px-2 py-1 border border-gray-300 p-10">Faculty</th>
-                                        <th class="table-cell px-2 py-1 border border-gray-300">Semester</th>
-                                        <th class="table-cell px-2 py-1 border border-gray-300 p-10">Category</th>
-                                        <th class="table-cell px-2 py-1 border border-gray-300 p-10">Action</th>
+                                    <tr class="p-2 text-center">
+                                        <th class="table-cell px-2 py-1 border border-gray-300 hidden md:table-cell">No</th>
+                                        <th class="table-cell px-2 py-1 border border-gray-300">Comment</th>
+                                        <th class="table-cell px-2 py-1 border border-gray-300 hidden md:table-cell">Faculty</th>
+                                        <th class="table-cell px-2 py-1 border border-gray-300 hidden md:table-cell">Semester</th>
+                                        <th class="table-cell px-2 py-1 border border-gray-300 ">Category</th>
+                                        <th class="table-cell px-2 py-1 border border-gray-300 hidden mobile-hidden">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody class="table-body">
                                     {% for comment, faculty, ay_sem, department, college in comments %}
                                     <tr class="border-b">
-                                        <td class="table-cell px-2 py-1 border border-gray-300">{{ loop.index + (comments_pagination.page - 1) * comments_pagination.per_page }}</td>
-                                        <td class="table-cell px-2 py-1 border border-gray-300">
+                                        <td class="table-cell px-2 py-1 border border-gray-300 hidden md:table-cell">{{ loop.index + (comments_pagination.page - 1) * comments_pagination.per_page }}</td>
+                                        <td class="table-cell px-2 py-1 border border-gray-300 cursor-pointer comment-cell">
                                             {{ comment.comment[:100] }}{% if comment.comment|length > 100 %}...{% endif %}
                                         </td>
-                                        
-                                        <td class="table-cell px-2 py-1 border border-gray-300">{{ faculty.lname }} {{ faculty.fname }}</td>
-                                        <td class="table-cell px-2 py-1 border border-gray-300">{{ ay_sem.ay_name }}</td>
-                                        <td class="table-cell px-2 py-1 border border-gray-300">
+                                        <td class="table-cell px-2 py-1 border border-gray-300 hidden md:table-cell">{{ faculty.lname }} {{ faculty.fname }}</td>
+                                        <td class="table-cell px-2 py-1 border border-gray-300 hidden md:table-cell">{{ ay_sem.ay_name }}</td>
+                                        <td class="table-cell px-2 py-1 border border-gray-300  mobile-hidden">
                                             {% if comment.category == 1 %}Neutral{% elif comment.category == 0 %}Negative{% elif comment.category == 2 %}Positive{% endif %}
                                         </td>
-                                        <td class="table-cell px-2 py-1 border border-gray-300">
+                                        <td class="table-cell px-2 py-1 border border-gray-300 hidden mobile-hidden">
                                             <div class="flex space-x-2">
                                                 <a href="{{ url_for('view_comment', comment_id=comment.comment_id) }}" title="View" class="secondary hover:text-green-800">View</a>
                                             </div>
@@ -94,46 +96,59 @@
                                     {% endfor %}
                                 </tbody>
                             </table>
+                            
+                            <script>
+                                // JavaScript to toggle the visibility of the Action and Category columns on mobile
+                                document.querySelectorAll('.comment-cell').forEach(commentCell => {
+                                    commentCell.addEventListener('click', function() {
+                                        const row = this.closest('tr');
+                                        const actionColumn = row.querySelector('.mobile-hidden:nth-child(5)'); // Category column
+                                        const categoryColumn = row.querySelector('.mobile-hidden:nth-child(6)'); // Action column
+                                        
+                                        actionColumn.classList.toggle('hidden');
+                                        categoryColumn.classList.toggle('hidden');
+                                    });
+                                });
+                            </script>
+                            
+                            
                         </div>
                     </div>
                 </div>
-                
 
-
-
-                <div class="items-center hidden md:flex gap-x-3">
-
+                <!-- Pagination (Mobile & Desktop) -->
+                <div class="items-center flex justify-center gap-x-3 mt-4">
                     {% if comments_pagination.has_prev %}
-                    <a href="{{ url_for('comments', page=comments_pagination.prev_num, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="inline-flex items-center px-3 py-1 text-sm  bg-[#004526] border rounded-md gap-x-2 text-white hover:bg-[#FF7043]">
-                        <span>Previous</span>
-                    </a>
-                      {% endif %}
-                
+                        <a href="{{ url_for('comments', page=comments_pagination.prev_num, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="inline-flex items-center px-3 py-1 text-sm bg-gray-200 border rounded-md gap-x-2 text-black hover:bg-[#FF7043]">
+                            <span>Previous</span>
+                        </a>
+                    {% endif %}
+                    
                     {% if start_page > 1 %}
-                        <a href="{{ url_for('comments', page=1, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">1</a>
+                        <a href="{{ url_for('comments', page=1, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="px-3 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">1</a>
                         <span class="px-2 py-1 text-sm text-gray-500">...</span>
                     {% endif %}
                     
                     {% for page_num in range(start_page, end_page + 1) %}
                         {% if page_num == comments_pagination.page %}
-                            <a href="#" class="px-2 py-1 text-sm text-white bg-[#004526] rounded-md">{{ page_num }}</a>
+                            <a href="#" class="px-3 py-1 text-sm text-white bg-[#004526] rounded-md">{{ page_num }}</a>
                         {% else %}
-                            <a href="{{ url_for('comments', page=page_num, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">{{ page_num }}</a>
+                            <a href="{{ url_for('comments', page=page_num, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="px-3 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">{{ page_num }}</a>
                         {% endif %}
                     {% endfor %}
                     
                     {% if end_page < comments_pagination.pages %}
                         <span class="px-2 py-1 text-sm text-gray-500">...</span>
-                        <a href="{{ url_for('comments', page=comments_pagination.pages, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="px-2 py-1 text-sm text-gray-500  rounded-md hover:bg-[#FF7043]">{{ comments_pagination.pages }}</a>
+                        <a href="{{ url_for('comments', page=comments_pagination.pages, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="px-3 py-1 text-sm text-gray-500 rounded-md hover:bg-[#FF7043]">{{ comments_pagination.pages }}</a>
                     {% endif %}
-                
                     
-                            {% if comments_pagination.has_next %}
-                            <a href="{{ url_for('comments', page=comments_pagination.next_num, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="inline-flex items-center px-3 py-1 text-sm primary bg-[#004526] text-white border rounded-md gap-x-2 hover:bg-[#FF7043] ">
-                                <span>Next</span>
-                            </a>
+                    {% if comments_pagination.has_next %}
+                        <a href="{{ url_for('comments', page=comments_pagination.next_num, search=search_query, category=filter_category, faculty=filter_faculty) }}" class="inline-flex items-center px-3 py-1 text-sm bg-[#004526] text-white border rounded-md gap-x-2 hover:bg-[#FF7043]">
+                            <span>Next</span>
+                        </a>
                     {% endif %}
                 </div>
+                
             </div>
         </main>
     </div>

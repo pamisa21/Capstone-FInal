@@ -23,7 +23,7 @@ body {
 
 #home-section h2 span {
     color: var(--primary);
-    text-align: center;
+    
 }
 #home-section p {
     color: var(--gs40);
@@ -66,9 +66,12 @@ body {
         margin-top: 0; /* No margin for smaller screens */
     }
     #home-section h2 {
-        text-align: center;
+        padding: 2px;
+        font-size: 30px;
+        text-align: center; /* Center the text */
     }
 }
+
 
 
 

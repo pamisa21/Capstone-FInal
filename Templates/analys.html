@@ -17,9 +17,9 @@
         {% include "includes/sidebar.html" %}
 
         <!-- Main Content Container -->
-        <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60">  
+        <main class="flex-1 md:p-5 mx-5 mt-20 ml-2 md:ml-60">  
 
-            <div id="Comments" class="w-full h-full mx-auto bg-white rounded-lg shadow-lg p-6">
+            <div id="Comments" class="w-full h-full mx-auto bg-white rounded-lg shadow-lg md:p-6">
                 <!-- Filter and Search Section -->
                 <div class="flex flex-col mb-3 gap-4">
                     <div class="flex items-center justify-between flex-col md:flex-row">
@@ -54,7 +54,7 @@
                                             <th class="table-cell px-2 py-1 border border-gray-300 p-10">Comment</th>
                                             <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden md:table-cell">Faculty Name</th>
                                             <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden md:table-cell">Semester</th>
-                                            <th class="table-cell px-2 py-1 border border-gray-300 p-10">Actions</th>
+                                            <th class="table-cell px-2 py-1 border border-gray-300 p-10">&nbsp;</th>
                                         </tr>
                                     </thead>
                                     <tbody class="table-body" id="commentsTableBody">
@@ -86,20 +86,20 @@
                 
 
                 <!-- Pagination Section -->
-                <div class="flex flex-col md:flex-row items-center justify-between mt-6">
+                <div class="flex items-center justify-between mt-6 p-2">
                     <!-- Previous Page Link -->
                     <a href="{{ url_for('analys', page=pagination.prev_num, search=request.args.get('search')) }}" 
-                    class="flex items-center px-5 py-2 text-sm text-green-900 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-gray-100"
-                    {% if not pagination.has_prev %}style="pointer-events: none; opacity: 0.5;"{% endif %}>
+                        class="flex items-center px-5 py-2 text-sm text-green-900 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-gray-100"
+                        {% if not pagination.has_prev %}style="pointer-events: none; opacity: 0.5;"{% endif %}>
                         <span>Previous</span>
                     </a>
-
+                
                     <!-- Page Numbers -->
                     <div class="items-center flex gap-x-3 mt-2 md:mt-0">
                         {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
                             {% if page_num %}
                                 <a href="{{ url_for('analys', page=page_num, search=request.args.get('search')) }}" 
-                                class="px-2 py-1 text-sm {% if pagination.page == page_num %}text-white rounded-md bg-green-800{% else %}text-green-900 hover:bg-gray-100{% endif %}">
+                                    class="px-2 py-1 text-sm {% if pagination.page == page_num %}text-white rounded-md bg-green-800{% else %}text-green-900 hover:bg-gray-100{% endif %}">
                                     {{ page_num }}
                                 </a>
                             {% else %}
@@ -107,14 +107,15 @@
                             {% endif %}
                         {% endfor %}
                     </div>
-
+                
                     <!-- Next Page Link -->
                     <a href="{{ url_for('analys', page=pagination.next_num, search=request.args.get('search')) }}" 
-                    class="flex items-center px-5 py-2 mt-2 text-sm text-yellow-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-yellow-400"
-                    {% if not pagination.has_next %}style="pointer-events: none; opacity: 0.5;"{% endif %}>
+                        class="flex items-center px-5 py-2 mt-2 text-sm text-yellow-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-yellow-400"
+                        {% if not pagination.has_next %}style="pointer-events: none; opacity: 0.5;"{% endif %}>
                         <span>Next</span>
                     </a>
                 </div>
+                
             </div>
         </main>
     </div>

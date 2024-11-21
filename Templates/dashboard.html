@@ -16,20 +16,23 @@
     <div class="flex flex-1">
         {% include "includes/sidebar.html" %}
 
-        <main class="flex-1 p-5 mx-3 mt-20 ml-2 md:ml-60">  
-            <div id="dashboard" class="p-6">
+        <main class="flex-1 p-5 mx-3 mt-20 ml-2 md:ml-60 sm:mx-0 sm:ml-0 sm:mr-0">
+
+            <div id="dashboard" class="p-1 md:p-6">
+
                 <!-- Dashboard Header with Filter Section -->   
                 <div class="flex flex-col md:flex-row justify-between items-center mb-5">
                     <h1 class="text-2xl font-bold">
                         Dashboard <span>{{ selected_semester_name or 'No Semester Selected' }}</span>
                     </h1>
                     
-                    
                     <!-- Download PDF button -->
-                    <button id="printButton" class="border border-gray-300  px-4 py-2 text-sm focus:outline-none start">
+                    <button id="printButton" 
+                            class="border border-gray-300 px-4 py-2 text-sm focus:outline-none start mt-2 md:mt-0">
                         <a id="printLink" href="{{ url_for('print_dashboard') }}">Print Overall Results</a>
                     </button>
                 </div>
+                
 
                 <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0 mb-5">
                     <div class="flex flex-col hidden ">
@@ -80,19 +83,19 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 rounded-lg">
                                 <div class="bg-[#32de84] rounded-lg shadow-md p-6 flex flex-col items-center primary ">
                                     <span class="material-icons ">thumb_up</span>
-                                    <h3 class="text-xl font-semibold mt-2 ">Positive</h3>
+                                    <h3 class="text-xl font-semibold mt-2 "> Interpreted Positive</h3>
                                     <p class="text-3xl font-bold">{{ positive_count }}</p>
                                 </div>
                                 
                                 <div class="bg-[#FFEB3B] rounded-lg shadow-md p-6 flex flex-col items-center primary">
                                     <span class="material-icons ">more_horiz</span>
-                                    <h3 class="text-xl font-semibold mt-2 ">Neutral</h3>
+                                    <h3 class="text-xl font-semibold mt-2 "> Interpreted Neutral</h3>
                                     <p class="text-3xl font-bold">{{ neutral_count }}</p>
                                 </div>
                                 
                                 <div class="bg-[#EF5350]  rounded-lg shadow-md p-6 flex flex-col items-center primary">
                                     <span class="material-icons ">thumb_down</span>
-                                    <h3 class="text-xl font-semibold mt-2 ">Negative</h3>
+                                    <h3 class="text-xl font-semibold mt-2 "> Interpreted Negative</h3>
                                     <p class="text-3xl font-bold">{{ negative_count }}</p>
                                 </div>
                             </div>
@@ -105,7 +108,7 @@
                                         <div class="flex items-center justify-between mb-2  primary">
                                             <div class="flex items-center">
                                                 <span class="material-icons primary">thumb_up</span>
-                                                <span class="ml-2 primary">Positive</span>
+                                                <span class="ml-2 primary"> Interpreted Positive</span>
                                             </div>
                                             <p class="text-3xl font-bold">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                                         </div>
@@ -117,7 +120,7 @@
                                         <div class="flex items-center justify-between mb-2 mt-4 primary">
                                             <div class="flex items-center">
                                                 <span class="material-icons">more_horiz</span>
-                                                <span class="ml-2">Neutral</span>
+                                                <span class="ml-2"> Interpreted Neutral</span>
                                             </div>
                                             <p class=" text-3xl font-bold">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                                         </div>
@@ -129,7 +132,7 @@
                                         <div class="flex items-center justify-between mb-2 mt-4 primary">
                                             <div class="flex items-center">
                                                 <span class="material-icons ">thumb_down</span>
-                                                <span class="ml-2">Negative</span>
+                                                <span class="ml-2"> Interpreted Negative</span>
                                             </div>
                                             <p class="text-3xl font-bold">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                                         </div>
@@ -165,18 +168,19 @@
                         <div>
                             
                             <div class="bg-white p-1  border-2 shadow-md rounded-lg  ">
-                                <h2 class=" text-lg font-semibold p-2  "> CMU Sentiment Overview</h2>
+                                <h2 class=" text-lg font-semibold p-2   text-center mx-auto "> CMU Sentiment Overview</h2>
                                 <div class="flex justify-center items-center   ">
-                                    <canvas  id="sentimentDoughnutChart"></canvas>
+                                    <canvas  id="sentimentDoughnutChart" class="pb-3"></canvas>
                                 </div>
                             </div>
                            
                             
                       
                             <div class="bg-white rounded-lg shadow-md  mt-5 border-2">
-                            
+                                <h2 class="text-lg font-semibold p-2 text-center mx-auto">CMU Sentiment Insights</h2>
+
                                 <div class="flex justify-center items-center">
-                                    <canvas id="sentimentBarChart" width="200px" height="200px"></canvas>
+                                    <canvas id="sentimentBarChart" width="200px" height="200px" class="pb-3"></canvas>
                                 </div>
                             </div>
                            
@@ -390,14 +394,14 @@
         
         // Doughnut chart data
         const data = {
-            labels: ['Positive', 'Negative', 'Neutral'],
+            labels: ['Int. Positive', ' Int. Negative', ' Interpreted. Neutral'],
             datasets: [{
                 label: 'Sentiment Breakdown',
                 data: [overallPositiveCount, overallNegativeCount, overallNeutralCount],
                 backgroundColor: [
-                    '#32de84',    // Positive - teal
-                    '#EF5350',   // Negative - red
-                    '#FFEB3B',     // Neutral - yellow
+                    '#32de84',    
+                    '#EF5350',   
+                    '#FFEB3B',     
                 ],
                 hoverOffset: 4
             }]
@@ -445,17 +449,17 @@
                     labels: limitedSemesterLabels,
                     datasets: [
                         {
-                            label: 'Positive Sentiment',
+                            label: 'Int. Positive ',
                             data: limitedPositiveData,
                             backgroundColor: '#32de84',
                         },
                         {
-                            label: 'Negative Sentiment',
+                            label: 'Int. Negative ',
                             data: limitedNegativeData,
                             backgroundColor: '#EF5350',
                         },
                         {
-                            label: 'Neutral Sentiment',
+                            label: 'Interpreted Neutral ',
                             data: limitedNeutralData,
                             backgroundColor: '#FFEB3B',
                         }

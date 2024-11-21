@@ -15,8 +15,8 @@
     <div class="flex flex-col md:flex-row flex-1">
         {% include "includes/sidebar.html" %}
 
-        <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60">
-            <div class="w-full bg-white rounded-lg shadow-lg p-5 h-full mx-full">
+        <main class="flex-1 md:p-5  mx-5 mt-20 ml-2  md:ml-60">
+            <div class="w-full bg-white rounded-lg shadow-lg p-2 h-full mx-full md:p-5">
                 
                 <div class="flex flex-col md:flex-row justify-between items-center mb-5">
                     <h1 class="text-2xl font-bold">
@@ -60,7 +60,7 @@
                 </div>
                 
 
-                <div class="mt-4 mb-5 p-5">
+                <div class="mt-4 mb-5 p-1 md;p-5">
                     <h2 class="text-lg font-bold primary mb-2">Comments</h2>
                     <div class="overflow-x-auto">
                         <div class="table-border">
@@ -85,31 +85,35 @@
                                         <td class="table-cell px-2 py-1 border border-gray-300 hidden md:table-cell">{{ faculty.lname }} {{ faculty.fname }}</td>
                                         <td class="table-cell px-2 py-1 border border-gray-300 hidden md:table-cell">{{ ay_sem.ay_name }}</td>
                                         <td class="table-cell px-2 py-1 border border-gray-300  mobile-hidden">
-                                            {% if comment.category == 1 %}Neutral{% elif comment.category == 0 %}Negative{% elif comment.category == 2 %}Positive{% endif %}
+                                            {% if comment.category == 1 %}Interpreted Neutral{% elif comment.category == 0 %}Interpreted Negative{% elif comment.category == 2 %}Interpreted Positive{% endif %}
                                         </td>
-                                        <td class="table-cell px-2 py-1 border border-gray-300 hidden mobile-hidden">
+                                        <td class="table-cell px-2 py-1 border border-gray-300 sm:table-cell hidden comment-cell">
                                             <div class="flex space-x-2">
                                                 <a href="{{ url_for('view_comment', comment_id=comment.comment_id) }}" title="View" class="secondary hover:text-green-800">View</a>
                                             </div>
                                         </td>
+                                        
                                     </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
                             
                             <script>
-                                // JavaScript to toggle the visibility of the Action and Category columns on mobile
+                               
                                 document.querySelectorAll('.comment-cell').forEach(commentCell => {
                                     commentCell.addEventListener('click', function() {
                                         const row = this.closest('tr');
-                                        const actionColumn = row.querySelector('.mobile-hidden:nth-child(5)'); // Category column
-                                        const categoryColumn = row.querySelector('.mobile-hidden:nth-child(6)'); // Action column
                                         
-                                        actionColumn.classList.toggle('hidden');
-                                        categoryColumn.classList.toggle('hidden');
+                                     
+                                        const actionColumn = row.querySelector('td:nth-child(5)');
+                                        const categoryColumn = row.querySelector('td:nth-child(6)'); 
+                            
+                                        if (actionColumn) actionColumn.classList.toggle('hidden');
+                                        if (categoryColumn) categoryColumn.classList.toggle('hidden');
                                     });
                                 });
                             </script>
+                            
                             
                             
                         </div>

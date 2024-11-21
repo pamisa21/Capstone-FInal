@@ -11,8 +11,16 @@ python -m pip install transformers
 python -m pip install cryptography
 
 pip install odfpy
+pip install pdfkit
 
 python -m pip install pandas openpyxl  --- for excel file
 
 sentencepiece
 emoji
+
+C:\Program Files\wkhtmltopdf
+
+
+scp -r "/mnt/c/FES sentiment AI/ai_model" root@89.116.122.184:/var/www/comfes/Capstone-Final/
+
+ssh root@89.116.122.184

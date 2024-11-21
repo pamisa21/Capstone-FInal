@@ -4,7 +4,7 @@ from models.extensions import db
 class Comment(db.Model):
     __tablename__ = 'comments' 
     comment_id = db.Column(db.Integer, primary_key=True)
-    comment = db.Column(db.String(255))
+    comment = db.Column(db.Text)
     faculty_id = db.Column(db.String(20), db.ForeignKey('faculty.faculty_id'), nullable=False)
     subject_id = db.Column(db.String(20), db.ForeignKey('subjects.subject_id'), nullable=False)
     date_added = db.Column(db.DateTime, default=datetime.utcnow)

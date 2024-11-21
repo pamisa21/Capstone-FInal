@@ -15,7 +15,7 @@
 {% block content %}
 
 <div class=" text-lg font-bold maze ml-5 ">
-    <h2 class="primary">Sentiment Overview</h2>
+    
     <div  class="flex flex-col md:flex-row justify-between items-center mb-2">
      
         <button id="downloadPdf" class=" hidden  print-button border border-gray-300 rounded-md px-4 py-2 text-sm text-white bg-[#004526]
@@ -73,11 +73,10 @@
             <h2 class="mb-2">Overall Results of Faculty Teaching Performance <br> </h2>
             <p class="mb-2">Central Mindanao University </p>
             <div class="flex justify-center items-center mb-2">
-                <span class="font-normal">{{ college_name }}</span>  <!-- Display college name here -->
+                <span class="font-normal">{{ college_name }}</span>  
             </div>
             <div class="flex justify-center items-center mb-2">
-                <span class="font-normal">{{ selected_ay_name }}</span>  <!-- Display semester name here -->
-            </div>
+                <span class="font-normal">{{ selected_ay_name }}</span> 
         </div>
     </div>
 
@@ -94,19 +93,19 @@
             
                 <!-- Positive Comments Card -->
                 <div class="border border-gray-300 rounded-lg shadow-md p-8">
-                    <h2 class="text-lg font-semibold positive">Positive</h2>
+                    <h2 class="text-lg font-semibold positive"> Interpreted Positive</h2>
                     <h4 class="text-3xl font-bold text-center">{{ positive_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
                 </div>
             
                 <!-- Negative Comments Card -->
                 <div class="border border-gray-300 rounded-lg shadow-md p-8">
-                    <h2 class="text-lg font-semibold negative">Negative</h2>
+                    <h2 class="text-lg font-semibold negative"> Interpreted Negative</h2>
                     <h4 class="text-3xl font-bold text-center">{{ negative_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
                 </div>
             
                 <!-- Neutral Comments Card -->
                 <div class="border border-gray-300 rounded-lg shadow-md p-8">
-                    <h2 class="text-lg font-semibold neutral">Neutral</h2>
+                    <h2 class="text-lg font-semibold neutral"> Interpreted Neutral</h2>
                     <h4 class="text-3xl font-bold text-center">{{ neutral_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
                 </div>
             </div>
@@ -122,7 +121,7 @@
                 <div class="flex items-center justify-between mb-2  primary">
                     <div class="flex items-center">
                         <span class="material-icons primary"></span>
-                        <span class="ml-2 primary">Positive</span>
+                        <span class="ml-2 primary"> Interpreted Positive</span>
                     </div>
                     <p class="text-3xl font-bold">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                 </div>
@@ -135,7 +134,7 @@
                 <div class="flex items-center justify-between mb-2 mt-4 primary">
                     <div class="flex items-center">
                         <span class="material-icons"></span>
-                        <span class="ml-2">Neutral</span>
+                        <span class="ml-2"> Interpreted Neutral</span>
                     </div>
                     <p class=" text-3xl font-bold">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                 </div>
@@ -147,7 +146,7 @@
                 <div class="flex items-center justify-between mb-2 mt-4 primary">
                     <div class="flex items-center">
                         <span class="material-icons "></span>
-                        <span class="ml-2">Negative</span>
+                        <span class="ml-2">Interpreted Negative</span>
                     </div>
                     <p class="text-3xl font-bold">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                 </div>
@@ -167,20 +166,14 @@
         <section>
             <div class="flex flex-wrap justify-center gap-4 mt-10">
                 <!-- Left Column: Sentiment Bar Chart -->
-                <div class="w-full md:w-1/2 bg-white rounded-lg shadow-md p-4">
+                <div class="w-full md:w-1/2 bg-white rounded-lg shadow-md p-4 mt-10">
                     <h2 class="text-lg font-bold primary mb-2 text-center">Sentiment Analysis Comparison Over Semesters</h2>
                     <div class="flex justify-center items-center">
                         <canvas id="sentimentBarChart" ></canvas>
                     </div>
                 </div>
         
-                <!-- Right Column: Stacked Bar Chart -->
-                <div class="w-full md:w-1/2 bg-white rounded-lg shadow-emerald-700 p-4">
-                    <h2 class="text-lg font-semibold mb-4 text-center">Semester Comparison</h2>
-                    <div class="flex justify-center items-center">
-                        <canvas id="stackbarchart" width="600px" height="300px"></canvas>
-                    </div>
-                </div>
+           
             </div>
         </section>
         
@@ -195,9 +188,9 @@
                                 <tr>
                                     <th class="table-cell px-2 py-1 border border-gray-300">Semester</th>
                                     <th class="table-cell px-2 py-1 border border-gray-300">Total Comments</th>
-                                    <th class="table-cell px-2 py-1 border border-gray-300">Positive</th>
-                                    <th class="table-cell px-2 py-1 border border-gray-300">Neutral</th>
-                                    <th class="table-cell px-2 py-1 border border-gray-300">Negative</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300">Interpreted Positive</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300">Interpreted Neutral</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300">"Interpreted Negative</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -244,17 +237,17 @@
                     labels: labels,
                     datasets: [
                         {
-                            label: 'Positive Comments',
+                            label: 'Interpreted Positive ',
                             data: positiveData,
                             backgroundColor: '#32de84'
                         },
                         {
-                            label: 'Neutral Comments',
+                            label: ' Interpreted Neutral ',
                             data: neutralData,
                             backgroundColor: '#FFEB3B'
                         },
                         {
-                            label: 'Negative Comments',
+                            label: ' Interpreted Negative ',
                             data: negativeData,
                             backgroundColor: '#EF5350'
                         }
@@ -281,17 +274,17 @@
                     labels: labels,
                     datasets: [
                         {
-                            label: 'Positive Comments',
+                            label: 'Interpreted Positive ',
                             data: positiveData,
                             backgroundColor: '#32de84'
                         },
                         {
-                            label: 'Neutral Comments',
+                            label: 'Interpreted Neutral ',
                             data: neutralData,
                             backgroundColor: '#FFEB3B'
                         },
                         {
-                            label: 'Negative Comments',
+                            label: ' Interpreted Negative ',
                             data: negativeData,
                             backgroundColor: '#EF5350'
                         }

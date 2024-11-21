@@ -767,7 +767,13 @@ input:checked + .toggle-bg + .toggle-dot {
 
 
 
+.thumb-up-icon {
+    color: var(--positive); 
 
-
-
-    
+}
+.thumb-down-icon {
+  color: var(--negative); 
+}
+.more_horiz-icon{
+    color: var(--neutral);
+}

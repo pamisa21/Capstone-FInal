@@ -17,8 +17,8 @@
         {% include "includes/sidebar.html" %}
 
         <!-- Main Content Container -->
-        <main class="flex-1 p-3 mx-5 mt-20 ml-2 md:ml-60">
-            <div id="Accounts" class="mx-auto bg-white rounded-lg shadow-lg p-4 h-[99%] max-w-full">
+        <main class="flex-1 p-1  mt-20 ml-2 md:ml-60 md:p-5">
+            <div id="Accounts" class="mx-auto bg-white rounded-lg shadow-lg md:  p-2 md:p-4 h-[99%] max-w-full">
                 <div class="flex flex-col mb-2 gap-4"> <!-- Changed mb-4 to mb-2 -->
 
                     <!-- Search and Filter Section -->
@@ -34,7 +34,8 @@
                                                 class="border rounded-md px-4 py-2 text-sm w-full pr-10" 
                                                 value="{{ request.args.get('search', '') }}">
                                             <button type="button" onclick="clearSearch()" 
-                                                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-900 focus:outline-none bg-transparent">
+                                                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600
+                                                 hover:text-gray-900 focus:outline-none bg-transparent">
                                                 <i class="ph ph-x bg-white text-black text-lg p-2 rounded transition"></i>
                                             </button>
                                         </form>
@@ -56,7 +57,8 @@
                                         <select name="college" onchange="this.form.submit()" class="border rounded-md px-4 py-2 text-sm w-full">
                                             <option value="">Select College</option>
                                             {% for college in colleges %}
-                                                <option value="{{ college.college_id }}" {% if college.college_id == request.args.get('college') %}selected{% endif %}>{{ college.college_name }}</option>
+                                                <option value="{{ college.college_id }}" {% if college.college_id == request.args.get('college') %}selected{% endif %}>{{ college.college_name }}      
+                                            </option>
                                             {% endfor %}
                                         </select>
                                     </div>
@@ -102,17 +104,17 @@
                 </div>
 
                 <!-- Table Section -->
-                <div class="mt-4 mb-5 p-5">
-                    <h2 class="text-lg font-bold primary mb-2">Comments</h2>
+                <div class="mt-4 mb-5 md:p-5 p-2" >
+                    <h2 class="text-lg font-bold primary mb-2">Faculty List</h2>
                     <div class="overflow-x-auto">
-                        <table class="data-table w-full border-collapse text-sm p-5">
+                        <table class="data-table w-full border-collapse text-sm p-5 border rounded-lg">
                             <thead>
                                 <tr>
                                     <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden md:table-cell">Faculty ID</th>
                                     <th class="table-cell px-2 py-1 border border-gray-300 p-10">Complete Name & Email</th>
                                     <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden md:table-cell">College</th>
                                     <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden md:table-cell">Department</th>
-                                    <th class="table-cell px-2 py-1 border border-gray-300 p-10">Actions</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300 p-10"></th>
                                 </tr>
                             </thead>
                             <tbody class="table-body" id="accountsTableBody">
@@ -144,7 +146,7 @@
                 </div>
 
                 <!-- Pagination Controls -->
-                <div class="flex items-center justify-between mt-4 p-2">
+                <div class="flex items-center justify-between mt-4 md:p-5 p-3">
                     {% if faculty_members.has_prev %}
                         <a href="{{ url_for('faculty', page=faculty_members.prev_num, search=request.args.get('search'), college=request.args.get('college')) }}" class="px-4 py-2 text-sm bg-[#004526] text-white border rounded-md hover:bg-[#023047] hover:text-[#FF7043]">
                             Previous

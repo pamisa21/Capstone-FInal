@@ -44,7 +44,7 @@
 
         <section class="mx-10">
             <div class=" text-lg font-bold maze ml-5 ">
-                <h2 class="primary">Sentiment Overview</h2>
+                <h2 class="primary">Sentiment Overview </h2>
                 <div  class="flex flex-col md:flex-row justify-between items-center mb-2">
                 
                     <button id="downloadPdf" class=" hidden  print-button border border-gray-300 rounded-md px-4 py-2 text-sm text-white bg-[#004526]
@@ -54,39 +54,28 @@
                 </div>
                 <script>
                     document.getElementById('downloadPdf').addEventListener('click', function () {
-                        const element = document.body; // You can specify any specific part of the page here
-                    
-                        // Force all text to use Arial by adding a style
+                        const element = document.body; 
                         const style = document.createElement('style');
                         style.innerHTML = 'body, * { font-family: Arial, sans-serif !important; }';
                         document.head.appendChild(style);
-                    
-                        // Get the department name from the page (assuming it's inside a span with class 'font-normal')
                         const departmentName = document.querySelector('.font-normal').innerText.trim();
-                    
-                        // Options for html2pdf
                         const options = {
                             margin:       [10, 10, 10, 10],
-                            filename:     `${departmentName}_Results.pdf`, // Include department_name in the filename
+                            filename:     `${departmentName}_Results.pdf`,
                             image:        { type: 'jpeg', quality: 0.98 },
                             html2canvas:  { dpi: 192, letterRendering: true },
                             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
                         };
                     
-                        // Delay PDF download by 4 seconds
                         setTimeout(function () {
-                            // Generate and download the PDF
                             html2pdf().from(element).set(options).save().then(() => {
-                                // After PDF is downloaded, redirect to the last visited page
                                 setTimeout(() => {
-                                    const previousUrl = document.referrer || "/dashboard"; // Fallback to /dashboard if no referrer is available
+                                    const previousUrl = document.referrer || "/dashboard";
                                     window.location.href = previousUrl;
-                                }, 3000); // Delay of 3 seconds before redirect
+                                }, 2000); 
                             });
                         }, 1000); 
                     });
-                    
-                    // Automatically click the download button when the page is loaded
                     window.onload = function() {
                         document.getElementById('downloadPdf').click();
                     };
@@ -100,15 +89,15 @@
                     <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
                 </div>
                 <div class="border border-gray-300 rounded-lg shadow-md  p-8">
-                    <h2 class="text-lg font-semibold positive">Positive</h2>
+                    <h2 class="text-lg font-semibold positive">Interpreted Positive</h2>
                     <h4 class="text-3xl font-bold text-center">{{ positive_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
                 </div>
                 <div class="border border-gray-300 rounded-lg shadow-md  p-8">
-                    <h2 class="text-lg font-semibold negative">Negative</h2>
+                    <h2 class="text-lg font-semibold negative"> Interpreted Negative</h2>
                     <h4 class="text-3xl font-bold text-center">{{ negative_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
                 </div>
                 <div class="border border-gray-300 rounded-lg shadow-md  p-8">
-                    <h2 class="text-lg font-semibold neutral">Neutral</h2>
+                    <h2 class="text-lg font-semibold neutral"> Interpreted Neutral</h2>
                     <h4 class="text-3xl font-bold text-center">{{ neutral_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
                 </div>
             </div>
@@ -122,7 +111,7 @@
                     <div class="flex items-center justify-between mb-2  primary">
                         <div class="flex items-center">
                             <span class="material-icons primary"></span>
-                            <span class="ml-2 primary">Positive</span>
+                            <span class="ml-2 primary"> Interpreted Positive</span>
                         </div>
                         <p class="text-3xl font-bold">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                     </div>
@@ -135,7 +124,7 @@
                     <div class="flex items-center justify-between mb-2 mt-4 primary">
                         <div class="flex items-center">
                             <span class="material-icons"></span>
-                            <span class="ml-2">Neutral</span>
+                            <span class="ml-2"> Interpreted Neutral</span>
                         </div>
                         <p class=" text-3xl font-bold">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                     </div>
@@ -147,7 +136,7 @@
                     <div class="flex items-center justify-between mb-2 mt-4 primary">
                         <div class="flex items-center">
                             <span class="material-icons "></span>
-                            <span class="ml-2">Negative</span>
+                            <span class="ml-2"> Interpreted Negative</span>
                         </div>
                         <p class="text-3xl font-bold">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                     </div>
@@ -176,12 +165,12 @@
                 </div>
         
                 <!-- Right Column: Stacked Bar Chart -->
-                <div class="w-full md:w-1/2 bg-white rounded-lg shadow-emerald-700 p-4">
+                <!-- <div class="w-full md:w-1/2 bg-white rounded-lg shadow-emerald-700 p-4">
                     <h2 class="text-lg font-semibold mb-4 text-center">Semester Comparison</h2>
                     <div class="flex justify-center items-center">
                         <canvas id="stackbarchart" width="600px" height="300px"></canvas>
                     </div>
-                </div>
+                </div> -->
             </div>
         </section>
         <section class="mx-12 mb-2">
@@ -194,9 +183,9 @@
                                 <tr>
                                     <th class="table-cell px-2 py-1 border border-gray-300">Semester</th>
                                     <th class="table-cell px-2 py-1 border border-gray-300">Total Comments</th>
-                                    <th class="table-cell px-2 py-1 border border-gray-300">Positive</th>
-                                    <th class="table-cell px-2 py-1 border border-gray-300">Neutral</th>
-                                    <th class="table-cell px-2 py-1 border border-gray-300">Negative</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300"> Interpreted Positive</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300"> Interpreted Neutral</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300"> Interpreted Negative</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -229,7 +218,7 @@
             new Chart(ctxPie, {
                 type: 'pie',
                 data: {
-                    labels: ['Positive', 'Neutral', 'Negative'],
+                    labels: [' Positive', '  Neutral', '  Negative'],
                     datasets: [{
                         label: 'Sentiments',
                         data: [
@@ -268,17 +257,17 @@
                     labels: labels,
                     datasets: [
                         {
-                            label: 'Positive Comments',
+                            label: ' Interpreted Positive ',
                             data: positiveData,
                             backgroundColor: '#32de84'
                         },
                         {
-                            label: 'Neutral Comments',
+                            label: ' Interpreted Neutral ',
                             data: neutralData,
                             backgroundColor: '#FFEB3B'
                         },
                         {
-                            label: 'Negative Comments',
+                            label: ' Interpreted Negative ',
                             data: negativeData,
                             backgroundColor: '#EF5350'
                         }
@@ -305,17 +294,17 @@
                     labels: labels,
                     datasets: [
                         {
-                            label: 'Positive Comments',
+                            label: ' Interpreted Positive ',
                             data: positiveData,
                             backgroundColor: '#32de84'
                         },
                         {
-                            label: 'Neutral Comments',
+                            label: ' Interpreted Neutral ',
                             data: neutralData,
                             backgroundColor: '#FFEB3B'
                         },
                         {
-                            label: 'Negative Comments',
+                            label: ' Interpreted Negative ',
                             data: negativeData,
                             backgroundColor: '#EF5350'
                         }

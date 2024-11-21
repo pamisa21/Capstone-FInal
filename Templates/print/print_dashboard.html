@@ -45,14 +45,14 @@
                 </div>
                 <script>
                     document.getElementById('downloadPdf').addEventListener('click', function () {
-                        const element = document.body; // You can specify any specific part of the page here
+                        const element = document.body; 
                 
-                        // Force all text to use Arial by adding a style
+                        
                         const style = document.createElement('style');
                         style.innerHTML = 'body, * { font-family: Arial, sans-serif !important; }';
                         document.head.appendChild(style);
                 
-                        // Options for html2pdf
+                       
                         const options = {
                             margin:       [10, 10, 10, 10],
                             filename:     'Cmu  Overall Results.pdf',
@@ -61,20 +61,20 @@
                             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
                         };
                 
-                        // Delay PDF download by 4 seconds
+                        
                         setTimeout(function () {
-                            // Generate and download the PDF
+                           
                             html2pdf().from(element).set(options).save().then(() => {
-                                // After PDF is downloaded, redirect to the last visited page
+                               
                                 setTimeout(() => {
-                                    const previousUrl = document.referrer || "/dashboard"; // Fallback to /dashboard if no referrer is available
+                                    const previousUrl = document.referrer || "/dashboard";
                                     window.location.href = previousUrl;
-                                }, 3000); // Delay of 3 seconds before redirect
+                                }, 2000); 
                             });
                         }, 1000); 
                     });
                 
-                    // Automatically click the download button when the page is loaded
+
                     window.onload = function() {
                         document.getElementById('downloadPdf').click();
                     };
@@ -87,15 +87,15 @@
                     <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
                 </div>
                 <div class="border border-gray-300 rounded-lg shadow-md p-8 flex flex-col justify-between">
-                    <h2 class="text-lg font-semibold positive">Positive</h2>
+                    <h2 class="text-lg font-semibold positive">Interpreted Positive</h2>
                     <h4 class="text-3xl font-bold text-center">{{ positive_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
                 </div>
                 <div class="border border-gray-300 rounded-lg shadow-md p-8 flex flex-col justify-between">
-                    <h2 class="text-lg font-semibold negative">Negative</h2>
+                    <h2 class="text-lg font-semibold negative"> Interpreted Negative</h2>
                     <h4 class="text-3xl font-bold text-center">{{ negative_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
                 </div>
                 <div class="border border-gray-300 rounded-lg shadow-md p-8 flex flex-col justify-between">
-                    <h2 class="text-lg font-semibold neutral">Neutral</h2>
+                    <h2 class="text-lg font-semibold neutral"> Interpreted Neutral</h2>
                     <h4 class="text-3xl font-bold text-center">{{ neutral_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
                 </div>
             </div>
@@ -110,8 +110,8 @@
                     <!-- Positive Sentiment -->
                     <div class="flex items-center justify-between mb-2  primary">
                         <div class="flex items-center">
-                            <span class="material-icons primary"></span>
-                            <span class="ml-2 primary">Positive</span>
+                            <span class="material-icons primary  thumb-up-icon"> </span>
+                            <span class="ml-2 primary">Interpreted Positive</span>
                         </div>
                         <p class="text-3xl font-bold">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                     </div>
@@ -123,8 +123,8 @@
                     <!-- Neutral Sentiment -->
                     <div class="flex items-center justify-between mb-2 mt-4 primary">
                         <div class="flex items-center">
-                            <span class="material-icons"></span>
-                            <span class="ml-2">Neutral</span>
+                            <span class="material-icons more_horiz-icon"></span>
+                            <span class="ml-2"> Interpreted Neutral</span>
                         </div>
                         <p class=" text-3xl font-bold">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                     </div>
@@ -135,8 +135,9 @@
                     <!-- Negative Sentiment -->
                     <div class="flex items-center justify-between mb-2 mt-4 primary">
                         <div class="flex items-center">
-                            <span class="material-icons "></span>
-                            <span class="ml-2">Negative</span>
+                            <span class="material-icons thumb-down-icon"></span>
+
+                            <span class="ml-2"> Interpreted Negative</span>
                         </div>
                         <p class="text-3xl font-bold">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                     </div>
@@ -154,15 +155,15 @@
             
         </section>
        
-            <section id="stockbar" class="mt-10 mb-2  ">                           
-                <div class="bg-white rounded-lg shadow-md mt-5 border-2">
-                    <h2 class="text-lg font-semibold mb-4 p-4 mt-5">Semester Comparison</h2>
-                    <div class="flex justify-center items-center mb-5">
-                        <!-- Adjusted width and height for smaller chart -->
-                        <canvas id="stackbarchart" width="700" height="500"></canvas>
-                    </div>
+        <section id="stockbar" class="mt-10 mb-2  mx-12">                           
+            <div class="bg-white rounded-lg shadow-md mt-5 border-2">
+                <h2 class="text-lg font-semibold mb-4 p-4 mt-5">Overall Semesters Comparison</h2>
+                <div class="flex justify-center items-center mb-5">
+                    <!-- Adjusted width and height for smaller chart -->
+                    <canvas id="stackbarchart" width="700" height="500"></canvas>
                 </div>
-            </section>
+            </div>
+        </section>
             
         <section class="mx-12">
             <div class="mt-4 mb-5">
@@ -174,9 +175,9 @@
                                 <tr>
                                     <th class="table-cell px-2 py-1 border border-gray-300">Semester</th>
                                     <th class="table-cell px-2 py-1 border border-gray-300">Total Comments</th>
-                                    <th class="table-cell px-2 py-1 border border-gray-300">Positive</th>
-                                    <th class="table-cell px-2 py-1 border border-gray-300">Neutral</th>
-                                    <th class="table-cell px-2 py-1 border border-gray-300">Negative</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300"> Interpreted Positive</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300"> Interpreted Neutral</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300"> Interpreted Negative</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -239,17 +240,17 @@
                 labels: labels,
                 datasets: [
                     {
-                        label: 'Positive',
+                        label: ' Interpreted Positive',
                         data: semesterData.map(item => item.positive),
                         backgroundColor: '#32de84', // Green color
                     },
                     {
-                        label: 'Neutral',
+                        label: ' Interpreted Neutral',
                         data: semesterData.map(item => item.neutral),
                         backgroundColor: '#FFEB3B', // Yellow color
                     },
                     {
-                        label: 'Negative',
+                        label: ' Interpreted Negative',
                         data: semesterData.map(item => item.negative),
                         backgroundColor: '#EF5350', // Red color
                     },

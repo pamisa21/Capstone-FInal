@@ -28,7 +28,23 @@
                     <textarea id="content" name="content" rows="5" readonly 
                               class="p-2 border border-gray-300 rounded bg-gray-100">{{ comment.comment }}</textarea>
                 </div>
-        
+                <div class="flex flex-col">
+                    <label class="text-lg font-semibold">Sentiment Results</label>
+                    <p class="p-2 border border-gray-300 rounded bg-gray-100">
+                        {% if comment.category == 0 %}
+                            Interpreted as Negative
+                        {% elif comment.category == 1 %}
+                            Interpreted as Neutral
+                        {% elif comment.category == 2 %}
+                            Interpreted as Positive
+                        {% elif comment.category == 3 %}
+                            Not Yet Sentiment
+                        {% else %}
+                            Unknown Category
+                        {% endif %}
+                    </p>
+                </div>
+                
                 <!-- Faculty Name (non-editable) -->
                 <div class="flex flex-col">
                     <label class="text-lg font-semibold">Faculty</label>

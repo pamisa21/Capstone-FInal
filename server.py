@@ -19,8 +19,10 @@ from datetime import datetime
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
-# Configure the SQLAlchemy part of the app instance
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/ComFES'
+# Configure the SQLAlchemy part of the app instancef
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://comfes:comfesadmin@localhost/comfes'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://comfes:comfesadmin@localhost/comfes'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:comfesadmin@localhost/comfes'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['FES_LOGO_PATH'] = '/static/img/feslogo.png'
 app.config['LOADING_GIF'] = '/static/img/Orange and Purple Vibrant Colorful Geometric Website Logo.gif'
@@ -48,7 +50,4 @@ with app.app_context():
     db.create_all()  
 
 if __name__ == '__main__':
-    app.run(debug=True)
-
-
-
+    app.run(host='0.0.0.0', port=9090 , debug = False )

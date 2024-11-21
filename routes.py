@@ -4,7 +4,8 @@ from server import app,db
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification,pipeline
 from server import Users,Faculty,Comment,Semester,SentimentComment,Department,College,Subject,AY_SEM,Student
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
 import pandas as pd  
@@ -111,6 +112,8 @@ def main_page():
 
 
 #Login 
+from werkzeug.security import check_password_hash
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -121,21 +124,21 @@ def login():
         
         if user:
             if user.status == 1:  # Check if user is active
-                if user.password == password:
-                    session['username'] = user.name 
-                    session['user_id'] = user.id  
+                if check_password_hash(user.password, password):  # Compare hashed password
+                    session['username'] = user.name
+                    session['user_id'] = user.id
                     return redirect(url_for("loading_screen", target=url_for("dashboard")))
                 else:
                     flash("Invalid password!", "error")
             else:
-               flash("Account is not authorized to access the admin page. Access is restricted to staff and admin only. Please contact support if you need assistance.", "error")
-
+                flash("Account is not authorized to access the admin page.ss Access is restricted to staff and admin only. Please contact support if you need assistance.", "error")
         else:
             flash("Email not found!", "error")
 
         return redirect(url_for("login"))
 
     return render_template('Auth/login.html')
+
 
 #Register
 @app.route('/register', methods=['GET', 'POST'])
@@ -156,8 +159,11 @@ def register():
             flash("Email address already exists!", "error")
             return redirect(url_for('register_page'))
 
+        # Hash the password using pbkdf2:sha256
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+
         # Assuming the Users model includes a 'status' field
-        new_user = Users(name=username, email=email, password=password, status=status)
+        new_user = Users(name=username, email=email, password=hashed_password, status=status)
         
         db.session.add(new_user)
         db.session.commit()
@@ -166,12 +172,6 @@ def register():
         return redirect(url_for('login'))
 
     return render_template('Auth/register.html')
-
-
-@app.route('/register_page')
-def register_page():
-    return render_template('Auth/register.html')
-
 
 
 #   Logout
@@ -1195,8 +1195,19 @@ def loading_profile():
 def profile():
     if 'username' in session:
         username = session['username']
-        return render_template('Users/profile.html', username=username)
+        user_id = session['user_id']
+        
+        # Fetch user data based on the user_id
+        user = Users.query.get(user_id)
+        
+        # Pass the available data to the template
+        return render_template('staff/profile.html', 
+                               username=username,
+                               email=user.email,
+                               status="Active" if user.status == 1 else "Inactive",
+                               password=user.password)
     return redirect(url_for('loading_screen', target=url_for('login')))
+
 
 @app.route('/loading_edit_profile')
 def loading_edit_profile():
@@ -1204,12 +1215,30 @@ def loading_edit_profile():
 
 
 #   Edit Profile
-@app.route('/edit_profile')
+@app.route('/edit_profile', methods=['GET', 'POST'])
 def edit_profile():
     if 'username' in session:
-        username = session['username']
-        return render_template('Users/edit_profile.html', username=username)
+        user_id = session['user_id']
+        user = Users.query.get(user_id)
+
+        if request.method == 'POST':
+            # Update user data with form inputs
+            user.name = request.form['name']
+            user.email = request.form['email']
+            user.password = request.form['password']
+            
+            # Save changes to the database
+            db.session.commit()
+            flash("Profile updated successfully!", "success")
+            return redirect(url_for('profile'))
+
+        return render_template('staff/edit_profile.html', 
+                               name=user.name, 
+                               email=user.email, 
+                               password=user.password)
     return redirect(url_for('loading_screen', target=url_for('login')))
+
+
 
 #   FQS
 @app.route('/FQS')

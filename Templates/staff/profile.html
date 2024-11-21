@@ -1,0 +1,67 @@
+{% extends "layout/base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/variable.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+{% endblock css %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-page">
+        <div class="profile-header flex flex-col items-center mb-6">
+            <!-- Profile Image -->
+            <img src="{{ url_for('static', filename='img/profile.jpg') }}" alt="Profile Image" class="w-24 h-24 rounded-full shadow-md mb-4">
+            <h1 class="text-3xl font-semibold">{{ username }}</h1>
+        </div>
+
+        <form>
+            <!-- Username -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" id="username" name="username" class="form-input" value="{{ username }}" readonly>
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" name="email" class="form-input" value="{{ email }}" readonly>
+                </div>
+            </div>
+
+            <!-- Status -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="status" class="form-label">Status</label>
+                    <input type="text" id="status" name="status" class="form-input" value="{{ status }}" readonly>
+                </div>
+            </div>
+
+            <!-- Password -->
+            <!-- <div class="form-row">
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" name="password" class="form-input" value="{{ password }}" readonly>
+                </div>
+            </div> -->
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col space-y-3 mt-6">
+                <a href="{{ url_for('edit_profile') }}">
+                    <button type="button" class="btn-save text-black py-2 rounded">
+                        <i class="material-icons align-middle mr-1">save</i> Edit Profile
+                    </button>
+                </a>
+                <a href="{{ url_for('dashboard') }}">
+                    <button type="button" class="btn-back text-black py-2 rounded">
+                        <i class="material-icons align-middle mr-1">arrow_back</i> Back to Dashboard
+                    </button>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

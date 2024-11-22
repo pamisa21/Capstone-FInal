@@ -60,29 +60,59 @@
                     
                     <!-- Notification dropdown -->
                     <div class="relative hidden sm:block">
-                       
                         <input type="checkbox" id="notification-toggle" class="hidden peer" />
                         <label for="notification-toggle" class="flex items-center cursor-pointer" title="notification">
                             <i class="ph ph-bell mt-1 h-4 w-4 text-current"></i>
                             <span class="flex absolute -mt-5 ml-4">
-                                <span class="animate-ping absolute inline-flex rounded-full bg-green-600 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-700"></span>
+                                <span id="notification-dot" class="animate-ping absolute inline-flex rounded-full bg-green-600 opacity-75 hidden"></span>
+                                <span id="notification-dot-inner" class="relative inline-flex rounded-full h-2 w-2 bg-green-700 hidden"></span>
                             </span>
                         </label>
-                        
+                    
                         <div class="absolute right-0 z-20 w-48 py-2 mt-2 origin-top-right bg-white rounded-md shadow-xl dark:bg-gray-800 opacity-0 pointer-events-none transition-opacity
-                         duration-200 ease-in-out transform scale-95 peer-checked:opacity-100 peer-checked:pointer-events-auto peer-checked:scale-100">
+                        duration-200 ease-in-out transform scale-95 peer-checked:opacity-100 peer-checked:pointer-events-auto peer-checked:scale-100">
                             <div class="block px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
-                                <p>No new notifications</p>
-                            </div>
-                            <div class="block px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
-                                <p>Notification 1</p>
-                            </div>
-                            <div class="block px-4 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
-                                <p>Notification 2</p>
+                                <p>
+                                    <a href="{{ url_for('analys') }}" id="new-comment-count">
+                                        Loading...
+                                    </a>
+                                </p> 
                             </div>
                         </div>
+                    
+                        <script>
+                            // Function to fetch the new comment count and update the display
+                            function fetchNewCommentCount() {
+                                fetch('/new_comment_count')
+                                    .then(response => response.text())
+                                    .then(data => {
+                                        const commentCount = parseInt(data); // Parse the count into an integer
+                                        const notificationDot = document.getElementById('notification-dot');
+                                        const notificationDotInner = document.getElementById('notification-dot-inner');
+                                        const commentCountElement = document.getElementById('new-comment-count');
+                    
+                                        // Update the count in the dropdown
+                                        commentCountElement.textContent = commentCount + ' new comments';
+                    
+                                        // Show or hide the notification dot based on the count
+                                        if (commentCount > 0) {
+                                            notificationDot.classList.remove('hidden');
+                                            notificationDotInner.classList.remove('hidden');
+                                        } else {
+                                            notificationDot.classList.add('hidden');
+                                            notificationDotInner.classList.add('hidden');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error fetching new comment count:', error);
+                                    });
+                            }
+                    
+                            // Call the function to fetch the new comment count when the page loads
+                            window.onload = fetchNewCommentCount;
+                        </script>
                     </div>
+                    
 
                     <div class="relative">
                         <input type="checkbox" id="profile-menu-toggle" class="hidden peer" />
@@ -100,8 +130,9 @@
                                 FAQ's</a>
                             <a href="#" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
                                 Settings</a>
-                            <a href="{{ url_for('logout') }}" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
-                                Sign Out</a>
+                                <a href="{{ url_for('logout') }}" id="signOutLink" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
+                                    Sign Out
+                                </a>
                         </div>
                     </div>
                 </div>
@@ -133,7 +164,9 @@
                                 <li>
                                     <a class="hover:text-gray-600 transition-colors duration-200 {% if request.path == url_for('faculty') %} active-link {% endif %}" href="{{ url_for('faculty') }}">Faculty</a>
                                 </li>
-                                
+                                <li>
+                                    <a class="hover:text-gray-600 transition-colors duration-200" href="{{ url_for('logout') }}">Logout</a>
+                                </li>
                             </ul>
                         </div>
                         

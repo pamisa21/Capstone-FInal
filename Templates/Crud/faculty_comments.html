@@ -186,26 +186,26 @@
                         <table class="data-table">
                             <thead class="table-header">
                                 <tr>
-                                    <th class="table-cell">No</th>
-                                    <th class="table-cell">Subject </th>
-                                    <th class="table-cell">Comment</th>
-                                    <th class="table-cell">Category</th>
+                                    <th class="table-cell hidden md:table-cell  px-2 py-1 border border-gray-300">No</th>
+                                    <th class="table-cell hidden md:table-cell  px-2 py-1 border border-gray-300">Subject </th>
+                                    <th class="table-cell  px-2 py-1 border border-gray-300" >Comment</th>
+                                    <th class="table-cell  px-2 py-1 border border-gray-300">Category</th>
                                 </tr>
                             </thead>
                             <tbody class="table-body">
                                 {% for item in comments %}
                                 <tr>
-                                    <td class="table-cell">{{ loop.index }}</td>
-                                    <td class="table-cell">{{ item.comment.subject_id }}</td>
-                                    <td class="table-cell">{{ item.comment.comment }}</td>
-                                   
-                                    <td class="table-cell">
+                                    <td class="table-cell hidden md:table-cell  px-2 py-1 border border-gray-300">{{ loop.index }}</td>
+                                    <td class="table-cell hidden md:table-cell px-2 py-1 border border-gray-300">{{ item.comment.subject_id }}</td>
+                                    <td class="table-cell  px-2 py-1 border border-gray-300">{{ item.comment.comment }}</td>
+                                    <td class="table-cell  px-2 py-1 border border-gray-300">
                                         {% if item.comment.category == 1 %} Neutral
                                         {% elif item.comment.category == 2 %} Positive
                                         {% elif item.comment.category == 0 %} Negative
                                         {% else %} Unknown {% endif %}
                                     </td>
                                 </tr>
+                                
                                 {% else %}
                                 <tr>
                                     <td colspan="5" class="table-cell text-center">No comments available for this semester.</td>
@@ -285,7 +285,7 @@
             <table class="comments-table">
                 <thead>
                     <tr>
-                        <th>No</th>
+                        <th class="table-cell hidden">">No</th>
                         <th>Comment</th>
                         <th>Category</th>
                     </tr>

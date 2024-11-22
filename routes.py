@@ -131,7 +131,7 @@ def login():
                 else:
                     flash("Invalid password!", "error")
             else:
-                flash("Account is not authorized to access the admin page.ss Access is restricted to staff and admin only. Please contact support if you need assistance.", "error")
+                flash("Account is not authorized to access the admin page.ssh Access is restricted to staff and admin only. Please contact support if you need assistance.", "error")
         else:
             flash("Email not found!", "error")
 
@@ -183,6 +183,11 @@ def logout():
 
 
 
+
+
+
+
+
 #   admin Page //  Staff Page
 
 
@@ -202,12 +207,16 @@ def dashboard():
         selected_department_id = request.args.get('department_id')
 
         # If ay_id is not selected, check localStorage via cookies
+
         if not selected_ay_id:
             selected_ay_id = request.cookies.get('selectedSemester')
 
-        # If there's no ay_id, set a default semester (e.g., first semester in list)
-        if not selected_ay_id and AY_SEM.query.first():
-            selected_ay_id = AY_SEM.query.first().ay_id  # Default to first semester if none selected
+
+        if not selected_ay_id:
+            last_semester = AY_SEM.query.order_by(AY_SEM.ay_id.desc()).first()
+            if last_semester:
+                selected_ay_id = last_semester.ay_id  
+        
 
         # Call the function to generate the word cloud image
         wordcloud_data = generate_wordcloud()
@@ -601,6 +610,8 @@ def evaluate():
                     sentiment = 'Positive'
         return render_template('evaluate.html', username=session['username'], sentiment=sentiment)
     return redirect(url_for('loading_screen', target=url_for('login')))
+
+
 
 
 @app.route('/analys', methods=['GET'])
@@ -1247,3 +1258,12 @@ def FQS():
         username = session['username']
         return render_template('FQS.html', username=username)
     return redirect(url_for('loading_screen', target=url_for('FQS')))
+
+
+
+@app.route('/new_comment_count', methods=['GET'])
+def new_comment_count():
+   
+    count = db.session.query(Comment).filter(Comment.category == 3).count()
+    return str(count)
+

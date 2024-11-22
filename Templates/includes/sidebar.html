@@ -50,6 +50,39 @@
                     <i class="ph ph-users w-5 h-5"></i>
                     <span class="mx-2 text-sm font-medium">Faculty</span>
                 </a>
+                <a href="/logout" id="signOutLink1" class="flex items-center px-3 py-2 custom-hover">
+                    <i class="ph ph-sign-out w-5 h-5"></i>
+                    <span class="mx-2 text-sm font-medium">Signout</span>
+                </a>
+                
+                <script>
+                    // Function to handle session timeout check
+                    function checkSessionExpiration() {
+                        const currentTime = new Date().getTime();
+                        const sessionExpirationTime = localStorage.getItem('sessionExpirationTime'); // Store session expiration time
+                
+                        // If session has expired, automatically sign out
+                        if (sessionExpirationTime && currentTime > sessionExpirationTime) {
+                            // Trigger logout
+                            document.getElementById('signOutLink1').click();
+                        }
+                    }
+                
+                    // Set session expiration time (e.g., 30 minutes from now)
+                    const expirationTime = new Date().getTime() + (30 * 60 * 1000); // 30 minutes
+                    localStorage.setItem('sessionExpirationTime', expirationTime);
+                
+                    // Check for session expiration every minute
+                    setInterval(checkSessionExpiration, 60000); 
+                
+                    // Logout event listener to clear local storage
+                    document.getElementById('signOutLink1').addEventListener("click", function () {
+                        localStorage.removeItem("selectedCollege");
+                        localStorage.removeItem("selectedDepartment");
+                        localStorage.removeItem("sessionExpirationTime"); // Remove session expiration time
+                    });
+                </script>
+                
             </nav>
         </div>
     </aside>

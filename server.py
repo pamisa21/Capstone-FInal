@@ -11,7 +11,7 @@ from models.student_model import Student
 from models.ay_model import AY_SEM
 from models.subject_model import Subject
 from models.extensions import db
-
+from datetime import timedelta
 from datetime import datetime
 
 
@@ -24,7 +24,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/Com
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['FES_LOGO_PATH'] = '/static/img/feslogo.png'
 app.config['LOADING_GIF'] = '/static/img/Orange and Purple Vibrant Colorful Geometric Website Logo.gif'
-
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 # Initialize SQLAlchemy with the app
 db.init_app(app)
 

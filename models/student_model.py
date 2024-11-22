@@ -7,7 +7,7 @@ class Student(db.Model):
     fname = db.Column(db.String(100), nullable=False)
     mi = db.Column(db.String(100), nullable=False)
     department_id = db.Column(db.String(20), db.ForeignKey('department.department_id'), nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False)
+    email = db.Column(db.String(100), nullable=False)
     status = db.Column(db.Boolean, nullable=False, default=True)
     
     # Relationships

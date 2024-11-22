@@ -35,7 +35,7 @@
                 
 
                 <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0 mb-5">
-                    <div class="flex flex-col hidden ">
+                    <div class="flex flex-col  hidden ">
                         <select id="dashboardSemesterDropdown" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black">
                             {% for semester in all_semesters %}
                                 <option value="{{ semester.ay_id }}" {% if semester.ay_id == selected_semester %} selected {% endif %}>
@@ -151,16 +151,14 @@
                                 
                             </div>
                             <section id="stockbar" class="hidden mt-5 mb-2">
-                               
-                                <div class="bg-white rounded-lg shadow-md  mt-5 border-2">
+                                <div class="bg-white rounded-lg shadow-md mt-5 border-2 max-w-full mx-auto">
                                     <h2 class="text-lg font-semibold mb-4 p-4">Semester Comparison</h2>
-                                    <div class="flex justify-center items-center mb-5">
-                                        <canvas id="stackbarchart" width="600px" height="300px"></canvas>
+                                    <div class="flex justify-center items-center mb-5 overflow-x-auto">
+                                        <canvas id="stackbarchart" class="max-w-full" width="600px" height="300px"></canvas>
                                     </div>
                                 </div>
-                                      
-                                
                             </section>
+                            
                             
                         </div>
                         
@@ -196,9 +194,9 @@
                     </div>  
 
 
-                    <div  id="faculty-list" class="bg-white rounded-lg shadow-md  mt-5  border-2">
-                        <div class="  p-1"> 
-                            <h2 class="text-lg font-semibold p-2"> Department Faculty List </h2>
+                    <div id="faculty-list" class="bg-white rounded-lg shadow-md mt-5 border-2">
+                        <div class="p-1">
+                            <h2 class="text-lg font-semibold p-2">Department Faculty List</h2>
                         </div>
                         <div class="overflow-x-auto max-w-full">
                             <div class="table-wrapper">
@@ -206,25 +204,29 @@
                                     <table class="data-table w-full border-collapse text-sm p-5">
                                         <thead class="table-header bg-gray-100">
                                             <tr>
-                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10">&nbsp;</th>
-                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10">ID</th>
+                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden">&nbsp;</th>
+                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden">ID</th>
                                                 <th class="table-cell px-2 py-1 border border-gray-300 p-10">Complete Name & Email</th>
-                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10">Department</th>
-                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10">College</th>
-                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10">&nbsp;</th>
+                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 lg:table-cell hidden">Department</th>
+                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 lg:table-cell hidden">College</th>
+                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody class="table-body">
                                             {% for faculty in filtered_faculty %}
                                                 <tr class="border-t">
-                                                    <td class="table-cell px-4 py-2 text-left">{{ loop.index }}</td>
-                                                    <td class="table-cell px-2 py-1 border border-gray-300">{{ faculty.faculty_id }}</td>
+                                                    <td class="table-cell px-4 py-2 text-left hidden">{{ loop.index }}</td>
+                                                    <td class="table-cell px-2 py-1 border border-gray-300 hidden">{{ faculty.faculty_id }}</td>
                                                     <td class="table-cell px-2 py-1 border border-gray-300">
                                                         {{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.<br>
                                                         <span class="email text-sm text-gray-600">{{ faculty.email }}</span>
                                                     </td>
-                                                    <td class="table-cell px-2 py-1 border border-gray-300">{{ faculty.department.department_name }}</td>
-                                                    <td class="table-cell px-2 py-1 border border-gray-300">{{ faculty.department.college_id }}</td>
+                                                    <td class="table-cell px-2 py-1 border border-gray-300 lg:table-cell hidden">
+                                                        {{ faculty.department.department_name }}
+                                                    </td>
+                                                    <td class="table-cell px-2 py-1 border border-gray-300 lg:table-cell hidden">
+                                                        {{ faculty.department.college_id }}
+                                                    </td>
                                                     <td class="px-4 py-4 text-sm whitespace-nowrap">
                                                         <div class="flex space-x-2">
                                                             <a href="{{ url_for('view_faculty', faculty_id=faculty.faculty_id) }}" title="View" class="primary">View</a>
@@ -242,14 +244,7 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        
-                       
-                        
-                    </div>
-
-
-                                
+                    </div>               
                 </section>                 
 
             </div>

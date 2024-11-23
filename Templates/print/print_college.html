@@ -23,7 +23,7 @@
             Download as Pdf
         </button>
     </div>
-    <script>
+    <!-- <script>
         document.getElementById('downloadPdf').addEventListener('click', function () {
             const element = document.body; 
 
@@ -57,7 +57,7 @@
             document.getElementById('downloadPdf').click();
         };
     </script>
-    
+     -->
     
 </div>
 <div id="printLayout">
@@ -81,7 +81,7 @@
     </div>
 
     <section class="mx-10">
-        <div class="text-lg font-bold maze ml-5">
+        <div class="text-lg font-bold  ml-5">
             <h2 class="primary">Sentiment Overview</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 p-5">
@@ -93,19 +93,19 @@
             
                 <!-- Positive Comments Card -->
                 <div class="border border-gray-300 rounded-lg shadow-md p-8">
-                    <h2 class="text-lg font-semibold positive"> Interpreted Positive</h2>
+                    <h2 class="text-lg font-semibold "> Interpreted Positive</h2>
                     <h4 class="text-3xl font-bold text-center">{{ positive_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
                 </div>
             
                 <!-- Negative Comments Card -->
                 <div class="border border-gray-300 rounded-lg shadow-md p-8">
-                    <h2 class="text-lg font-semibold negative"> Interpreted Negative</h2>
+                    <h2 class="text-lg font-semibold "> Interpreted Negative</h2>
                     <h4 class="text-3xl font-bold text-center">{{ negative_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
                 </div>
             
                 <!-- Neutral Comments Card -->
                 <div class="border border-gray-300 rounded-lg shadow-md p-8">
-                    <h2 class="text-lg font-semibold neutral"> Interpreted Neutral</h2>
+                    <h2 class="text-lg font-semibold    "> Interpreted Neutral</h2>
                     <h4 class="text-3xl font-bold text-center">{{ neutral_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
                 </div>
             </div>

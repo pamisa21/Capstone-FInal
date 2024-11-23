@@ -207,19 +207,16 @@ def dashboard():
         selected_department_id = request.args.get('department_id')
 
         # If ay_id is not selected, check localStorage via cookies
-
         if not selected_ay_id:
             selected_ay_id = request.cookies.get('selectedSemester')
-
 
         if not selected_ay_id:
             last_semester = AY_SEM.query.order_by(AY_SEM.ay_id.desc()).first()
             if last_semester:
                 selected_ay_id = last_semester.ay_id  
-        
 
-        # Call the function to generate the word cloud image
-        wordcloud_data = generate_wordcloud()
+        # Call the function to generate the word cloud image, passing the selected filters
+        wordcloud_data = generate_wordcloud(selected_ay_id, selected_college_id, selected_department_id)
 
         # Base query for comments (with existing filters)
         query = (
@@ -273,7 +270,8 @@ def dashboard():
             .join(Department, Department.department_id == Faculty.department_id)
             .filter(Department.department_id == selected_department_id if selected_department_id else True)
             .group_by(AY_SEM.ay_id, AY_SEM.ay_name)  # Group by ay_id and ay_name to avoid error
-            .order_by(AY_SEM.ay_id.asc())            # Order by ay_id in ascending order
+            .order_by(AY_SEM.ay_id.desc())   
+            .limit(6)           
             .all()
         )
 
@@ -342,27 +340,36 @@ def dashboard():
     return redirect(url_for('login'))
 
 
-def generate_wordcloud():
-    comments = Comment.query.filter(Comment.category != 3).all()
+def generate_wordcloud(selected_ay_id=None, selected_college_id=None, selected_department_id=None):
 
-    # Combine all comments into a single string
+    query = db.session.query(Comment).filter(Comment.category != 3)  
+
+    if selected_ay_id:
+        query = query.filter(Comment.ay_id == selected_ay_id)
+
+    if selected_college_id:
+        query = query.join(Faculty).join(Department).join(College).filter(College.college_id == selected_college_id)
+
+    if selected_department_id:
+        query = query.filter(Department.department_id == selected_department_id)
+
+    comments = query.all()
+
     text = " ".join([comment.comment for comment in comments])
-    text = text.replace("Ma'am", "").replace("Sir", "")
+    text = text.replace("Ma'am", "").replace("Sir", "")  
 
-    # Check if there's any data to create a word cloud
     if not text.strip():
-        return "No Data"  # Alternatively, return a base64 encoded image saying "No Data"
-    
-    # Generate the word cloud if data exists
+        return "No Data"  
+
     wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
 
-    # Convert the word cloud to an image and encode it as base64
     img = BytesIO()
     wordcloud.to_image().save(img, format='PNG')
     img.seek(0)
     img_base64 = base64.b64encode(img.read()).decode('utf-8')
     
     return img_base64
+
 
 
 
@@ -457,7 +464,7 @@ def print_colleges():
 
 
     semester_counts = []
-    semesters = AY_SEM.query.order_by(AY_SEM.ay_id).all()
+    semesters = AY_SEM.query.order_by(AY_SEM.ay_id.desc()).limit(6).all()
 
     for semester in semesters:
         positive_semester_count = db.session.query(Comment).join(Faculty).join(Department).filter(

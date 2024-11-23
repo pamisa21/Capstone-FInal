@@ -16,7 +16,7 @@
     <div class="flex flex-1">
         {% include "includes/sidebar.html" %}
 
-        <main class="flex-1 p-5 mx-3 mt-20 ml-2 md:ml-60 sm:mx-0 sm:ml-0 sm:mr-0">
+        <main class="flex-1 md:p-5 p-2 mx-3 mt-20 ml-2 md:ml-60 sm:mx-0 sm:ml-0 sm:mr-0">
 
             <div id="dashboard" class="p-1 md:p-6">
 
@@ -165,14 +165,15 @@
                         <!-- Column 2: Sentiment Analysis Chart -->
                         <div>
                             
-                            <div class="bg-white p-1  border-2 shadow-md rounded-lg  ">
-                                <h2 class=" text-lg font-semibold p-2   text-center mx-auto "> CMU Sentiment Overview</h2>
-                                <div class="flex justify-center items-center   ">
-                                    <canvas  id="sentimentDoughnutChart" class="pb-3"></canvas>
-                                </div>
+                         <div class="bg-white p-1 border-2 shadow-md rounded-lg">
+                            <h2 id="overviewTitle" class="text-lg font-semibold p-2 text-center mx-auto">CMU Sentiment Overview Across Semesters</h2>
+                            <div class="flex justify-center items-center">
+                                <canvas id="sentimentDoughnutChart" class="pb-3"></canvas>
                             </div>
+                        </div>
+
                            
-                            
+
                       
                             <div class="bg-white rounded-lg shadow-md  mt-5 border-2">
                                 <h2 class="text-lg font-semibold p-2 text-center mx-auto">CMU Sentiment Insights</h2>
@@ -185,7 +186,7 @@
                             <div id="wordCloudSection" class="bg-white rounded-lg shadow-md mt-5 border-2">
                                 
                                 <div class="flex justify-center items-center">
-                                    <img src="data:image/png;base64,{{ wordcloud_data }}" alt="Word Cloud" class="max-w-full h-80"/> <!-- Adjust height here -->
+                                    <img src="data:image/png;base64,{{ wordcloud_data }}" alt="Word Cloud" class="max-w-full h-60"/> <!-- Adjust height here -->
                                 </div>
                             </div>
 
@@ -195,48 +196,62 @@
 
 
                     <div id="faculty-list" class="bg-white rounded-lg shadow-md mt-5 border-2">
-                        <div class="p-1">
-                            <h2 class="text-lg font-semibold p-2">Department Faculty List</h2>
+                        <div class="p-1 flex justify-between items-center">
+                            <h2 class="font-semibold p-2 text-sm sm:text-lg">Department Faculty List</h2>
+                            <!-- Search Box on the Right -->
+                            <div class="flex items-center space-x-2 ml-5">
+                                <input type="text" id="faculty-search" placeholder="Search..." class="p-1 sm:p-2 border border-gray-300 rounded text-xs sm:text-sm text-black">
+                            </div>
+                            
                         </div>
+                        
+                        
                         <div class="overflow-x-auto max-w-full">
                             <div class="table-wrapper">
                                 <div class="table-border max-h-[500px] overflow-y-auto">
                                     <table class="data-table w-full border-collapse text-sm p-5">
                                         <thead class="table-header bg-gray-100">
                                             <tr>
-                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden">&nbsp;</th>
-                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden">ID</th>
-                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10">Complete Name & Email</th>
-                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 lg:table-cell hidden">Department</th>
-                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 lg:table-cell hidden">College</th>
-                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10">Actions</th>
+                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden sm:table-cell">&nbsp;</th>
+                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden sm:table-cell">ID</th>
+                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 text-xs sm:text-sm">Complete Name & Email</th>
+                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden lg:table-cell text-xs sm:text-sm">Department</th>
+                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden lg:table-cell text-xs sm:text-sm">College</th>
+                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 text-xs sm:text-sm">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody class="table-body">
                                             {% for faculty in filtered_faculty %}
-                                                <tr class="border-t">
-                                                    <td class="table-cell px-4 py-2 text-left hidden">{{ loop.index }}</td>
-                                                    <td class="table-cell px-2 py-1 border border-gray-300 hidden">{{ faculty.faculty_id }}</td>
-                                                    <td class="table-cell px-2 py-1 border border-gray-300">
+                                                <tr class="border-t faculty-row">
+                                                    <td class="table-cell px-4 py-2 text-left hidden sm:table-cell text-xs sm:text-sm">{{ loop.index }}</td>
+                                                    <td class="table-cell px-2 py-1 border border-gray-300 hidden sm:table-cell text-xs sm:text-sm">{{ faculty.faculty_id }}</td>
+                                                    <td class="table-cell px-2 py-1 border border-gray-300 text-xs sm:text-sm">
                                                         {{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.<br>
-                                                        <span class="email text-sm text-gray-600">{{ faculty.email }}</span>
+                                                        <span class="email text-xs sm:text-sm text-gray-600">{{ faculty.email }}</span>
                                                     </td>
-                                                    <td class="table-cell px-2 py-1 border border-gray-300 lg:table-cell hidden">
+                                                    <td class="table-cell px-2 py-1 border border-gray-300 lg:table-cell hidden text-xs sm:text-sm">
                                                         {{ faculty.department.department_name }}
                                                     </td>
-                                                    <td class="table-cell px-2 py-1 border border-gray-300 lg:table-cell hidden">
+                                                    <td class="table-cell px-2 py-1 border border-gray-300 lg:table-cell hidden text-xs sm:text-sm">
                                                         {{ faculty.department.college_id }}
                                                     </td>
-                                                    <td class="px-4 py-4 text-sm whitespace-nowrap">
+                                                    <td class="px-4 py-4 text-xs sm:text-sm whitespace-nowrap">
                                                         <div class="flex space-x-2">
-                                                            <a href="{{ url_for('view_faculty', faculty_id=faculty.faculty_id) }}" title="View" class="primary">View</a>
-                                                            <a href="{{ url_for('faculty_comments', faculty_id=faculty.faculty_id) }}" title="Comments" class="secondary">Results</a>
+                                                            <a href="{{ url_for('view_faculty', faculty_id=faculty.faculty_id) }}" title="View" class="primary hidden sm:inline">View</a>
+                                                            <a href="{{ url_for('faculty_comments', faculty_id=faculty.faculty_id) }}" title="Comments" class="secondary hidden sm:inline">Results</a>
+
+                                                            <a href="{{ url_for('view_faculty', faculty_id=faculty.faculty_id) }}" title="View" class="primary sm:hidden">
+                                                                <i class="ph ph-eye"></i>
+                                                            </a>
+                                                            <a href="{{ url_for('faculty_comments', faculty_id=faculty.faculty_id) }}" title="Comments" class="secondary sm:hidden">
+                                                                <i class="ph ph-chart-bar"></i>
+                                                            </a>
                                                         </div>
                                                     </td>
                                                 </tr>
                                             {% else %}
                                                 <tr>
-                                                    <td colspan="6" class="text-center px-4 py-2">No Faculty Found</td>
+                                                    <td colspan="6" class="text-center px-4 py-2 text-xs sm:text-sm">No Faculty Found</td>
                                                 </tr>
                                             {% endfor %}
                                         </tbody>
@@ -244,7 +259,27 @@
                                 </div>
                             </div>
                         </div>
-                    </div>               
+                </div>
+
+                <!-- JavaScript to filter faculty list by Name or Email -->
+                <script>
+                    document.getElementById('faculty-search').addEventListener('input', function() {
+                        let searchTerm = this.value.toLowerCase();
+                        let rows = document.querySelectorAll('.faculty-row'); // Select all rows
+                        rows.forEach(function(row) {
+                            let name = row.querySelector('td:nth-child(3)').textContent.toLowerCase(); // Name and Email column
+                            let email = row.querySelector('td:nth-child(3) .email').textContent.toLowerCase(); // Email inside the third column
+                            if (name.includes(searchTerm) || email.includes(searchTerm)) {
+                                row.style.display = ''; // Show the row if match is found
+                            } else {
+                                row.style.display = 'none'; // Hide the row if no match is found
+                            }
+                        });
+                    });
+                </script>
+
+                    
+                          
                 </section>                 
 
             </div>

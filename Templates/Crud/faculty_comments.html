@@ -244,9 +244,9 @@
         <div class="faculty-result mb-6 p-2 border-gray-200 rounded-lg shadow-sm primary mt-5">
             <h2 class="text-xl font-semibold primary mb-4">Sentiment Results</h2>
             <p class="primary mb-2">Total Comments: <span class="font-medium">{{ total_comments }}</span> Comments</p>
-            <p class=" mb-2">Positive: <span class="font-medium">{{ positive_comments }}</span> Comments</p>
-            <p class=" mb-2">Negative: <span class="font-medium">{{ negative_comments }}</span> Comments</p>
-            <p class=" mb-2">Neutral: <span class="font-medium">{{ neutral_comments }}</span> Comments</p>
+            <p class=" mb-2">Positive: <span class="font-medium">{{ positive_count }}</span> Comments</p>
+            <p class=" mb-2">Negative: <span class="font-medium">{{ negative_count }}</span> Comments</p>
+            <p class=" mb-2">Neutral: <span class="font-medium">{{ neutral_count }}</span> Comments</p>
         </div>
 
 
@@ -285,7 +285,7 @@
             <table class="comments-table">
                 <thead>
                     <tr>
-                        <th class="table-cell hidden">">No</th>
+                        <th class="">No</th>
                         <th>Comment</th>
                         <th>Category</th>
                     </tr>

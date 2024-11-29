@@ -46,6 +46,7 @@ def inject_default_semester():
 with app.app_context():
     from routes import *
     db.create_all()  
+    
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

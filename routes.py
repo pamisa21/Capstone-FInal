@@ -27,50 +27,35 @@ import base64
 sentiment_pipeline = pipeline("sentiment-analysis", model="./ai_model/fine_tuned_twitter_xlm-roberta_model_bv2.3")
 
 
-
+# text preprocess remove all unecesary before process ... .  
 def preprocess_text(text):
-    # Convert to lowercase
     text = text.lower()
-    
-    # Remove emojis
     text = emoji.replace_emoji(text, replace='')
-    
-    # Remove special characters except basic punctuation
     text = re.sub(r'[^a-zA-Z0-9\s.,!?]', '', text)
-    
-    # Normalize spaces
     text = " ".join(text.split())
-    
-    # Remove numeric characters
-    text = re.sub(r'\d+', '', text).strip()
-    
+    text = re.sub(r'\d+', '', text).strip()  
     return text
 
+
+
 def predict_sentiment(text):
-  
-    if text.lower() == "thanks":
-        return 2  
+    """
+    Predict sentiment using predefined mappings or the sentiment model.
+    """
+    # Check for predefined sentiment
+    predefined_sentiment = get_predefined_sentiment(text)
+    if predefined_sentiment is not None:
+        return predefined_sentiment
 
-    if text.lower() == "tanga":
-        return 0 
-    if text.lower() == "yawa ka":
-        return 0
-    if text.lower() == "yawa ka maam":
-        return 0 
-    if text.lower() == "yawa ka":
-        return 0  
-    if text.lower() == "bobo ka":
-        return 0
-    if text.lower() == "i love you":
-        return 1
-
-
+    # Default: use the sentiment pipeline
     preprocessed_text = preprocess_text(text)
-
-    inputs = sentiment_pipeline.tokenizer(preprocessed_text, return_tensors='pt', truncation=True, padding=True, max_length=512)
+    inputs = sentiment_pipeline.tokenizer(
+        preprocessed_text, return_tensors='pt', truncation=True, padding=True, max_length=512
+    )
     with torch.no_grad():
         outputs = sentiment_pipeline.model(**inputs)
         logits = outputs.logits
+
     predicted_class = logits.argmax().item()
     return predicted_class
 
@@ -605,8 +590,9 @@ def print_department():
 def evaluate():
     if 'username' in session:  
         sentiment = None
+        comment = None  # Initialize comment variable
         if request.method == 'POST':
-            comment = request.form.get('comment')
+            comment = request.form.get('comment')  # Get the user's input
             if comment: 
                 predicted_class = predict_sentiment(comment)
                 if predicted_class == 0:
@@ -615,8 +601,12 @@ def evaluate():
                     sentiment = 'Neutral'
                 elif predicted_class == 2:
                     sentiment = 'Positive'
-        return render_template('evaluate.html', username=session['username'], sentiment=sentiment)
+        return render_template('evaluate.html', 
+                               username=session['username'], 
+                               sentiment=sentiment, 
+                               comment=comment)  # Pass comment to the template
     return redirect(url_for('loading_screen', target=url_for('login')))
+
 
 
 
@@ -1243,7 +1233,7 @@ def edit_profile():
             # Update user data with form inputs
             user.name = request.form['name']
             user.email = request.form['email']
-            user.password = request.form['password']
+            
             
             # Save changes to the database
             db.session.commit()
@@ -1253,7 +1243,7 @@ def edit_profile():
         return render_template('staff/edit_profile.html', 
                                name=user.name, 
                                email=user.email, 
-                               password=user.password)
+        )
     return redirect(url_for('loading_screen', target=url_for('login')))
 
 
@@ -1273,4 +1263,70 @@ def new_comment_count():
    
     count = db.session.query(Comment).filter(Comment.category == 3).count()
     return str(count)
+
+
+
+
+
+
+
+
+def get_predefined_sentiment(text):
+    # Clean and normalize the input text
+    cleaned_text = re.sub(r'[^a-zA-Z\s]', '', text)  
+    cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip().lower()
+
+    # Predefined sentiments with expanded common phrases
+    specific_sentiments = {
+        # Positive comments
+        "thanks": 2,
+        "thank you": 2,
+        "thankyou": 2,
+        "i appreciate it": 2,
+        "good job": 2,
+        "well done": 2,
+        "salamat": 2,
+        "i love you": 2,
+        "mahal kita": 2,
+        "ayos ka": 2,
+        "galing mo": 2,
+        "galing": 2,
+        "very good": 2,
+        "very good sir": 2,
+        "very good maam": 2,
+        "i like you": 2,
+        "i like you maam": 2,
+        "i like you sir": 2,
+        
+        # Neutral comments
+        "ayos lang": 1,
+        "okay lang": 1,
+        "fine": 1,
+        "noted": 1,
+        "sure": 1,
+        "sige": 1,
+        "ok": 1,
+        "wala lang": 1,
+        
+        # Negative comments
+        "tanga": 0,
+        "yawa ka": 0,
+        "yawa ka maam": 0,
+        "bobo ka": 0,
+        "bugo ka": 0,
+        "pangit ka": 0,
+        "i hate you": 0,
+        "walang kwenta": 0,
+        "basura ka": 0,
+        "walang kwenta ka": 0,
+        "inutil ka": 0,
+        "mahina ka": 0,
+    }
+
+    # Check if any predefined sentiment matches a substring in the cleaned text
+    for phrase, sentiment in specific_sentiments.items():
+        if phrase in cleaned_text:
+            return sentiment
+
+    return None  
 

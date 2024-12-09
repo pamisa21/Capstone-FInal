@@ -7,11 +7,12 @@
 {% endblock css %}
 
 {% block content %}
-<div class="bg-bg text-gs-10 border border-border p-8 rounded-lg max-w-lg mx-auto mt-20 shadow-lg">
-    <div class="register text-center">
-        <h2 class="text-3xl">Register to ComFES!</h2>
+<div class="bg-white text-gs-10 border border-border p-8 rounded-lg max-w-lg mx-auto mt-20 shadow-lg">
+    <div class="Login text-center bg-white">
+        <h3 class="text-xl font-bold flex items-center justify-center">
+            <img src="static/img/feslogo.png" alt="Logo" class="h-6 w-auto mr-2"> Comfes
+        </h3>
     </div>
-
     <!-- Display Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=True) %}
         {% if messages %}

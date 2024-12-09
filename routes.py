@@ -85,7 +85,7 @@ def loading_screen():
     return render_template("loading.html", redirect_url=target)
 
 #Main 
-@app.route('/')
+@app.route('/') 
 def main():
     return redirect(url_for("loading_screen", target=url_for("main_page")))
 
@@ -137,24 +137,28 @@ def register():
 
         if password != confpassword:  
             flash("Passwords do not match!", "error")
-            return redirect(url_for('register_page'))
+            return redirect(url_for('register'))
 
         existing_user = Users.query.filter_by(email=email).first()
         if existing_user:
             flash("Email address already exists!", "error")
-            return redirect(url_for('register_page'))
+            return redirect(url_for('register'))
 
         # Hash the password using pbkdf2:sha256
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
 
-        # Assuming the Users model includes a 'status' field
+        # Create a new user
         new_user = Users(name=username, email=email, password=hashed_password, status=status)
         
         db.session.add(new_user)
         db.session.commit()
 
-        flash("Registration successful! Please log in.", "success")
-        return redirect(url_for('login'))
+        # Log the user in
+        session['username'] = new_user.name
+        session['user_id'] = new_user.id
+
+        flash("Registration successful!", "success")
+        return redirect(url_for('dashboard'))  # Redirect to dashboard instead of login
 
     return render_template('Auth/register.html')
 
@@ -294,6 +298,7 @@ def dashboard():
             selected_semester = AY_SEM.query.filter_by(ay_id=selected_ay_id).first()
             if selected_semester:
                 selected_semester_name = selected_semester.ay_name
+                
 
         return render_template(
             'dashboard.html',
@@ -319,7 +324,9 @@ def dashboard():
             overall_neutral_count=overall_neutral_count,
             overall_negative_count=overall_negative_count,
             wordcloud_data=wordcloud_data,
-            selected_semester_name=selected_semester_name  # Pass the semester name to the template
+            selected_semester_name=selected_semester_name 
+           # Pass the semester name to the template
+           
         )
 
     return redirect(url_for('login'))
@@ -1202,7 +1209,7 @@ def loading_profile():
 @app.route('/profile')
 def profile():
     if 'username' in session:
-        username = session['username']
+       
         user_id = session['user_id']
         
         # Fetch user data based on the user_id
@@ -1210,7 +1217,7 @@ def profile():
         
         # Pass the available data to the template
         return render_template('staff/profile.html', 
-                               username=username,
+                               name=user.name,
                                email=user.email,
                                status="Active" if user.status == 1 else "Inactive",
                                password=user.password)
@@ -1270,11 +1277,10 @@ def new_comment_count():
 
 
 
-
 def get_predefined_sentiment(text):
     # Clean and normalize the input text
     cleaned_text = re.sub(r'[^a-zA-Z\s]', '', text)  
-    cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip().lower()
+    cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
 
     # Predefined sentiments with expanded common phrases
     specific_sentiments = {
@@ -1323,10 +1329,15 @@ def get_predefined_sentiment(text):
         "mahina ka": 0,
     }
 
-    # Check if any predefined sentiment matches a substring in the cleaned text
-    for phrase, sentiment in specific_sentiments.items():
-        if phrase in cleaned_text:
-            return sentiment
+    # Check if the cleaned text matches predefined sentiments
+    sentiment = specific_sentiments.get(cleaned_text.lower(), None)
+    if sentiment is not None:
+        return sentiment
 
-    return None  
-
+    # Additional feature: Check length and positive words
+    positive_words = ["very good", "nice","good job" , "excellent", "awesome"]
+    # Check if the text length is 15 and contains any of the positive words
+    if len(cleaned_text) <= 10 and any(word in cleaned_text.lower() for word in positive_words):
+        return 2  # Positive sentiment
+    
+    return None  # Default to None if no match

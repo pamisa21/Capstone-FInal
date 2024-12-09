@@ -2,12 +2,12 @@
 <div>
     <section class="relative left-5">
         <!-- Navbar -->
-        <nav class="flex justify-between text-b w-screen fixed top-0 left-1 right-0 bg-white shadow-md z-50 rounded-lg" style="height: 70px;">
+        <nav class="flex justify-between text-b w-screen fixed top-0 left-1 right-0 header shadow-md z-50 rounded-lg" style="height: 60px;">
             <div class="px-5 xl:px-12 py-6 flex w-full items-center">
                 <!-- Logo -->
                 <a href="#" class="flex items-center">
-                    <img src="{{ url_for('static', filename='img/feslogo.png') }}" class="h-7 mr-1 w-auto ml-[15px] sm:pl-0">
-                    <span class="text-2xl font-bold font-heading primary hidden sm:inline">COM FES</span>
+                    <img src="{{ url_for('static', filename='img/feslogo.png') }}" class="h-5 mr-1 w-auto ml-[15px] sm:pl-0">
+                    <span class="font-bold font-heading primary hidden sm:inline">COM FES</span>
                 </a>
                 
                 
@@ -128,8 +128,8 @@
                                 Your profile</a>
                             <a href="/FQS" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
                                 FAQ's</a>
-                            <a href="#" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
-                                Settings</a>
+                            <!-- <a href="#" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
+                                Settings</a> -->
                                 <a href="{{ url_for('logout') }}" id="signOutLink" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
                                     Sign Out
                                 </a>

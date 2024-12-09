@@ -54,9 +54,9 @@
                     </div>
 
                     <div class="text-right mt-4">
-                     
-                        <a href="{{ url_for('faculty') }}" class="font-semibold text-green-600 hover:underline">Back to Faculty List</a>
+                        <a href="{{ request.referrer or url_for('faculty') }}" class="font-semibold text-green-600 hover:underline">Back</a>
                     </div>
+                    
                     
                 </form>
             </div>

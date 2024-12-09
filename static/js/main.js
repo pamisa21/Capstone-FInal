@@ -69,6 +69,39 @@ function toggleText() {
 
 
 
+function updateDepartments() {
+    const collegeDropdown = document.getElementById('filterCollege');
+    const departmentDropdown = document.getElementById('filterDepartment');
+    const selectedCollege = collegeDropdown.value;
+
+    // Save the currently selected department
+    const selectedDepartment = departmentDropdown.value;
+
+    // Loop through department options and toggle visibility
+    Array.from(departmentDropdown.options).forEach((option) => {
+        const departmentCollegeId = option.getAttribute('data-college-id');
+        if (departmentCollegeId === selectedCollege || !departmentCollegeId) {
+            option.style.display = '';
+        } else {
+            option.style.display = 'none';
+        }
+    });
+
+    // Restore the selected department if valid
+    if (selectedDepartment) {
+        const validOption = Array.from(departmentDropdown.options).find(
+            (option) => option.value === selectedDepartment && option.style.display !== 'none'
+        );
+
+        if (validOption) {
+            departmentDropdown.value = selectedDepartment;
+        } else {
+            departmentDropdown.value = '';
+        }
+    } else {
+        departmentDropdown.value = '';
+    }
+}
 
 
 document.addEventListener('DOMContentLoaded', () => {

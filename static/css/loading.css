@@ -3,6 +3,7 @@
 body {
     margin: 0;
     overflow: hidden;
+
 }
 
 .preloader {
@@ -18,6 +19,7 @@ body {
     z-index: 9999; 
     opacity: 0; /* Initially set opacity to 0 for the fade-in effect */
     animation: fadeInOut 8s ease-in-out; /* CSS animation for fade-in and fade-out */
+    
 }
 
 /* Optional: Style the preloader image */

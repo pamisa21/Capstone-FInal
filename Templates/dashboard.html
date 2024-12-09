@@ -18,7 +18,7 @@
 
         <main class="flex-1 md:p-5 p-2 mx-3 mt-20 ml-2 md:ml-60 sm:mx-0 sm:ml-0 sm:mr-0">
 
-            <div id="dashboard" class="p-1 md:p-6">
+            <div id="dashboard" class="p-1 md:p-4">
 
                 <!-- Dashboard Header with Filter Section -->   
                 <div class="flex flex-col md:flex-row justify-between items-center mb-5">
@@ -46,24 +46,31 @@
                     </div>
                 
                     <!-- College Dropdown -->
-                    <div class="flex items-center   ">
-                        <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black" onchange="updateDashboard()">
-                            <option value="">Select College</option>
-                            {% for college in colleges %}
-                                <option value="{{ college.college_id }}" {% if college.college_id == selected_college %}selected{% endif %}>{{ college.college_name }}</option>
-                            {% endfor %}
-                        </select>
+                    <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0 mb-5">
+                        <!-- College Dropdown -->
+                        <div class="flex items-center">
+                            <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black" onchange="updateDepartments()">
+                                <option value="">Select College</option>
+                                {% for college in colleges %}
+                                    <option value="{{ college.college_id }}" {% if college.college_id == selected_college %}selected{% endif %}>
+                                        {{ college.college_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <!-- Department Dropdown -->
+                        <div class="flex items-center">
+                            <select id="filterDepartment" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black">
+                                <option value="">Select Department</option>
+                                {% for department in selected_departments %}
+                                    <option value="{{ department.department_id }}" data-college-id="{{ department.college_id }}" {% if department.department_id == selected_department %}selected{% endif %}>
+                                        {{ department.department_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     </div>
-                    <div class="flex items-center   r">
-                        <select id="filterDepartment" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black" onchange="updateDashboard()">
-                            <option value="">Select Department</option>
-                            {% for department in selected_departments %}
-                                <option value="{{ department.department_id }}" {% if department.department_id == selected_department %}selected{% endif %}>
-                                    {{ department.department_name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                    
                    
                 </div>
 

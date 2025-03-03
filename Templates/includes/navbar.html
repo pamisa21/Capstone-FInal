@@ -117,22 +117,27 @@
                     <div class="relative">
                         <input type="checkbox" id="profile-menu-toggle" class="hidden peer" />
                         <label for="profile-menu-toggle" class="flex items-center cursor-pointer" title="{{ username }}">
-                            <i class="ph ph-user-circle text-2xl"></i> <!-- Adjust the size here -->
+                            <i class="ph ph-user-circle text-2xl"></i> 
                         </label>
                         
                         
                         <div class="absolute right-0 z-20 w-48 py-2 mt-2 origin-top-right bg-white rounded-md shadow-xl dark:bg-gray-800 opacity-0 pointer-events-none transition-opacity duration-200 ease-in-out transform scale-95 peer-checked:opacity-100 peer-checked:pointer-events-auto peer-checked:scale-100">
                             <a class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
-                                Hi! &nbsp;{{ username }}</a>
+                                Hi! &nbsp;{{ username }} 
+                            </a>
                             <a href="/profile" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
-                                Your profile</a>
+                                Your profile
+                            </a>
                             <a href="/FQS" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
-                                FAQ's</a>
-                            <!-- <a href="#" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
-                                Settings</a> -->
-                                <a href="{{ url_for('logout') }}" id="signOutLink" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
-                                    Sign Out
-                                </a>
+                                FAQ's
+                            </a>
+                            <a href="/Setting" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
+                                Settings
+                            </a>
+
+                            <a href="{{ url_for('logout') }}" id="signOutLink" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
+                                Sign Out
+                            </a>
                         </div>
                     </div>
                 </div>

@@ -4,19 +4,23 @@
 
 
 	--primary: #004526;
-	--secondary: #FFA726;
+	--secondary: #FFC600;
 	--positive: #32de84;
 	--positive50: #32de84;
 	--negative: #EF5350;
 	--neutral: #FFEB3B;
 	--hover: #452beb;
+ 
 
+
+	/*  new variables*/
+	--yellow: #FFC600;
+	--green: #00491E;
+	--altgreen1:#02681E;
+	--altgreen2:#02681E;
+	--tabletext:black; 
+	
+	 
 }
 
-/* --primary: #2e9353;
-	--secondary: #023047;
-	--positive: #32de84;
-	--positive50: #32de84;
-	--negative: #EF5350;
-	--neutral: #FFEB3B;
-	--hover: #FF7043; */
+

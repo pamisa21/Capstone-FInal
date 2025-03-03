@@ -3912,3 +3912,15 @@ video {
 .neutral {
   color: var(--neutral);
 }
+
+.tabletext {
+  color:var (--tabletext);
+}
+
+.yellow {
+  color:var(--yellow);
+}
+
+.green{
+  color: var(--green);
+}

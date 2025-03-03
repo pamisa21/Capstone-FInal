@@ -1,0 +1,104 @@
+{% extends "layout/base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/variable.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+{% endblock css %}
+
+{% block content %}
+<div class="flex flex-col h-screen">
+    <header>
+    
+    </header>
+    
+    <div class="flex flex-1">
+        
+
+        <main class="flex-1 p-5 mx-5 mt-20">
+            
+            <section class="bg-white p-6 rounded-lg shadow-md grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Calendar -->
+                <div class="p-4 bg-gray-100 rounded-lg">
+                    <h2 class="text-xl font-bold mb-3">Calendar</h2>
+                    <div id="calendar" class="grid grid-cols-7 gap-2 text-center"></div>
+                </div>
+
+                <!-- Alarm Clock -->
+                <div class="p-4 bg-gray-100 rounded-lg text-center">
+                    <h2 class="text-xl font-bold mb-3">Alarm Clock</h2>
+                    <h1 class="text-3xl font-mono" id="current-time">00:00:00 PM</h1>
+                    <div class="flex justify-center mt-4 space-x-2">
+                        <select class="p-2 border rounded" id="hour"></select>
+                        <select class="p-2 border rounded" id="minute"></select>
+                        <select class="p-2 border rounded" id="ampm">
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
+                        </select>
+                    </div>
+                    <button class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" id="set-alarm">Set Alarm</button>
+                </div>
+                
+            </section>
+            <div class="text-right mt-4">
+                <a href="javascript:history.back()" class="font-semibold primary hover:underline">Back to Comments List</a>
+            </div>
+        </main>
+    </div>
+    
+</div>
+
+<script>
+    // Clock Functionality
+    const currentTime = document.getElementById("current-time");
+    const hourSelect = document.getElementById("hour");
+    const minuteSelect = document.getElementById("minute");
+    const ampmSelect = document.getElementById("ampm");
+    const setAlarmBtn = document.getElementById("set-alarm");
+    let alarmTime = "";
+    let ringtone = new Audio("{{ url_for('static', filename='files/ringtone.mp3') }}");
+    
+    for (let i = 1; i <= 12; i++) {
+        let option = `<option value="${i}">${i}</option>`;
+        hourSelect.insertAdjacentHTML("beforeend", option);
+    }
+    for (let i = 0; i < 60; i++) {
+        let formatted = i < 10 ? `0${i}` : i;
+        let option = `<option value="${formatted}">${formatted}</option>`;
+        minuteSelect.insertAdjacentHTML("beforeend", option);
+    }
+    
+    setInterval(() => {
+        let date = new Date(),
+            h = date.getHours(),
+            m = date.getMinutes(),
+            s = date.getSeconds(),
+            ampm = h >= 12 ? "PM" : "AM";
+        h = h % 12 || 12;
+        h = h < 10 ? "0" + h : h;
+        m = m < 10 ? "0" + m : m;
+        s = s < 10 ? "0" + s : s;
+        currentTime.innerText = `${h}:${m}:${s} ${ampm}`;
+        if (alarmTime === `${h}:${m} ${ampm}`) {
+            ringtone.play();
+        }
+    }, 1000);
+    
+    setAlarmBtn.addEventListener("click", () => {
+        alarmTime = `${hourSelect.value}:${minuteSelect.value} ${ampmSelect.value}`;
+        alert(`Alarm set for ${alarmTime}`);
+    });
+    
+    // Calendar Functionality
+    const calendar = document.getElementById("calendar");
+    const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+    for (let i = 1; i <= daysInMonth; i++) {
+        let day = document.createElement("div");
+        day.classList.add("p-2", "bg-white", "rounded", "shadow", "cursor-pointer", "hover:bg-blue-200");
+        day.innerText = i;
+        calendar.appendChild(day);
+    }
+</script>
+{% endblock content %}
+
+{% include "includes/public/footers.html" %}

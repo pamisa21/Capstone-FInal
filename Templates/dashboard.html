@@ -29,7 +29,7 @@
                     <!-- Download PDF button -->
                     <button id="printButton" 
                             class="border border-gray-300 px-4 py-2 text-sm focus:outline-none start mt-2 md:mt-0">
-                        <a id="printLink" href="{{ url_for('print_dashboard') }}">Print Overall Results</a>
+                        <a id="printLink" href="{{ url_for('print_dashboard') }}">Print Results</a>
                     </button>
                 </div>
                 
@@ -50,7 +50,7 @@
                         <!-- College Dropdown -->
                         <div class="flex items-center">
                             <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black" onchange="updateDepartments()">
-                                <option value="">Select College</option>
+                                <option value="">Display all Colleges</option>
                                 {% for college in colleges %}
                                     <option value="{{ college.college_id }}" {% if college.college_id == selected_college %}selected{% endif %}>
                                         {{ college.college_name }}
@@ -61,7 +61,7 @@
                         <!-- Department Dropdown -->
                         <div class="flex items-center">
                             <select id="filterDepartment" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black">
-                                <option value="">Select Department</option>
+                                <option value="">Display all Departments</option>
                                 {% for department in selected_departments %}
                                     <option value="{{ department.department_id }}" data-college-id="{{ department.college_id }}" {% if department.department_id == selected_department %}selected{% endif %}>
                                         {{ department.department_name }}
@@ -192,9 +192,9 @@
                            
                             <div id="wordCloudSection" class="bg-white rounded-lg shadow-md mt-5 border-2">
                                 
-                                <div class="flex justify-center items-center">
-                                    <img src="data:image/png;base64,{{ wordcloud_data }}" alt="Word Cloud" class="max-w-full h-60"/> <!-- Adjust height here -->
-                                </div>
+                                <!-- <div class="flex justify-center items-center">
+                                    <img src="data:image/png;base64,{{ wordcloud_data }}" alt="Word Cloud" class="max-w-full h-60"/> 
+                                </div> -->
                             </div>
 
                         </div>
@@ -223,7 +223,7 @@
                                                 <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden sm:table-cell">ID</th>
                                                 <th class="table-cell px-2 py-1 border border-gray-300 p-10 text-xs sm:text-sm">Complete Name & Email</th>
                                                 <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden lg:table-cell text-xs sm:text-sm">Department</th>
-                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden lg:table-cell text-xs sm:text-sm">College</th>
+                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden lg:table-cell text-xs sm:text-sm">Status</th>
                                                 <th class="table-cell px-2 py-1 border border-gray-300 p-10 text-xs sm:text-sm">Actions</th>
                                             </tr>
                                         </thead>
@@ -239,18 +239,23 @@
                                                     <td class="table-cell px-2 py-1 border border-gray-300 lg:table-cell hidden text-xs sm:text-sm">
                                                         {{ faculty.department.department_name }}
                                                     </td>
-                                                    <td class="table-cell px-2 py-1 border border-gray-300 lg:table-cell hidden text-xs sm:text-sm">
+                                                    <!-- <td class="table-cell px-2 py-1 border border-gray-300 lg:table-cell hidden text-xs sm:text-sm">
                                                         {{ faculty.department.college_id }}
+                                                    </td> -->
+
+                                                    <td class="table-cell px-2 py-1 border border-gray-300 lg:table-cell hidden text-xs sm:text-sm">
+                                                        {{ "Active" if faculty.status == 1 else "Not Active" }}
                                                     </td>
+                                                    
                                                     <td class="px-4 py-4 text-xs sm:text-sm whitespace-nowrap">
                                                         <div class="flex space-x-2">
-                                                            <a href="{{ url_for('view_faculty', faculty_id=faculty.faculty_id) }}" title="View" class="primary hidden sm:inline">View</a>
-                                                            <a href="{{ url_for('faculty_comments', faculty_id=faculty.faculty_id) }}" title="Comments" class="secondary hidden sm:inline">Results</a>
+                                                            <!-- <a href="{{ url_for('view_faculty', faculty_id=faculty.faculty_id) }}" title="View" class="primary hidden sm:inline">View</a> -->
+                                                            <a href="{{ url_for('faculty_comments', faculty_id=faculty.faculty_id) }}" title="Comments" class="yellow  hidden sm:inline">View Results</a>
 
-                                                            <a href="{{ url_for('view_faculty', faculty_id=faculty.faculty_id) }}" title="View" class="primary sm:hidden">
+                                                            <!-- <a href="{{ url_for('view_faculty', faculty_id=faculty.faculty_id) }}" title="View" class="primary sm:hidden">
                                                                 <i class="ph ph-eye"></i>
-                                                            </a>
-                                                            <a href="{{ url_for('faculty_comments', faculty_id=faculty.faculty_id) }}" title="Comments" class="secondary sm:hidden">
+                                                            </a> -->
+                                                            <a href="{{ url_for('faculty_comments', faculty_id=faculty.zfaculty_id) }}" title="Comments" class="secondary sm:hidden">
                                                                 <i class="ph ph-chart-bar"></i>
                                                             </a>
                                                         </div>

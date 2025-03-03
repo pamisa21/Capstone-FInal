@@ -18,7 +18,7 @@ body {
     background-color: white; 
 }
 .active {
-    color: var(--secondary);
+    color: var(--yellow);
     font-weight: semibold;
     
 }
@@ -26,14 +26,14 @@ body {
     font-family: 'poppins'; 
 }
 #home-section h2 {
-    color: var(--secondary);
+    color: var(--yellow);
     letter-spacing: 0.5px; 
  
     
 }
 
 #home-section h2 span {
-    color: var(--primary);
+    color: var(--green);
     
 }
 #home-section p {
@@ -43,7 +43,7 @@ body {
 }
 
 .btn {
-    background-color: var(--primary);
+    background-color: var(--green);
     color: white; 
     font-weight: 600; 
     padding: 0.5rem 1rem; 
@@ -52,8 +52,8 @@ body {
 }
 
 .btn:hover {
-    background-color: var(--secondary); 
-    color: var(--primary); 
+    background-color: var(--yellow); 
+    color: var(--green); 
 }
 
 
@@ -93,7 +93,7 @@ body {
 }
 
 .custom-hover:hover {
-    background-color: var(--secondary);
+    background-color: var(--yellow);
     color: black;
    
 }
@@ -103,7 +103,7 @@ body {
 }
 
 input:checked ~ .toggle-bg {
-    background-color: var(--primary); /* Change to your desired toggle on color */
+    background-color: var(--green); /* Change to your desired toggle on color */
 }
 
 input:checked ~ .toggle-dot {
@@ -119,52 +119,52 @@ input:checked ~ .toggle-dot {
 /* Team Section */
 
 .team_name{
-    color: var(--secondary);
+    color: var(--yellow);
     text-transform: capitalize;
 }
 
 .team_title{
-    color: var(--primary);
+    color: var(--green);
 }
 .fb_icon {
-    color: var(--primary)
+    color: var(--green)
      
 }
 
 .fb_icon:hover {
-    color:var(--secondary);
+    color:var(--yellow);
 }
 
 
 /* Contact Section */
 
 .Contact h1 {
-    color: var(--primary);
+    color: var(--green);
     
 }
 .sub{
-    color: var(--secondary);
+    color: var(--yellow);
 }
 
 
 
 /*Login */
 .Login ,  .register{
-color: var(--primary);
+color: var(--green);
 }
 .Login h2, .register h2 {
-    color: var(--primary); 
+    color: var(--green); 
 
 }
 
 
 .loginbutton {
-    background-color: var(--primary);
+    background-color: var(--green);
     color:white;
   
 }
 .loginbutton:hover{
-    background-color: var(--secondary);
+    background-color: var(--yellow);
 }
 
 /* side bar */
@@ -234,25 +234,25 @@ input:checked + .toggle-bg + .toggle-dot {
 
 .filterCategory
 {
-    background-color: var(--primary);
+    background-color: var(--green);
 }
 
 
 #dashboard h1 {
-    color: var(--primary);
+    color: var(--green);
 }
 
 #evaluate button {
-    background-color: var(--primary);
+    background-color: var(--green);
     color: white;
 }
 #evaluate button:hover {
-    background-color: var(--secondary);
+    background-color: var(--yellow);
     color: white;
   
 }
 .active-link {
-    color: var(--secondary);
+    color: var(--yellow);
    
     border-radius: 2px;
 }
@@ -264,11 +264,11 @@ input:checked + .toggle-bg + .toggle-dot {
 /* Dashboard */
 
 #dashboard h2{
-    color: var(--primary);
+    color: var(--green);
     margin-bottom: 20px;
 }
 #dashboard  h4{
-    color: var(--primary);
+    color: var(--green);
     margin-bottom: 20px;
 }
 #dashboard  h3{
@@ -292,20 +292,20 @@ input:checked + .toggle-bg + .toggle-dot {
 
 /* accounts css */
 #accounts button{
-    background-color:var(--primary);
+    background-color:var(--green);
     color: white;
    
 }
 #accounts button:hover{
-    background-color:var(--secondary);
-    color: var(--primary);
+    background-color:var(--yellow);
+    color: var(--green);
     font-weight:bold;
 }
 
 .heading {
     font-size: 1.125rem; /* text-lg */
     font-weight: 500; /* font-medium */
-    color: #1f2937; /* text-gray-800 */
+    color: black;
 }
 
 .description {
@@ -337,6 +337,7 @@ input:checked + .toggle-bg + .toggle-dot {
 .data-table {
     min-width: 100%;
     border-collapse: collapse;
+    color: black;
 }
 
 .table-header {
@@ -347,7 +348,7 @@ input:checked + .toggle-bg + .toggle-dot {
     padding: 1rem 1rem; /* py-3.5 px-4 */
     text-align: left; /* text-left */
     font-size: 0.875rem; /* text-sm */
-    color:var(--primary);
+   
     
 }
 
@@ -361,7 +362,7 @@ input:checked + .toggle-bg + .toggle-dot {
     font-size: 0.875rem;
     font-weight: normal;
     color: white; ;
-    background-color:var(--primary);
+    background-color:var(--green);
     border-radius: 9999px; 
    
 }
@@ -371,7 +372,7 @@ input:checked + .toggle-bg + .toggle-dot {
     font-size: 0.875rem;
     font-weight: normal;
     color: white; ;
-    background-color:var(--primary);
+    background-color:var(--green);
     border-radius: 9999px; 
    
 }
@@ -386,7 +387,7 @@ input:checked + .toggle-bg + .toggle-dot {
     font-size: 0.875rem;
     font-weight: normal;
     color: white; ;
-    background-color:var(--primary);
+    background-color:var(--green);
     border-radius: 9999px; 
 }
 
@@ -441,16 +442,16 @@ input:checked + .toggle-bg + .toggle-dot {
     .form-input {
         width: 100%;
         padding: 0.5rem;
-        border: 1px solid var(--primary);
+        border: 1px solid var(--green);
         border-radius: 4px;
     }
     .profile-header img {
-        border: 3px solid var(--primary);
+        border: 3px solid var(--green);
     }
     .btn-save {
         width: 100%;
         text-align: center;
-        background-color: var(--primary);
+        background-color: var(--green);
         color: white;
     }
   
@@ -462,7 +463,7 @@ input:checked + .toggle-bg + .toggle-dot {
 
     .btn-back {
         width: 100%;
-        background-color: var(--secondary);
+        background-color: var(--yellow);
         text-align: center;
     }
 
@@ -474,21 +475,21 @@ input:checked + .toggle-bg + .toggle-dot {
 
     .Semester {
         color: white;
-        background-color: var(--primary);
+        background-color: var(--green);
         border-radius: 5px;
     }
     .card_results h2{
-        color: var(--primary);
+        color: var(--green);
         
     }
     .card_link{
-        color: var(--primary);
+        color: var(--green);
     }
   
 
 
     .green{
-        color: var(--primary);
+        color: var(--green);
     }
     .green:hover{
     
@@ -500,14 +501,14 @@ input:checked + .toggle-bg + .toggle-dot {
 
     .start {
         color: white;
-        background-color: var(--primary);
+        background-color: var(--green);
         font-weight: 600;
         border-radius: 10px;
         transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
     }
     
     .start:hover {
-        background-color: var(--secondary);
+        background-color: var(--yellow);
         color: black;
     }
     
@@ -530,11 +531,11 @@ input:checked + .toggle-bg + .toggle-dot {
 
     #close-modal {
         
-        color:var(--primary);
+        color:var(--green);
     }
     #close-modal:hover {
       
-        color:var(--secondary);
+        color:var(--yellow);
     }
 
 
@@ -542,23 +543,23 @@ input:checked + .toggle-bg + .toggle-dot {
 
     /* Set Default */
     .setdf{
-        background-color: var(--primary);
+        background-color: var(--green);
         color: white;
         transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
     }
     .setdf:hover{
-        background-color: var(--secondary);
+        background-color: var(--yellow);
         color: black;
         transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
     }
 
     .cancel{
-        background-color: var(--secondary);
+        background-color: var(--yellow);
         color: black;
         transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
     }
     .cancel:hover{
-        background-color: var(--primary);
+        background-color: var(--green);
         color: white;
         transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
     }
@@ -571,7 +572,7 @@ input:checked + .toggle-bg + .toggle-dot {
     transform: perspective(1px) translateZ(0);
     box-shadow: 0 0 1px rgba(0, 0, 0, 0);
     position: relative;
-    background-color: var(--primary);
+    background-color: var(--green);
     -webkit-transition-property: color;
     transition-property: color;
     -webkit-transition-duration: 0.3s;
@@ -585,7 +586,7 @@ input:checked + .toggle-bg + .toggle-dot {
     bottom: 0;
     left: 0;
     right: 0;
-    background: var(--secondary);
+    background: var(--yellow);
     border-radius: 5px;
     -webkit-transform: scaleX(0);
     transform: scaleX(0);
@@ -615,7 +616,7 @@ input:checked + .toggle-bg + .toggle-dot {
     transform: perspective(1px) translateZ(0);
     box-shadow: 0 0 1px rgba(0, 0, 0, 0);
     position: relative;
-    background-color: var(--secondary);
+    background-color: var(--yellow);
     -webkit-transition-property: color;
     transition-property: color;
     -webkit-transition-duration: 0.3s;

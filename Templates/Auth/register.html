@@ -28,11 +28,18 @@
 
     <form action="{{ url_for('register') }}" method="post" class="mt-6 space-y-4">
         <div>
-            <label for="username" class="block text-sm font-semibold text-gray-700">Complete Name</label>
-            <input type="text" id="username" name="username" required 
+            <label for="lname" class="block text-sm font-semibold text-gray-700">Last Name</label>
+            <input type="text" id="lname" name="lname" required 
                    class="mt-1 block w-full border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-[#19402B] focus:outline-none" 
-                   placeholder="Ex. Juan P. Delacuz">
+                   placeholder="Ex. Delacruz">
         </div>
+        <div>
+            <label for="fname" class="block text-sm font-semibold text-gray-700">First Name</label>
+            <input type="text" id="fname" name="fname" required
+                   class="mt-1 block w-full border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-[#19402B] focus:outline-none" 
+                   placeholder="Ex. Juan">
+        </div>
+       
         
         <div>
             <label for="email" class="block text-sm font-semibold text-gray-700">Email</label>

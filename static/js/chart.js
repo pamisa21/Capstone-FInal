@@ -55,20 +55,20 @@
             const selectedCollegeName = collegeDropdown.options[collegeDropdown.selectedIndex]?.text || "Select College";
             const selectedDepartmentName = departmentDropdown.options[departmentDropdown.selectedIndex]?.text || "Select Department";
 
-            let buttonText = "Print Overall Results";
+            let buttonText = "Print  Results";
             let route = "/print_dashboard";
 
             if (selectedCollegeId) {
-                buttonText = `Print ${selectedCollegeName} Results`;
+                buttonText = `Print Results `;
                 route = `/print_colleges?college_id=${selectedCollegeId}&ay_id=${selectedSemesterId}`;
             }
             if (selectedDepartmentId) {
-                buttonText = `Print ${selectedDepartmentName} Results`;
+                buttonText = `Print Results`;
                 route = `/print_department?department_id=${selectedDepartmentId}&ay_id=${selectedSemesterId}`;
             }
 
             if (selectedCollegeId && selectedDepartmentId) {
-                buttonText = `Print ${selectedCollegeName} - ${selectedDepartmentName} Results`.slice(0, 50);
+                buttonText = `Print Results` ;
                 route = `/print_department?college_id=${selectedCollegeId}&department_id=${selectedDepartmentId}&ay_id=${selectedSemesterId}`;
             }
 

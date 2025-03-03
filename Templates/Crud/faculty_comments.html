@@ -65,10 +65,10 @@
     <section >
         <div id="stockbar" class="mt-10 mb-2 flex flex-wrap mx-12 gap-6 items-start">
             <!-- Sentiment Analysis Section -->
-            <div class="bg-white rounded-lg shadow-lg p-8 flex-1 border-2">
+            <!-- <div class="bg-white rounded-lg shadow-lg p-8 flex-1 border-2">
                 <h2 class="text-2xl font-semibold mb-6 text-gray-800">Sentiment Analysis This Semester</h2>
                 
-                <!-- Positive Sentiment -->
+           
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center">
                         <span class="material-icons text-[#32de84]">thumb_up</span>
@@ -80,7 +80,7 @@
                     <div class="bg-[#32de84] h-2 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
                 </div>
         
-                <!-- Neutral Sentiment -->
+           
                 <div class="flex items-center justify-between mb-4 mt-6">
                     <div class="flex items-center">
                         <span class="material-icons text-[#FFEB3B]">thumbs_up_down</span>
@@ -92,7 +92,7 @@
                     <div class="bg-[#FFEB3B] h-2 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
                 </div>
         
-                <!-- Negative Sentiment -->
+          
                 <div class="flex items-center justify-between mb-4 mt-6">
                     <div class="flex items-center">
                         <span class="material-icons text-[#EF5350]">thumb_down</span>
@@ -103,7 +103,7 @@
                 <div class="w-full bg-gray-200 rounded-full h-2">
                     <div class="bg-[#EF5350] h-2 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
                 
-            </div>
+            </div> -->
                 
             </div>
         
@@ -111,7 +111,7 @@
             <div class="bg-white rounded-lg shadow-lg p-4 flex items-center justify-center flex-1 border-2">
                 <div class="text-center">
                     <h2 class="text-2xl font-semibold mb-2 text-gray-800">Semester Comparison</h2>
-                    <canvas id="stackbarchart" width="250" height="250"></canvas>
+                    <canvas id="stackbarchart" width="500" height="300"></canvas>
                 </div>
             </div>
         </div>
@@ -119,8 +119,8 @@
     </section>
 
     <section class="mx-12 mt-4">
-        <div class="p-2 text-lg font-bold maze">
-            <h2 class="primary">Sentiment Overview</h2>
+        <div class="p-2 text-lg font-bold ">
+            <h2 class="text-lg font-bold primary mb-2">Sentiment Overview</h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -129,18 +129,46 @@
                 <h2 class="text-lg font-semibold">Total Comments</h2>
                 <h4 class="text-3xl font-bold text-center">{{ total_comments }} <span class="ml-2 text-sm">Comments</span></h4>
             </div>
-            <div class="bg-[white] border-l-4 border-[#32de84] rounded-lg shadow-md mb-5 p-8 flex flex-col hvr-grow">
-                <h2 class="text-lg font-semibold positive">Positive</h2>
-                <h4 class="text-3xl font-bold text-center positive">{{ positive_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
+
+            <div class="bg-white border-l-4 border-[#32de84] rounded-lg shadow-md mb-5 p-8 flex flex-col hvr-grow">
+                <h2 class="text-lg font-semibold text-green-600">Positive</h2>
+                <div class="flex items-center justify-between">
+                    <h4 class="text-3xl font-bold text-gray-600">
+                        {{ positive_count }} 
+                        <span class="ml-2 text-sm text-gray-600">Comments</span>
+                    </h4>
+                    <p class="text-3xl font-bold text-gray-700 ">
+                        {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%
+                    </p>
+                </div>
             </div>
-            <div class="bg-white border-l-4 border-[#EF5350] rounded-lg shadow-md mb-5 p-8 flex flex-col relative hvr-grow">
-                <h2 class="text-lg font-semibold negative">Negative</h2>
-                <h4 class="text-3xl font-bold text-center text-red-500">{{ negative_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
+            
+            <div class="bg-white border-l-4 border-[#EF5350] rounded-lg shadow-md mb-5 p-8 flex flex-col hvr-grow">
+                <h2 class="text-lg font-semibold text-red-600">Negative</h2>
+                <div class="flex items-center justify-between">
+                    <h4 class="text-3xl font-bold text-gray-600">
+                        {{ negative_count }} 
+                        <span class="ml-2 text-sm text-gray-600">Comments</span>
+                    </h4>
+                    <p class="text-3xl font-bold text-gray-700">
+                        {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%
+                    </p>
+                </div>
             </div>
-            <div class="bg-white border-l-4 border-[#FFEB3B] rounded-lg shadow-md mb-5 p-8 flex flex-col relative hvr-grow">
-                <h2 class="text-lg font-semibold neutral">Neutral</h2>
-                <h4 class="text-3xl font-bold text-center neutral">{{ neutral_count }} <span class="ml-2 text-sm primary">Comments</span></h4>
+            
+            <div class="bg-white border-l-4 border-[#FFEB3B] rounded-lg shadow-md mb-5 p-8 flex flex-col hvr-grow">
+                <h2 class="text-lg font-semibold text-yellow-600">Neutral</h2>
+                <div class="flex items-center justify-between">
+                    <h4 class="text-3xl font-bold text-gray-800">
+                        {{ neutral_count }} 
+                        <span class="ml-2 text-sm text-gray-600">Comments</span>
+                    </h4>
+                    <p class="text-3xl font-bold text-gray-800">
+                        {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%
+                    </p>
+                </div>
             </div>
+            
         </div>
     </section>
 
@@ -189,7 +217,7 @@
                                     <th class="table-cell hidden md:table-cell  px-2 py-1 border border-gray-300">No</th>
                                     <th class="table-cell hidden md:table-cell  px-2 py-1 border border-gray-300">Subject </th>
                                     <th class="table-cell  px-2 py-1 border border-gray-300" >Comment</th>
-                                    <th class="table-cell  px-2 py-1 border border-gray-300">Category</th>
+                                    <th class="table-cell  px-2 py-1 border border-gray-300">Interpreted</th>
                                 </tr>
                             </thead>
                             <tbody class="table-body">
@@ -216,10 +244,42 @@
                     </div>
                 </div>
             </div>
+            <!-- Pagination Section -->
+            <div class="flex items-center justify-between mt-6 p-2">
+                {% if paginated_comments.has_prev %}
+                <a href="{{ url_for('faculty_comments', faculty_id=faculty.faculty_id, page=paginated_comments.prev_num) }}"
+                    class="flex items-center px-5 py-2 text-sm text-green-900 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-gray-100">
+                    <span>Previous</span>
+                </a>
+                {% else %}
+                <span class="flex items-center px-5 py-2 text-sm text-gray-500 bg-gray-200 border rounded-md">Previous</span>
+                {% endif %}
+
+                <div class="items-center flex gap-x-3 mt-2 md:mt-0">
+                    <span class="text-sm">Page {{ paginated_comments.page }} of {{ paginated_comments.pages }}</span>
+                </div>
+
+                {% if paginated_comments.has_next %}
+                <a href="{{ url_for('faculty_comments', faculty_id=faculty.faculty_id, page=paginated_comments.next_num) }}"
+                    class="flex items-center px-5 py-2 mt-2 text-sm text-yellow-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-yellow-400">
+                    <span>Next</span>
+                </a>
+                {% else %}
+                <span class="flex items-center px-5 py-2 mt-2 text-sm text-gray-500 bg-gray-200 border rounded-md">Next</span>
+                {% endif %}
+            </div>
         </div>
+            
+        
+        
         <div class="text-right mt-4 mx-12 p-4">
             <a href="javascript:history.back()" class="font-semibold primary hover:underline">Back to previous page</a>
         </div>
+
+
+
+
+
     </section>               
     
 </div>
@@ -233,7 +293,7 @@
         </div>
     </div>
     
-    <div class="content mb-5">
+    <div class="content mb-5 text-sm">
         <div class="faculty-info text-center mx-auto p-4">
             <h2 class="mb-2">Overall Results of Faculty Teaching Performance <br> {{ default_semester.ay_name }}</h2>
             <p class="mb-2">Full Name: {{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.</p>
@@ -241,8 +301,8 @@
             <p class="mb-2">Department: {{ department.department_name }}</p>
         </div>
         
-        <div class="faculty-result mb-6 p-2 border-gray-200 rounded-lg shadow-sm primary mt-5">
-            <h2 class="text-xl font-semibold primary mb-4">Sentiment Results</h2>
+        <div class="faculty-result mb-6 p-2 border-gray-200 rounded-lg shadow-sm primary mt-5 text-sm">
+            <h2 class="text-sm font-semibold primary mb-2">Sentiment Results</h2>
             <p class="primary mb-2">Total Comments: <span class="font-medium">{{ total_comments }}</span> Comments</p>
             <p class=" mb-2">Positive: <span class="font-medium">{{ positive_count }}</span> Comments</p>
             <p class=" mb-2">Negative: <span class="font-medium">{{ negative_count }}</span> Comments</p>
@@ -250,9 +310,9 @@
         </div>
 
 
-        <div class="mt-4 mb-5">
-            <h2 class="text-lg font-bold primary mb-2">Student Statistics Overview</h2>
-            <div class="overflow-x-auto">
+        <div class="mt-4 mb-5 text-sm">
+            <h2 class="text-sm font-bold primary mb-2">Student Statistics Overview</h2>
+            <div class="overflow-x-auto text-sm">
                 <div class="table-border">
                     <table class="data-table w-full border-collapse text-sm">
                         <thead class="table-header bg-gray-100">
@@ -287,7 +347,7 @@
                     <tr>
                         <th class="">No</th>
                         <th>Comment</th>
-                        <th>Category</th>
+                        <th>Inpreted</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -359,7 +419,7 @@
             },
             title: {
                 display: true,
-                text: 'Comments by Semester and Category',
+                text: 'This is a comparison of the last 5 years.',
             },
         },
     };

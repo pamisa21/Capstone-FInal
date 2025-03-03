@@ -97,12 +97,12 @@ def main_page():
 
 
 #Login 
-from werkzeug.security import check_password_hash
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['username']  # Email is used as the username
+        email = request.form['username']  
         password = request.form['password']
     
         user = Users.query.filter_by(email=email).first()
@@ -110,7 +110,7 @@ def login():
         if user:
             if user.status == 1:  # Check if user is active
                 if check_password_hash(user.password, password):  # Compare hashed password
-                    session['username'] = user.name
+                    session['username'] = user.lname + " " + user.fname
                     session['user_id'] = user.id
                     return redirect(url_for("loading_screen", target=url_for("dashboard")))
                 else:
@@ -130,7 +130,8 @@ def login():
 def register():
     if request.method == 'POST':
         email = request.form['email']
-        username = request.form['username']
+        lname = request.form['lname']  # Last Name
+        fname = request.form['fname']  # First Name
         password = request.form['password']
         confpassword = request.form['confpassword']
         status = 1
@@ -144,23 +145,22 @@ def register():
             flash("Email address already exists!", "error")
             return redirect(url_for('register'))
 
-        # Hash the password using pbkdf2:sha256
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
 
-        # Create a new user
-        new_user = Users(name=username, email=email, password=hashed_password, status=status)
+        # Create a new user with first name and last name
+        new_user = Users(lname=lname, fname=fname, email=email, password=hashed_password, status=status)
         
         db.session.add(new_user)
         db.session.commit()
 
-        # Log the user in
         session['username'] = new_user.name
         session['user_id'] = new_user.id
 
         flash("Registration successful!", "success")
-        return redirect(url_for('dashboard'))  # Redirect to dashboard instead of login
+        return redirect(url_for('dashboard'))  # Redirect to dashboard
 
     return render_template('Auth/register.html')
+
 
 
 #   Logout
@@ -1093,6 +1093,8 @@ def view_faculty(faculty_id):
 
 # faculy resutls 
 
+
+
 @app.route('/faculty/comments/<faculty_id>', methods=['GET'])
 def faculty_comments(faculty_id):
     if 'username' in session:
@@ -1111,14 +1113,11 @@ def faculty_comments(faculty_id):
             flash('Faculty member not found!', 'error')
             return redirect(url_for('faculty'))
 
-        # Get the college and department
         college = faculty_member.department.college
         department = faculty_member.department
 
-        # Retrieve all semesters
         all_semesters = AY_SEM.query.order_by(AY_SEM.ay_id.desc()).all()
 
-        # Determine the default semester: URL parameter, cookie, or latest in the database
         selected_semester = (
             request.args.get('semester') or 
             request.cookies.get('selectedSemester') or 
@@ -1126,7 +1125,10 @@ def faculty_comments(faculty_id):
         )
         default_semester_obj = AY_SEM.query.filter_by(ay_id=selected_semester).first()
 
-        # Query comments specific to the selected faculty member for the selected semester
+        # Pagination Setup
+        page = request.args.get('page', 1, type=int)
+        per_page = 15
+
         comments_query = (
             db.session.query(Comment, AY_SEM, Subject)
             .filter(Comment.faculty_id == faculty_id)
@@ -1136,11 +1138,14 @@ def faculty_comments(faculty_id):
             .filter(Comment.ay_id == selected_semester)
         )
 
+        # Apply Pagination
+        paginated_comments = comments_query.paginate(page=page, per_page=per_page, error_out=False)
+
         comments = [
-            {"comment": comment, "ay_sem": ay_sem, "subject": subject} for comment, ay_sem, subject in comments_query.all()
+            {"comment": comment, "ay_sem": ay_sem, "subject": subject}
+            for comment, ay_sem, subject in paginated_comments.items
         ]
 
-        # Group comments by subject_id
         subjects = {}
         for item in comments:
             subject_id = item["comment"].subject_id
@@ -1152,13 +1157,11 @@ def faculty_comments(faculty_id):
                 }
             subjects[subject_id]["comments"].append(item["comment"])
 
-        # Sentiment counts for the selected semester
         total_comments = comments_query.count()
         positive_count = comments_query.filter(Comment.category == 2).count()
         neutral_count = comments_query.filter(Comment.category == 1).count()
         negative_count = comments_query.filter(Comment.category == 0).count()
 
-        # Sentiment counts for all semesters
         semester_sentiment_counts = {}
         for semester in all_semesters:
             sentiment_query = (
@@ -1178,7 +1181,6 @@ def faculty_comments(faculty_id):
                 'negative': negative
             }
 
-        # Render template
         return render_template(
             'Crud/faculty_comments.html',
             username=username,
@@ -1193,11 +1195,11 @@ def faculty_comments(faculty_id):
             negative_count=negative_count,
             all_semesters=all_semesters,
             default_semester=default_semester_obj,
-            semester_sentiment_counts=semester_sentiment_counts  # Pass sentiment counts for all semesters
+            semester_sentiment_counts=semester_sentiment_counts,
+            paginated_comments=paginated_comments  # Pass pagination object
         )
 
     return redirect(url_for('loading_screen', target=url_for('login')))
-
 
 
 # Profile 
@@ -1217,11 +1219,14 @@ def profile():
         
         # Pass the available data to the template
         return render_template('staff/profile.html', 
-                               name=user.name,
+                               lname=user.lname,
+                               fname=user.fname,
                                email=user.email,
                                status="Active" if user.status == 1 else "Inactive",
                                password=user.password)
     return redirect(url_for('loading_screen', target=url_for('login')))
+
+
 
 
 @app.route('/loading_edit_profile')
@@ -1238,7 +1243,8 @@ def edit_profile():
 
         if request.method == 'POST':
             # Update user data with form inputs
-            user.name = request.form['name']
+            user.lname = request.form['lname']
+            user.fname = request.form['fname']
             user.email = request.form['email']
             
             
@@ -1248,7 +1254,8 @@ def edit_profile():
             return redirect(url_for('profile'))
 
         return render_template('staff/edit_profile.html', 
-                               name=user.name, 
+                               lname=user.lname, 
+                               fname=user.fname, 
                                email=user.email, 
         )
     return redirect(url_for('loading_screen', target=url_for('login')))
@@ -1260,8 +1267,17 @@ def edit_profile():
 def FQS():
     if 'username' in session:
         username = session['username']
-        return render_template('FQS.html', username=username)
+        return render_template('staff/FQS.html', username=username)
     return redirect(url_for('loading_screen', target=url_for('FQS')))
+
+# Settings
+@app.route('/Setting')
+def Setting():
+    if 'username' in session:
+        username = session['username']
+        return render_template('staff/Data_manupulate/settings.html', username=username)
+    return redirect(url_for('loading_screen', target=url_for('FQS')))
+
 
 
 

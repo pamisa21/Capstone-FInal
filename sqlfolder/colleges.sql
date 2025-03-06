@@ -1,0 +1,10 @@
+INSERT INTO `colleges` (`college_id`, `college_name`) VALUES ('COA', 'College of Agriculture');
+INSERT INTO `colleges` (`college_id`, `college_name`) VALUES ('CAS', 'College of Arts and Sciences');
+INSERT INTO `colleges` (`college_id`, `college_name`) VALUES ('CBM', 'College of Business and Management');
+INSERT INTO `colleges` (`college_id`, `college_name`) VALUES ('COED', 'College of Education');
+INSERT INTO `colleges` (`college_id`, `college_name`) VALUES ('COE', 'College of Engineering');
+INSERT INTO `colleges` (`college_id`, `college_name`) VALUES ('CFES', 'College of Forestry and Environmental Sciences');
+INSERT INTO `colleges` (`college_id`, `college_name`) VALUES ('CHE', 'College of Human Ecology');
+INSERT INTO `colleges` (`college_id`, `college_name`) VALUES ('CISC', 'College of Information Sciences and Computing');
+INSERT INTO `colleges` (`college_id`, `college_name`) VALUES ('CON', 'College of Nursing');
+INSERT INTO `colleges` (`college_id`, `college_name`) VALUES ('CVM', 'College of Veterinary Medicine');

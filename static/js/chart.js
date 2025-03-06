@@ -96,23 +96,23 @@
 document.addEventListener("DOMContentLoaded", function() {
 const departmentDropdown = document.getElementById("filterDepartment");
 const facultyList = document.getElementById("faculty-list");
-const wordCloudSection = document.getElementById("wordCloudSection");
+// const wordCloudSection = document.getElementById("wordCloudSection");
 const stockbar = document.getElementById("stockbar");
 
 // Initially, hide the faculty list
 facultyList.classList.add('hidden');
-wordCloudSection.classList.add('hidden');
+// wordCloudSection.classList.add('hidden');
 stockbar.classList.add('hidden');
 
 // Show or hide the faculty list when a department is selected
 departmentDropdown.addEventListener("change", function() {
   if (departmentDropdown.value) {
       facultyList.classList.remove('hidden');
-      wordCloudSection.classList.remove('hidden');
+    //   wordCloudSection.classList.remove('hidden');
       stockbar.classList.remove('hidden'); // Show faculty list when a department is selected
   } else {
       facultyList.classList.add('hidden'); 
-      wordCloudSection.classList.add('hidden');
+    //   wordCloudSection.classList.add('hidden');
       stockbar.classList.add('hidden'); // Hide faculty list when no department is selected
   }   
 });
@@ -120,7 +120,7 @@ departmentDropdown.addEventListener("change", function() {
 // Check the current department on page load (in case there is a saved value in localStorage)
 if (departmentDropdown.value) {
   facultyList.classList.remove('hidden');
-  wordCloudSection.classList.remove('hidden');
+//   wordCloudSection.classList.remove('hidden');
   stockbar.classList.remove('hidden');
 }
 });

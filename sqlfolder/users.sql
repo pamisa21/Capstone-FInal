@@ -1,0 +1,1 @@
+INSERT INTO `users` (`id`, `lname`, `fname`, `email`, `password`, `date_added`, `status`) VALUES (1, 'Pamisa', 'Arram', 'arrampamisa21@gmail.com', 'pbkdf2:sha256:600000$fMHyjcwc3h47KMTI$021f95ce24c93d5abd486ddc788c651a671f9f901f74cc0ba332931c9302f338', '2025-02-20 01:01:04', 1);

@@ -34,8 +34,8 @@
         </div>
 
         <section class="mx-10">
-            <div class=" text-lg font-bold maze ml-5 ">
-                <h2 class="primary">Sentiment Overview</h2>
+            <div class=" text-lg font-bold  ml-5 ">
+                <h2 class="">Sentiment Overview</h2>
                 <div  class="flex flex-col md:flex-row justify-between items-center mb-2">
                  
                     <button id="downloadPdf" class=" hidden  print-button border border-gray-300 rounded-md px-4 py-2 text-sm text-white bg-[#004526]
@@ -43,7 +43,7 @@
                         Download as Pdf
                     </button>
                 </div>
-                <script>
+                <!-- <script>
                     document.getElementById('downloadPdf').addEventListener('click', function () {
                         const element = document.body; 
                 
@@ -78,7 +78,7 @@
                     window.onload = function() {
                         document.getElementById('downloadPdf').click();
                     };
-                </script>
+                </script> -->
                 
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-5">
@@ -157,12 +157,13 @@
        
         <section id="stockbar" class="mt-10 mb-2  mx-12">                           
             <div class="bg-white rounded-lg shadow-md mt-5 border-2">
-                <h2 class="text-lg font-semibold mb-4 p-4 mt-5">Overall Semesters Comparison</h2>
+                <h2 class="text-xl font-semibold text-center mb-6 p-2">Latest 5 Semesters Comparison</h2>   
                 <div class="flex justify-center items-center mb-5">
                     <!-- Adjusted width and height for smaller chart -->
-                    <canvas id="stackbarchart" width="500" height="500"></canvas>
+                    <canvas id="stackbarchart" width="1000" height="400"></canvas>
                 </div>
             </div>
+            
         </section>
             
         <section class="mx-12">
@@ -228,60 +229,58 @@
             });
         </script>
 
-        <script>
-            // Fetch the dynamic sentiment data passed from Flask
-            const semesterData = {{ semester_sentiment_counts|tojson }};
-            
-            // Labels for the X-axis (semester names)
-            const labels = semesterData.map(item => item.semester);
+<script>
+    // batchart
+    let semesterData = {{ semester_sentiment_counts|tojson }};
 
-            // Data for the stacked bar chart (for all semesters)
-            const data = {
-                labels: labels,
-                datasets: [
-                    {
-                        label: ' Interpreted Positive',
-                        data: semesterData.map(item => item.positive),
-                        backgroundColor: '#32de84', // Green color
-                    },
-                    {
-                        label: ' Interpreted Neutral',
-                        data: semesterData.map(item => item.neutral),
-                        backgroundColor: '#FFEB3B', // Yellow color
-                    },
-                    {
-                        label: ' Interpreted Negative',
-                        data: semesterData.map(item => item.negative),
-                        backgroundColor: '#EF5350', // Red color
-                    },
-                ]
-            };
+    semesterData = semesterData.slice(-5);
+    const labels = semesterData.map(item => item.semester);
+    const data = {
+        labels: labels,
+        datasets: [
+            {
+                label: 'Interpreted Positive',
+                data: semesterData.map(item => item.positive),
+                backgroundColor: '#32de84', 
+            },
+            {
+                label: 'Interpreted Neutral',
+                data: semesterData.map(item => item.neutral),
+                backgroundColor: '#FFEB3B', 
+            },
+            {
+                label: 'Interpreted Negative',
+                data: semesterData.map(item => item.negative),
+                backgroundColor: '#EF5350',
+            },
+        ]
+    };
 
-            // Configuration for the stacked bar chart
-            const config = {
-                type: 'bar',
-                data: data,
-                options: {
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Sentiment Analysis for All Semesters', // Title for the chart
-                        },
-                    },
-                    responsive: false,
-                    scales: {
-                        x: {
-                            stacked: true, // Stack bars on the x-axis
-                        },
-                        y: {
-                            stacked: true, // Stack bars on the y-axis
-                        },
-                    },
+    const config = {
+        type: 'bar',
+        data: data,
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Sentiment Analysis (Latest 5 Semesters)', 
                 },
-            };
+            },
+            responsive: false,
+            scales: {
+                x: {
+                    stacked: false, 
+                },
+                y: {
+                    stacked: false, 
+                    beginAtZero: true,
+                },
+            },
+        },
+    };
 
-            // Create and render the stacked bar chart
-            const ctx = document.getElementById('stackbarchart').getContext('2d');
-            new Chart(ctx, config);
-        </script>
+    const ctx = document.getElementById('stackbarchart').getContext('2d');
+    new Chart(ctx, config);
+</script>
+
 {% endblock %}

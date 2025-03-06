@@ -258,7 +258,7 @@ def dashboard():
             .join(Faculty, Faculty.faculty_id == Comment.faculty_id)
             .join(Department, Department.department_id == Faculty.department_id)
             .filter(Department.department_id == selected_department_id if selected_department_id else True)
-            .group_by(AY_SEM.ay_id, AY_SEM.ay_name)  # Group by ay_id and ay_name to avoid error
+            .group_by(AY_SEM.ay_id, AY_SEM.ay_name) 
             .order_by(AY_SEM.ay_id.desc())   
             .limit(6)           
             .all()

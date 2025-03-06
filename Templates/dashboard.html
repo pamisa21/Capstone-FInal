@@ -170,18 +170,17 @@
                         </div>
                         
                         <!-- Column 2: Sentiment Analysis Chart -->
-                        <div>
-                            
-                         <div class="bg-white p-1 border-2 shadow-md rounded-lg">
-                            <h2 id="overviewTitle" class="text-lg font-semibold p-2 text-center mx-auto">CMU Sentiment Overview Across Semesters</h2>
-                            <div class="flex justify-center items-center">
-                                <canvas id="sentimentDoughnutChart" class="pb-3"></canvas>
+                        <div class="bg-[#00491E] p-4 min-h-screen border-4">  
+                            <!-- <div class="bg-[url('https://the-post-assets.sgp1.digitaloceanspaces.com/2020/10/CENTRAL-MINDANAO-UNIVERSITY-1.jpg')] bg-cover bg-center p-4 min-h-screen border-4"> -->
+                            <div class="bg-white p-1 border-2 shadow-md rounded-lg">
+                                <h2 id="overviewTitle" class="text-lg font-semibold p-2 text-center mx-auto">
+                                    CMU Sentiment Overview Across Semesters
+                                </h2>
+                                <div class="flex justify-center items-center">
+                                    <canvas id="sentimentDoughnutChart" class="pb-3"></canvas>
+                                </div>
                             </div>
-                        </div>
 
-                           
-
-                      
                             <div class="bg-white rounded-lg shadow-md  mt-5 border-2">
                                 <h2 class="text-lg font-semibold p-2 text-center mx-auto">CMU Sentiment Insights</h2>
 
@@ -190,12 +189,10 @@
                                 </div>
                             </div>
                            
-                            <div id="wordCloudSection" class="bg-white rounded-lg shadow-md mt-5 border-2">
+                            <!-- <div id="wordCloudSection" class="bg-white rounded-lg shadow-md mt-5 border-2">
                                 
-                                <!-- <div class="flex justify-center items-center">
-                                    <img src="data:image/png;base64,{{ wordcloud_data }}" alt="Word Cloud" class="max-w-full h-60"/> 
-                                </div> -->
-                            </div>
+                       
+                            </div> -->
 
                         </div>
 
@@ -265,6 +262,7 @@
                                                 <tr>
                                                     <td colspan="6" class="text-center px-4 py-2 text-xs sm:text-sm">No Faculty Found</td>
                                                 </tr>
+                                       
                                             {% endfor %}
                                         </tbody>
                                     </table>

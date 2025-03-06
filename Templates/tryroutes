@@ -14,7 +14,7 @@
     <header>
         {% include "includes/navbar.html" %}
     </header>
-
+z 
 
     <div class="flex flex-1">
         {% include "includes/sidebar.html" %}
@@ -342,7 +342,6 @@
             }
         }
     </script>
-
 
 
 

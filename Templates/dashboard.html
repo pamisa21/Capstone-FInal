@@ -130,21 +130,75 @@
 
                         <section id="stockbar" class=" mt-5 mb-2 ">
                             <div class="bg-white rounded-lg shadow-md mt-5 border-2 max-w-full mx-auto">
-                                <h2 class="text-lg font-semibold mb-4 p-4">Semester Comparison</h2>
+                                <h2 class="text-lg font-semibold mb-4 p-4"> Department Semester Comparison</h2>
                                 <div class="flex justify-center items-center mb-5 overflow-x-auto">
                                     <canvas id="stackbarchart" class="max-w-full p-3" width="900px" height="300px"  ></canvas>
                                 </div>
                             </div>
                         </section>
                         
-                        <div id="faculty-list" class="bg-white rounded-lg shadow-md mt-5 border-2">
+                        <div id="faculty-list" class="bg-white rounded-lg shadow-md mt-5 border-2 mb-4" >
                             <div class="p-1 flex justify-between items-center">
-                                <h2 class="font-semibold p-2 text-sm sm:text-lg">Department Faculty List</h2>
+                                <h2 class="font-semibold p-2 text-sm sm:text-sm">Department Faculty List</h2>
                                 <!-- Search Box on the Right -->
-                                <div class="flex items-center space-x-2 ml-5">
-                                    <input type="text" id="faculty-search" placeholder="Search..." class="p-1 sm:p-2 border border-gray-300 rounded text-xs sm:text-sm text-black">
+                                <div class="flex items-center space-x-2 ">
+                                    <input type="text" id="faculty-search" placeholder="Search..." class="p-1 sm:p-2
+                                     border border-gray-300 rounded text-xs sm:text-sm text-black">
                                 </div>
-                                
+                            </div>
+                            <div >
+                                <div class="table-wrapper">
+                                    <div class="table-border max-h-[500px] overflow-y-auto">
+                                        <table class="data-table w-full border-collapse text-sm p-5">
+                                            <thead class="table-header bg-gray-100">
+                                                <tr>
+                                                    <th class=" px-2 py-1 border border-gray-300 p-10 hidden sm:table-cell">&nbsp;</th>
+                                                    <th class=" px-2 py-1 border border-gray-300 p-10 hidden sm:table-cell">ID</th>
+                                                    <th class=" px-2 py-1 border border-gray-300 p-10 text-xs sm:text-sm">Complete Name & Email</th>
+                                                
+                                                    <th class=" px-2 py-1 border border-gray-300 p-10 hidden lg:table-cell text-xs sm:text-sm">Status</th>
+                                                    <th class=" px-2 py-1 border border-gray-300 p-10 text-xs sm:text-sm">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="table-body ">
+                                                {% for faculty in filtered_faculty %}
+                                                    <tr class="border-t faculty-row p-2">
+                                                        <td class=" p-2 text-left hidden sm:table-cell text-xs sm:text-sm">{{ loop.index }}</td>
+                                                        <td class="  p-2  border border-gray-300 hidden sm:table-cell text-xs sm:text-sm">{{ faculty.faculty_id }}</td>
+                                                        <td class=" p-2 border border-gray-300 text-xs sm:text-sm">
+                                                            {{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.<br>
+                                                            <span class="email text-xs sm:text-sm text-gray-600">{{ faculty.email }}</span>
+                                                        </td>
+                                                   
+                                                     
+                                                        <td class="table-cell px-2 py-1 border border-gray-300 lg:table-cell hidden text-xs sm:text-sm">
+                                                            {{ "Active" if faculty.status == 1 else "Not Active" }}
+                                                        </td>
+                                                        
+                                                        <td class="px-4 py-4 text-xs sm:text-sm whitespace-nowrap">
+                                                            <div class="flex space-x-2">
+                                                                <!-- <a href="{{ url_for('view_faculty', faculty_id=faculty.faculty_id) }}" title="View" class="primary hidden sm:inline">View</a> -->
+                                                                <a href="{{ url_for('faculty_comments', faculty_id=faculty.faculty_id) }}" title="Comments" class="yellow  hidden sm:inline">View Results</a>
+    
+                                                                <!-- <a href="{{ url_for('view_faculty', faculty_id=faculty.faculty_id) }}" title="View" class="primary sm:hidden">
+                                                                    <i class="ph ph-eye"></i>
+                                                                </a> -->
+                                                                <a href="{{ url_for('faculty_comments', faculty_id=faculty.zfaculty_id) }}" title="Comments" class="secondary sm:hidden">
+                                                                    <i class="ph ph-chart-bar"></i>
+                                                                </a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% else %}
+                                                    <tr>
+                                                        <td colspan="6" class="text-center px-4 py-2 text-xs sm:text-sm">No Faculty Found</td>
+                                                    </tr>
+                                           
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

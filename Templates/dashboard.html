@@ -12,291 +12,192 @@
     <header>
         {% include "includes/navbar.html" %}
     </header>
-    
     <div class="flex flex-1">
         {% include "includes/sidebar.html" %}
 
-        <main class="flex-1 md:p-5 p-2 mx-3 mt-20 ml-2 md:ml-60 sm:mx-0 sm:ml-0 sm:mr-0">
-
-            <div id="dashboard" class="p-1 md:p-4">
-
-                <!-- Dashboard Header with Filter Section -->   
-                <div class="flex flex-col md:flex-row justify-between items-center mb-5">
-                    <h1 class="text-2xl font-bold">
-                        Dashboard <span>{{ selected_semester_name or 'No Semester Selected' }}</span>
-                    </h1>
-                    
-                    <!-- Download PDF button -->
-                    <button id="printButton" 
-                            class="border border-gray-300 px-4 py-2 text-sm focus:outline-none start mt-2 md:mt-0">
-                        <a id="printLink" href="{{ url_for('print_dashboard') }}">Print Results</a>
-                    </button>
-                </div>
-                
-
-                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0 mb-5">
-                    <div class="flex flex-col  hidden ">
-                        <select id="dashboardSemesterDropdown" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black">
-                            {% for semester in all_semesters %}
-                                <option value="{{ semester.ay_id }}" {% if semester.ay_id == selected_semester %} selected {% endif %}>
-                                    {{ semester.ay_name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                
-                    <!-- College Dropdown -->
-                    <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0 mb-5">
-                        <!-- College Dropdown -->
-                        <div class="flex items-center">
-                            <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black" onchange="updateDepartments()">
-                                <option value="">Display all Colleges</option>
-                                {% for college in colleges %}
-                                    <option value="{{ college.college_id }}" {% if college.college_id == selected_college %}selected{% endif %}>
-                                        {{ college.college_name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
+        <main class="flex-1 md:p-5 p-2 mx-3 mt-20 ml-2 md:ml-60 sm:mx-0 sm:ml-0 sm:mr-0 flex">
+            <div id="dashboard" class="p-1 md:p-4 w-full flex">
+                <div class="grid grid-cols-1 md:grid-cols-[70%,30%] gap-8 w-full">
+                    <!-- Left Column (70%) Scrollable -->
+                    <div class="space-y-5  pr-2" style="max-height: 80vh;">
+                        <div class="flex justify-between items-center mb-5">
+                            <h1 class="text-2xl font-bold">Dashboard <span>{{ selected_semester_name or 'No Semester Selected' }}</span></h1>
+                            <button id="printButton" class="border border-gray-300 px-4 py-2 text-sm focus:outline-none start mt-2 md:mt-0">
+                                <a id="printLink" href="{{ url_for('print_dashboard') }}">Print Results</a>
+                            </button>
                         </div>
-                        <!-- Department Dropdown -->
-                        <div class="flex items-center">
-                            <select id="filterDepartment" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black">
-                                <option value="">Display all Departments</option>
-                                {% for department in selected_departments %}
-                                    <option value="{{ department.department_id }}" data-college-id="{{ department.college_id }}" {% if department.department_id == selected_department %}selected{% endif %}>
-                                        {{ department.department_name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    
-                   
-                </div>
-
-                <section>
-                    <div  class="grid grid-cols-1 md:grid-cols-[70%,30%] gap-8">
+                        <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0 mb-5">
+                            <div class="flex flex-col  hidden ">
+                                <select id="dashboardSemesterDropdown" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black">
+                                    {% for semester in all_semesters %}
+                                        <option value="{{ semester.ay_id }}" {% if semester.ay_id == selected_semester %} selected {% endif %}>
+                                            {{ semester.ay_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                         
-                        <!-- Column 1: Comments Summary -->
-                        <div class="space-y-5 ">
-                            <!-- Total Comments Card -->
-                            <div class="bg-white rounded-lg shadow-md p-8 flex flex-col relative border-2">
-                                <h2 class="text-lg font-semibold">Total Comments</h2>
-                                <h4 class="text-3xl font-bold text-center text-[#023047]">{{ total_comments }} <span class="ml-2 text-sm text-[#00B4D8]">Comments</span></h4>
-                                <!-- <a href="/comments" class="text-sm absolute top-0 right-0 mt-4 mr-2">View Comments!</a> -->
-                            </div>
-                            
-                            <!-- Positive, Neutral, and Negative Cards -->
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 rounded-lg">
-                                <div class="bg-[#32de84] rounded-lg shadow-md p-6 flex flex-col items-center primary ">
-                                    <span class="material-icons ">thumb_up</span>
-                                    <h3 class="text-xl font-semibold mt-2 "> Interpreted Positive</h3>
-                                    <p class="text-3xl font-bold">{{ positive_count }}</p>
+                            <!-- College Dropdown -->
+                            <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0 mb-5">
+                                <!-- College Dropdown -->
+                                <div class="flex items-center">
+                                    <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black" onchange="updateDepartments()">
+                                        <option value="">Display all Colleges</option>
+                                        {% for college in colleges %}
+                                            <option value="{{ college.college_id }}" {% if college.college_id == selected_college %}selected{% endif %}>
+                                                {{ college.college_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
-                                
-                                <div class="bg-[#FFEB3B] rounded-lg shadow-md p-6 flex flex-col items-center primary">
-                                    <span class="material-icons ">more_horiz</span>
-                                    <h3 class="text-xl font-semibold mt-2 "> Interpreted Neutral</h3>
-                                    <p class="text-3xl font-bold">{{ neutral_count }}</p>
-                                </div>
-                                
-                                <div class="bg-[#EF5350]  rounded-lg shadow-md p-6 flex flex-col items-center primary">
-                                    <span class="material-icons ">thumb_down</span>
-                                    <h3 class="text-xl font-semibold mt-2 "> Interpreted Negative</h3>
-                                    <p class="text-3xl font-bold">{{ negative_count }}</p>
+                                <!-- Department Dropdown -->
+                                <div class="flex items-center">
+                                    <select id="filterDepartment" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black">
+                                        <option value="">Display all Departments</option>
+                                        {% for department in selected_departments %}
+                                            <option value="{{ department.department_id }}" data-college-id="{{ department.college_id }}" {% if department.department_id == selected_department %}selected{% endif %}>
+                                                {{ department.department_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
                             </div>
-                            <div class="bg-white rounded-lg shadow-md mb-5 p-8 flex flex-col md:flex-row mt-6 border-2">
-                                    <div class="flex-grow">
-                                        <h2 class="text-lg font-semibold mb-4">Sentiment Analysis this semester</h2>
-                                        
-                                        <!-- Positive Sentiment -->
-                                        
-                                        <div class="flex items-center justify-between mb-2  primary">
-                                            <div class="flex items-center">
-                                                <span class="material-icons primary">thumb_up</span>
-                                                <span class="ml-2 primary"> Interpreted Positive</span>
-                                            </div>
-                                            <p class="text-3xl font-bold">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                                        </div>
-                                        <div class="w-full bg-gray-200 rounded-full mt-2">
-                                            <div class="bg-[#32de84] h-2 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                                        </div>
-                    
-                                        <!-- Neutral Sentiment -->
-                                        <div class="flex items-center justify-between mb-2 mt-4 primary">
-                                            <div class="flex items-center">
-                                                <span class="material-icons">more_horiz</span>
-                                                <span class="ml-2"> Interpreted Neutral</span>
-                                            </div>
-                                            <p class=" text-3xl font-bold">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                                        </div>
-                                        <div class="w-full bg-gray-200 rounded-full mt-2">
-                                            <div class="bg-[#FFEB3B] h-2 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                                        </div>
-                    
-                                        <!-- Negative Sentiment -->
-                                        <div class="flex items-center justify-between mb-2 mt-4 primary">
-                                            <div class="flex items-center">
-                                                <span class="material-icons ">thumb_down</span>
-                                                <span class="ml-2"> Interpreted Negative</span>
-                                            </div>
-                                            <p class="text-3xl font-bold">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                                        </div>
-                                        <div class="w-full bg-gray-200 rounded-full mt-2">
-                                            <div class="bg-[#EF5350] h-2 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                                        </div>
-                                        
-                                        
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 rounded-lg">
+                            <div class="bgprimary rounded-lg shadow-md p-6 flex flex-col justify-between border-2">
+                                <div>
+                                    <h2 class="text-lg text-left text-white">Total Comments</h2>
+                                    <h4 class="text-4xl font-extrabold text-left text-white">{{ total_comments }}</h4>
+                                </div>
+                                <p class="text-xs font-light text-white mt-2">Total comments this semester</p>
+                            </div>
+                            <div class="bgwhite rounded-lg shadow-md p-6 flex flex-col justify-between border-2">
+                                <div>
+                                    <h3 class="text-lg text-left">Interpreted Positive</h3>
+                                    <h4 class="text-4xl font-extrabold text-left">{{ positive_count }}</h4>
+                                </div>
+                                <p class="text-xs font-light gray mt-2">Positive comments this semester</p>
+                            </div>
+                            <div class="bgwhite rounded-lg shadow-md p-6 flex flex-col justify-between border-2">
+                                <div>
+                                    <h3 class="text-lg text-left">Interpreted Neutral</h3>
+                                    <h4 class="text-4xl font-extrabold text-left">{{ neutral_count }}</h4>
+                                </div>
+                                <p class="text-xs gray mt-2">Neutral comments this semester</p>
+                            </div>
+                            <div class="bgwhite rounded-lg shadow-md p-6 flex flex-col justify-between border-2">
+                                <div>
+                                    <h3 class="text-lg text-left">Interpreted Negative</h3>
+                                    <h4 class="text-4xl font-extrabold text-left">{{ negative_count }}</h4>
+                                </div>
+                                <p class="text-xs gray mt-2">Negative comments this semester</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-md p-6 border-2">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-semibold">Sentiment Analysis this Semester</h2>
+                                <div class="flex space-x-4 text-xs gray">
+                                    <span class="flex items-center"><span class="w-3 h-3 bgprimary inline-block rounded-full mr-2"></span> Interpreted Positive</span>
+                                    <span class="flex items-center"><span class="w-3 h-3 bgneutral inline-block rounded-full mr-2"></span> Interpreted Neutral</span>
+                                    <span class="flex items-center"><span class="w-3 h-3 bgnegative inline-block rounded-full mr-2"></span> Interpreted Negative</span>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex items-center space-x-4">
+                                    <span class="material-icons text-black">thumb_up</span>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bgprimary h-2 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
                                     </div>
-                                    
-                            
-                                <!-- Pie Chart -->
-                                <div class="mt-4 md:mt-0 md:ml-6">
-                                    <canvas id="sentimentPieChart" width="150" height="150"></canvas>
+                                    <p class="text-lg font-bold gray">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                                 </div>
-                                
-                            </div>
-                            <section id="stockbar" class="hidden mt-5 mb-2">
-                                <div class="bg-white rounded-lg shadow-md mt-5 border-2 max-w-full mx-auto">
-                                    <h2 class="text-lg font-semibold mb-4 p-4">Semester Comparison</h2>
-                                    <div class="flex justify-center items-center mb-5 overflow-x-auto">
-                                        <canvas id="stackbarchart" class="max-w-full" width="600px" height="300px"></canvas>
+                                <div class="flex items-center space-x-4">
+                                    <span>⚫</span>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bgneutral h-2 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
                                     </div>
+                                    <p class="text-lg font-bold gray">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                                 </div>
-                            </section>
-                            
-                            
+                                <div class="flex items-center space-x-4">
+                                    <span class="material-icons text-black">thumb_down</span>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bgnegative h-2 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                                    </div>
+                                    <p class="text-lg font-bold gray">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                                </div>
+                            </div>
                         </div>
+
+                        <section id="stockbar" class=" mt-5 mb-2 ">
+                            <div class="bg-white rounded-lg shadow-md mt-5 border-2 max-w-full mx-auto">
+                                <h2 class="text-lg font-semibold mb-4 p-4">Semester Comparison</h2>
+                                <div class="flex justify-center items-center mb-5 overflow-x-auto">
+                                    <canvas id="stackbarchart" class="max-w-full p-3" width="900px" height="300px"  ></canvas>
+                                </div>
+                            </div>
+                        </section>
                         
-                        <!-- Column 2: Sentiment Analysis Chart -->
-                        <div class="bg-[#00491E] p-4 min-h-screen border-4">  
-                            <!-- <div class="bg-[url('https://the-post-assets.sgp1.digitaloceanspaces.com/2020/10/CENTRAL-MINDANAO-UNIVERSITY-1.jpg')] bg-cover bg-center p-4 min-h-screen border-4"> -->
-                            <div class="bg-white p-1 border-2 shadow-md rounded-lg">
-                                <h2 id="overviewTitle" class="text-lg font-semibold p-2 text-center mx-auto">
-                                    CMU Sentiment Overview Across Semesters
-                                </h2>
-                                <div class="flex justify-center items-center">
-                                    <canvas id="sentimentDoughnutChart" class="pb-3"></canvas>
+                        <div id="faculty-list" class="bg-white rounded-lg shadow-md mt-5 border-2">
+                            <div class="p-1 flex justify-between items-center">
+                                <h2 class="font-semibold p-2 text-sm sm:text-lg">Department Faculty List</h2>
+                                <!-- Search Box on the Right -->
+                                <div class="flex items-center space-x-2 ml-5">
+                                    <input type="text" id="faculty-search" placeholder="Search..." class="p-1 sm:p-2 border border-gray-300 rounded text-xs sm:text-sm text-black">
                                 </div>
-                            </div>
-
-                            <div class="bg-white rounded-lg shadow-md  mt-5 border-2">
-                                <h2 class="text-lg font-semibold p-2 text-center mx-auto">CMU Sentiment Insights</h2>
-
-                                <div class="flex justify-center items-center">
-                                    <canvas id="sentimentBarChart" width="200px" height="200px" class="pb-3"></canvas>
-                                </div>
-                            </div>
-                           
-                            <!-- <div id="wordCloudSection" class="bg-white rounded-lg shadow-md mt-5 border-2">
                                 
-                       
-                            </div> -->
-
-                        </div>
-
-                    </div>  
-
-
-                    <div id="faculty-list" class="bg-white rounded-lg shadow-md mt-5 border-2">
-                        <div class="p-1 flex justify-between items-center">
-                            <h2 class="font-semibold p-2 text-sm sm:text-lg">Department Faculty List</h2>
-                            <!-- Search Box on the Right -->
-                            <div class="flex items-center space-x-2 ml-5">
-                                <input type="text" id="faculty-search" placeholder="Search..." class="p-1 sm:p-2 border border-gray-300 rounded text-xs sm:text-sm text-black">
-                            </div>
-                            
-                        </div>
-                        
-                        
-                        <div class="overflow-x-auto max-w-full">
-                            <div class="table-wrapper">
-                                <div class="table-border max-h-[500px] overflow-y-auto">
-                                    <table class="data-table w-full border-collapse text-sm p-5">
-                                        <thead class="table-header bg-gray-100">
-                                            <tr>
-                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden sm:table-cell">&nbsp;</th>
-                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden sm:table-cell">ID</th>
-                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 text-xs sm:text-sm">Complete Name & Email</th>
-                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden lg:table-cell text-xs sm:text-sm">Department</th>
-                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden lg:table-cell text-xs sm:text-sm">Status</th>
-                                                <th class="table-cell px-2 py-1 border border-gray-300 p-10 text-xs sm:text-sm">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="table-body">
-                                            {% for faculty in filtered_faculty %}
-                                                <tr class="border-t faculty-row">
-                                                    <td class="table-cell px-4 py-2 text-left hidden sm:table-cell text-xs sm:text-sm">{{ loop.index }}</td>
-                                                    <td class="table-cell px-2 py-1 border border-gray-300 hidden sm:table-cell text-xs sm:text-sm">{{ faculty.faculty_id }}</td>
-                                                    <td class="table-cell px-2 py-1 border border-gray-300 text-xs sm:text-sm">
-                                                        {{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.<br>
-                                                        <span class="email text-xs sm:text-sm text-gray-600">{{ faculty.email }}</span>
-                                                    </td>
-                                                    <td class="table-cell px-2 py-1 border border-gray-300 lg:table-cell hidden text-xs sm:text-sm">
-                                                        {{ faculty.department.department_name }}
-                                                    </td>
-                                                    <!-- <td class="table-cell px-2 py-1 border border-gray-300 lg:table-cell hidden text-xs sm:text-sm">
-                                                        {{ faculty.department.college_id }}
-                                                    </td> -->
-
-                                                    <td class="table-cell px-2 py-1 border border-gray-300 lg:table-cell hidden text-xs sm:text-sm">
-                                                        {{ "Active" if faculty.status == 1 else "Not Active" }}
-                                                    </td>
-                                                    
-                                                    <td class="px-4 py-4 text-xs sm:text-sm whitespace-nowrap">
-                                                        <div class="flex space-x-2">
-                                                            <!-- <a href="{{ url_for('view_faculty', faculty_id=faculty.faculty_id) }}" title="View" class="primary hidden sm:inline">View</a> -->
-                                                            <a href="{{ url_for('faculty_comments', faculty_id=faculty.faculty_id) }}" title="Comments" class="yellow  hidden sm:inline">View Results</a>
-
-                                                            <!-- <a href="{{ url_for('view_faculty', faculty_id=faculty.faculty_id) }}" title="View" class="primary sm:hidden">
-                                                                <i class="ph ph-eye"></i>
-                                                            </a> -->
-                                                            <a href="{{ url_for('faculty_comments', faculty_id=faculty.zfaculty_id) }}" title="Comments" class="secondary sm:hidden">
-                                                                <i class="ph ph-chart-bar"></i>
-                                                            </a>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            {% else %}
-                                                <tr>
-                                                    <td colspan="6" class="text-center px-4 py-2 text-xs sm:text-sm">No Faculty Found</td>
-                                                </tr>
-                                       
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
                             </div>
                         </div>
-                </div>
-
-                <!-- JavaScript to filter faculty list by Name or Email -->
-                <script>
-                    document.getElementById('faculty-search').addEventListener('input', function() {
-                        let searchTerm = this.value.toLowerCase();
-                        let rows = document.querySelectorAll('.faculty-row'); // Select all rows
-                        rows.forEach(function(row) {
-                            let name = row.querySelector('td:nth-child(3)').textContent.toLowerCase(); // Name and Email column
-                            let email = row.querySelector('td:nth-child(3) .email').textContent.toLowerCase(); // Email inside the third column
-                            if (name.includes(searchTerm) || email.includes(searchTerm)) {
-                                row.style.display = ''; // Show the row if match is found
-                            } else {
-                                row.style.display = 'none'; // Hide the row if no match is found
-                            }
-                        });
-                    });
-                </script>
-
+                    </div>
                     
-                          
-                </section>                 
+                    <!-- Right Column (30%) Fixed Position -->
+                    <div class="w-full md:w-auto md:sticky top-20 pr-2 self-start h-auto ">
 
+                        <div class="bg-white border-2 shadow-md rounded-lg p-3">
+                            <h2 id="overviewTitle" class="text-lg font-semibold text-left mx-auto">
+                                CMU Overall Sentiment
+                            </h2>
+                            <p class="text-xs gray ">
+                                Summary of sentiment across semesters
+                            </p>
+                            <div class="flex justify-center items-center p-3">
+                                <canvas id="sentimentDoughnutChart" class="pb-3"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md  mt-5 border-2 ">
+                            <h2 class="text-lg font-semibold p-2 text-left mx-auto">
+                                CMU Sentiment: Previous vs. Current
+                            </h2>
+                            <p class="text-xs gray pl-2 ">
+                                Comparison of sentiment between last semester and now
+                            </p>
+
+                            <div class="flex justify-center items-center">
+                                <canvas id="sentimentBarChart" width="200px" height="200px" class="pb-3"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
         </main>
     </div>
 </div>
+
+<!-- JavaScript to filter faculty list by Name or Email -->
+<script>
+    document.getElementById('faculty-search').addEventListener('input', function() {
+        let searchTerm = this.value.toLowerCase();
+        let rows = document.querySelectorAll('.faculty-row'); // Select all rows
+        rows.forEach(function(row) {
+            let name = row.querySelector('td:nth-child(3)').textContent.toLowerCase(); // Name and Email column
+            let email = row.querySelector('td:nth-child(3) .email').textContent.toLowerCase(); // Email inside the third column
+            if (name.includes(searchTerm) || email.includes(searchTerm)) {
+                row.style.display = ''; // Show the row if match is found
+            } else {
+                row.style.display = 'none'; // Hide the row if no match is found
+            }
+        });
+    });
+</script>
 
 
 
@@ -320,7 +221,7 @@
                     {{ neutral_count }},
                     {{ negative_count }}
                 ];
-                chartColors = ['#32de84', '#FFEB3B', '#EF5350'];
+                chartColors = ['#004E26', '#FDC603', '#B30505'];
                 chartLabels = ['Positive', 'Neutral', 'Negative'];
             }
 
@@ -365,17 +266,17 @@
                     {
                         label: 'Positive',
                         data: positiveData,
-                        backgroundColor: '#32de84',
+                        backgroundColor: '#004E26',
                     },
                     {
                         label: 'Neutral',
                         data: neutralData,
-                        backgroundColor: '#FFEB3B',
+                        backgroundColor: '#FDC603',
                     },
                     {
                         label: 'Negative',
                         data: negativeData,
-                        backgroundColor: '#EF5350',
+                        backgroundColor: '#B30505',
                     }
                 ]
             };
@@ -387,7 +288,7 @@
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Semester Comparison per Department'
+                           
                         },
                     },
                     responsive: false,
@@ -439,9 +340,9 @@
                 label: 'Sentiment Breakdown',
                 data: [overallPositiveCount, overallNegativeCount, overallNeutralCount],
                 backgroundColor: [
-                    '#32de84',    
-                    '#EF5350',   
-                    '#FFEB3B',     
+                    '#004E26',    
+                    '#B30505',   
+                    '#FDC603',     
                 ],
                 hoverOffset: 4
             }]
@@ -465,6 +366,7 @@
 
 
 <script>
+  
     document.addEventListener('DOMContentLoaded', () => {
         const ctxBar = document.getElementById('sentimentBarChart');
         if (ctxBar) {
@@ -473,35 +375,35 @@
             const negativeData = {{ negative_data | tojson }};
             const neutralData = {{ neutral_data | tojson }};
             
-            // Limit the data to a maximum of 6
-            const maxDataPoints = 6;
-            const limitedSemesterLabels = semesterLabels.slice(-maxDataPoints).map(label => label.slice(0, 15));  // Limit each label to 10 characters
+            // Limit the data to the latest 2
+            const maxDataPoints = 2;
+            const limitedSemesterLabels = semesterLabels.slice(-maxDataPoints).map(label => label);
             const limitedPositiveData = positiveData.slice(-maxDataPoints);
             const limitedNegativeData = negativeData.slice(-maxDataPoints);
             const limitedNeutralData = neutralData.slice(-maxDataPoints);
-
-            // Check if the number of labels exceeds 6, and adjust the font size accordingly
-            const fontSize = limitedSemesterLabels.length > 6 ? 10 : 12;
-
+    
             new Chart(ctxBar, {
                 type: 'bar',
                 data: {
                     labels: limitedSemesterLabels,
                     datasets: [
                         {
-                            label: 'Int. Positive ',
+                            label: 'Positive',
                             data: limitedPositiveData,
-                            backgroundColor: '#32de84',
+                            backgroundColor: '#004E26',
+                            stack: 'Sentiment',
                         },
                         {
-                            label: 'Int. Negative ',
+                            label: 'Negative',
                             data: limitedNegativeData,
-                            backgroundColor: '#EF5350',
+                            backgroundColor: '#B30505',
+                            stack: 'Sentiment',
                         },
                         {
-                            label: 'Interpreted Neutral ',
+                            label: 'Neutral',
                             data: limitedNeutralData,
-                            backgroundColor: '#FFEB3B',
+                            backgroundColor: '#FDC603',
+                            stack: 'Sentiment',
                         }
                     ]
                 },
@@ -509,7 +411,7 @@
                     responsive: true,
                     scales: {
                         x: { 
-                            beginAtZero: true,
+                            stacked: true,
                             ticks: {
                                 font: {
                                     size: 12,
@@ -517,13 +419,13 @@
                             }
                         },
                         y: {
-                            beginAtZero: false
+                            stacked: true,
+                            beginAtZero: true
                         }
                     }
                 }
             });
         }
     });
-</script>
-
+    </script>
 {% endblock content %}

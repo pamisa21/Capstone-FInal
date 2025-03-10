@@ -3,12 +3,12 @@
 	--border: #E5F6EA;
 
 
-	--primary: #004526;
+	--primary: #004E26;
 	--secondary: #FFC600;
 	--positive: #32de84;
 	--positive50: #32de84;
-	--negative: #EF5350;
-	--neutral: #FFEB3B;
+	--negative: #B30505;
+	--neutral: #FDC603;
 	--hover: #452beb;
  
 
@@ -19,6 +19,9 @@
 	--altgreen1:#02681E;
 	--altgreen2:#02681E;
 	--tabletext:black; 
+	--white:white; 
+	--gray:#898989;
+	--black:black;
 	
 	 
 }

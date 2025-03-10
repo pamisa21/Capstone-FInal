@@ -260,7 +260,7 @@ def dashboard():
             .filter(Department.department_id == selected_department_id if selected_department_id else True)
             .group_by(AY_SEM.ay_id, AY_SEM.ay_name) 
             .order_by(AY_SEM.ay_id.desc())   
-            .limit(6)           
+            .limit(5)           
             .all()
         )
 

@@ -3924,3 +3924,31 @@ video {
 .green{
   color: var(--green);
 }
+
+.primary{
+  color:var(--primary)
+}
+
+
+.gray {
+  color: var(--gray);
+}
+.black{
+  color: var(--black);
+}
+
+/* Background */
+
+ .bgprimary{
+  background-color: var(--primary);
+}
+
+.bgwhite{
+  background-color: var(--white);
+}
+.bgnegative{
+  background-color: var(--negative);
+}
+.bgneutral{
+  background-color: var(--neutral);
+}

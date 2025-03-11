@@ -360,16 +360,16 @@
                 <h2 class="font-bold text-lg">Overall Faculty Teaching Performance</h2>
                 <p class="font-bold">{{ default_semester.ay_name }}</p>
             </div>
-            <div class="flex justify-center items-center space-x-2 mb-1">
-                <span class="font-semibold mr-2">Full Name:</span>
+            <div class="flex justify-center items-center space-x-1 mb-1">
+                <span class="font-semibold mr-1">Full Name :</span>
                 <span class="">{{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.</span>
             </div>
-            <div class="flex justify-center items-center space-x-2 mb-1">
-                <span class="font-semibold mr-2">College:</span>
+            <div class="flex justify-center items-center space-x-1 mb-1">
+                <span class="font-semibold mr-1">College :</span>
                 <span class="">{{ college.college_name }}</span>
             </div>
-            <div class="flex justify-center items-center space-x-2 mb-1">
-                <span class="font-semibold mr-2">Department:</span>
+            <div class="flex justify-center items-center space-x-1 mb-1">
+                <span class="font-semibold mr-1">Department :</span>
                 <span class="">{{ department.department_name }}</span>
             </div>
         </div>
@@ -395,7 +395,7 @@
         </div>
 
         <div class="mt-4 mb-5 text-sm">
-            <h2 class="text-lg font-semibold mb-2">Student Statistics Overview</h2>
+            <h2 class="text-sm font-semibold mb-2">Student Statistics Overview</h2>
             <div class="overflow-x-auto text-sm">
                 <div class="table-border">
                     <table class="data-table w-full border-collapse text-sm">
@@ -423,7 +423,7 @@
         </div>
 
         <div class="mt-4 mb-5">
-            <h2 class="text-lg font-semibold mb-2">Student Statistics Overview</h2>
+            <h2 class="text-sm font-semibold mb-2">Student Statistics Overview</h2>
             <table class="comments-table">
                 <thead>
                     <tr>
@@ -552,13 +552,24 @@
 <!--Printing -->
 <script>
     function printFacultyResults() {
+        // Store the original title and content
+        const originalTitle = document.title;
         const printContent = document.getElementById('printLayout').innerHTML;
         const originalContent = document.body.innerHTML;
 
+        // Extract faculty name
+        const facultyName = document.querySelector('.flex .font-semibold + span').textContent.trim();
+
+        // Set a new title
+        document.title = `FES_Sentiment: ${facultyName}`;
+
+        // Replace body content and print
         document.body.innerHTML = printContent;
         window.print();
-        
-        // Reload the page after print dialog is closed
+
+        // Restore original content and title after printing
+        document.body.innerHTML = originalContent;
+        document.title = originalTitle;
         window.location.reload();
     }
 </script>

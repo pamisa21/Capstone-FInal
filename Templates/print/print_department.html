@@ -193,15 +193,15 @@
                 <h2 class="text-xl font-semibold text-center m-2 p-2">Latest 5 Semesters Comparison</h2>   
                 <div class="flex justify-center items-center mb-3">
                     <!-- Adjusted width and height for smaller chart -->
-                    <canvas id="sentimentBarChart" width="1000" height="400"></canvas>
+                    <canvas id="sentimentBarChart" width="1000" height="200"></canvas>
                 </div>
             </div>
             
         </section>
-        
+
         <section class="mx-12 mb-2">
             <div    class="bg-white rounded-lg shadow-md mt-5 border-2 ">
-                <h2 class="text-lg font-bold primary mb-2 p-2">Faculty Evaluation Sentiment Comparison </h2>
+                <h2 class="text-xl font-semibold text-center m-2 p-2">Faculty Evaluation Sentiment Comparison </h2>
                 <div class="overflow-x-auto">
                     <div class="table-border">
                         <table class="data-table w-full border-collapse text-sm">
@@ -252,7 +252,7 @@
                             {{ neutral_count }},
                             {{ negative_count }}
                         ],
-                        backgroundColor: ['#32de84', '#FFEB3B', '#EF5350']
+                        backgroundColor: ['#004E26', '#FDC603', '#B30505']
                     }]
                 },
                 options: {
@@ -285,17 +285,17 @@
                         {
                             label: ' Interpreted Positive ',
                             data: positiveData,
-                            backgroundColor: '#32de84'
+                            backgroundColor: '#004E26'
                         },
                         {
                             label: ' Interpreted Neutral ',
                             data: neutralData,
-                            backgroundColor: '#FFEB3B'
+                            backgroundColor: '#FDC603'
                         },
                         {
                             label: ' Interpreted Negative ',
                             data: negativeData,
-                            backgroundColor: '#EF5350'
+                            backgroundColor: '#B30505'
                         }
                     ]
                 },
@@ -322,17 +322,17 @@
                         {
                             label: ' Interpreted Positive ',
                             data: positiveData,
-                            backgroundColor: '#32de84'
+                            backgroundColor: '#004E26'
                         },
                         {
                             label: ' Interpreted Neutral ',
                             data: neutralData,
-                            backgroundColor: '#FFEB3B'
+                            backgroundColor: '#FDC603'
                         },
                         {
                             label: ' Interpreted Negative ',
                             data: negativeData,
-                            backgroundColor: '#EF5350'
+                            backgroundColor: '#B30505'
                         }
                     ]
                 },

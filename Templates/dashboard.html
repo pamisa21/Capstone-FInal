@@ -27,7 +27,7 @@
                             </button>
                         </div>
                         <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0 mb-5">
-                            <div class="flex flex-col  hidden ">
+                            <div class="flex-col  hidden ">
                                 <select id="dashboardSemesterDropdown" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black">
                                     {% for semester in all_semesters %}
                                         <option value="{{ semester.ay_id }}" {% if semester.ay_id == selected_semester %} selected {% endif %}>
@@ -67,7 +67,7 @@
                             <div class="bgprimary rounded-lg shadow-md p-6 flex flex-col justify-between border-2">
                                 <div>
                                     <h2 class="text-lg text-left text-white">Total Comments</h2>
-                                    <h4 class="text-4xl font-extrabold text-left text-white">{{ total_comments }}</h4>
+                                    <h4 class="text-3xl font-extrabold text-left text-white">{{ total_comments }}</h4>
                                 </div>
                                 <p class="text-xs font-light text-white mt-2">Total comments this semester</p>
                             </div>
@@ -96,42 +96,42 @@
 
                         <div class="bg-white rounded-lg shadow-md p-6 border-2">
                             <div class="flex justify-between items-center mb-4">
-                                <h2 class="text-lg font-semibold">Sentiment Analysis this Semester</h2>
+                                <h2 class="text-3X1 font-semibold">Sentiment Analysis this Semester</h2>
                                 <div class="flex space-x-4 text-xs gray">
                                     <span class="flex items-center"><span class="w-3 h-3 bgprimary inline-block rounded-full mr-2"></span> Interpreted Positive</span>
                                     <span class="flex items-center"><span class="w-3 h-3 bgneutral inline-block rounded-full mr-2"></span> Interpreted Neutral</span>
                                     <span class="flex items-center"><span class="w-3 h-3 bgnegative inline-block rounded-full mr-2"></span> Interpreted Negative</span>
                                 </div>
                             </div>
-                            <div class="space-y-3">
+                            <div class="space-y-4">
                                 <div class="flex items-center space-x-4">
-                                    <span class="material-icons text-black">thumb_up</span>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bgprimary h-2 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                                    <span class="material-icons text-black text-2xl">thumb_up</span>
+                                    <div class="w-full bg-gray-200 rounded-full h-4">
+                                        <div class="bgprimary h-4 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
                                     </div>
-                                    <p class="text-lg font-bold gray">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                                    <p class="text-xl font-bold text-gray-700">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                                 </div>
                                 <div class="flex items-center space-x-4">
-                                    <span>⚫</span>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bgneutral h-2 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                                    <span class="text-2xl">⚫</span>
+                                    <div class="w-full bg-gray-200 rounded-full h-4">
+                                        <div class="bgneutral h-4 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
                                     </div>
-                                    <p class="text-lg font-bold gray">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                                    <p class="text-xl font-bold text-gray-700">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                                 </div>
                                 <div class="flex items-center space-x-4">
-                                    <span class="material-icons text-black">thumb_down</span>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bgnegative h-2 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
+                                    <span class="material-icons text-black text-2xl">thumb_down</span>
+                                    <div class="w-full bg-gray-200 rounded-full h-4">
+                                        <div class="bgnegative h-4 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
                                     </div>
-                                    <p class="text-lg font-bold gray">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
+                                    <p class="text-xl font-bold text-gray-700">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
                                 </div>
                             </div>
                         </div>
 
-                        <section id="stockbar" class=" mt-5 mb-2 ">
+                        <section id="stockbar" class=" mt-5">
                             <div class="bg-white rounded-lg shadow-md mt-5 border-2 max-w-full mx-auto">
-                                <h2 class="text-lg font-semibold mb-4 p-4"> Department Semester Comparison</h2>
-                                <div class="flex justify-center items-center mb-5 overflow-x-auto">
+                                <h2 class="text-sm font-semibold  p-4"> Department Semester Comparison</h2>
+                                <div class="flex justify-center items-center  overflow-x-auto">
                                     <canvas id="stackbarchart" class="max-w-full p-3" width="900px" height="300px"  ></canvas>
                                 </div>
                             </div>
@@ -171,7 +171,7 @@
                                                         </td>
                                                    
                                                      
-                                                        <td class="table-cell px-2 py-1 border border-gray-300 lg:table-cell hidden text-xs sm:text-sm">
+                                                        <td class=" px-2 py-1 border border-gray-300 lg:table-cell hidden text-xs sm:text-sm  text-center">
                                                             {{ "Active" if faculty.status == 1 else "Not Active" }}
                                                         </td>
                                                         
@@ -207,7 +207,7 @@
                     <div class="w-full md:w-auto md:sticky top-20 pr-2 self-start h-auto ">
 
                         <div class="bg-white border-2 shadow-md rounded-lg p-3">
-                            <h2 id="overviewTitle" class="text-lg font-semibold text-left mx-auto">
+                            <h2 id="overviewTitle" class="text-3X1 font-semibold text-left mx-auto">
                                 CMU Overall Sentiment
                             </h2>
                             <p class="text-xs gray ">
@@ -218,7 +218,7 @@
                             </div>
                         </div>
                         <div class="bg-white rounded-lg shadow-md  mt-5 border-2 ">
-                            <h2 class="text-lg font-semibold p-2 text-left mx-auto">
+                            <h2 class="text-3X1 font-semibold p-2 text-left mx-auto">
                                 CMU Sentiment: Previous vs. Current
                             </h2>
                             <p class="text-xs gray pl-2 ">
@@ -306,55 +306,63 @@
 </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const ctxBar = document.getElementById('stackbarchart').getContext('2d');
-        
-            const labels = {{ semester_labels|tojson }};
-            const positiveData = {{ positive_data|tojson }};
-            const neutralData = {{ neutral_data|tojson }};
-            const negativeData = {{ negative_data|tojson }};
-        
-            const data = {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Positive',
-                        data: positiveData,
-                        backgroundColor: '#004E26',
-                    },
-                    {
-                        label: 'Neutral',
-                        data: neutralData,
-                        backgroundColor: '#FDC603',
-                    },
-                    {
-                        label: 'Negative',
-                        data: negativeData,
-                        backgroundColor: '#B30505',
-                    }
-                ]
-            };
-        
-            const config = {
-                type: 'bar',
-                data: data,
-                options: {
-                    plugins: {
-                        title: {
-                            display: true,
-                           
-                        },
-                    },
-                    responsive: false,
-                    scales: {
-                        x: { stacked: true },
-                        y: { beginAtZero: true, stacked: true }
-                    }
+       document.addEventListener('DOMContentLoaded', () => {
+    const ctxBar = document.getElementById('stackbarchart').getContext('2d');
+
+    const labels = {{ semester_labels|tojson }};
+    const positiveData = {{ positive_data|tojson }};
+    const neutralData = {{ neutral_data|tojson }};
+    const negativeData = {{ negative_data|tojson }};
+
+    const data = {
+        labels: labels,
+        datasets: [
+            {
+                label: 'Positive',
+                data: positiveData,
+                backgroundColor: '#004E26',
+            },
+            {
+                label: 'Neutral',
+                data: neutralData,
+                backgroundColor: '#FDC603',
+            },
+            {
+                label: 'Negative',
+                data: negativeData,
+                backgroundColor: '#B30505',
+            }
+        ]
+    };
+
+    const config = {
+        type: 'bar',
+        data: data,
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                },
+            },
+            responsive: false,
+            scales: {
+                x: { 
+                    stacked: true 
+                },
+                y: { 
+                    beginAtZero: true, 
+                    stacked: true 
                 }
-            };
-        
-            new Chart(ctxBar, config);
-        });
+            },
+            barThickness: 70, // Reduce bar width
+            categoryPercentage: 0.5, // Adjust spacing between bars
+            barPercentage: 0.6 // Adjust individual bar width
+        }
+    };
+
+    new Chart(ctxBar, config);
+});
+
     </script>   
 
 
@@ -421,65 +429,69 @@
 
 <script>
   
-    document.addEventListener('DOMContentLoaded', () => {
-        const ctxBar = document.getElementById('sentimentBarChart');
-        if (ctxBar) {
-            const semesterLabels = {{ semester_labels | tojson }};
-            const positiveData = {{ positive_data | tojson }};
-            const negativeData = {{ negative_data | tojson }};
-            const neutralData = {{ neutral_data | tojson }};
-            
-            // Limit the data to the latest 2
-            const maxDataPoints = 2;
-            const limitedSemesterLabels = semesterLabels.slice(-maxDataPoints).map(label => label);
-            const limitedPositiveData = positiveData.slice(-maxDataPoints);
-            const limitedNegativeData = negativeData.slice(-maxDataPoints);
-            const limitedNeutralData = neutralData.slice(-maxDataPoints);
-    
-            new Chart(ctxBar, {
-                type: 'bar',
-                data: {
-                    labels: limitedSemesterLabels,
-                    datasets: [
-                        {
-                            label: 'Positive',
-                            data: limitedPositiveData,
-                            backgroundColor: '#004E26',
-                            stack: 'Sentiment',
-                        },
-                        {
-                            label: 'Negative',
-                            data: limitedNegativeData,
-                            backgroundColor: '#B30505',
-                            stack: 'Sentiment',
-                        },
-                        {
-                            label: 'Neutral',
-                            data: limitedNeutralData,
-                            backgroundColor: '#FDC603',
-                            stack: 'Sentiment',
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        x: { 
-                            stacked: true,
-                            ticks: {
-                                font: {
-                                    size: 12,
-                                }
-                            }
-                        },
-                        y: {
-                            stacked: true,
-                            beginAtZero: true
-                        }
+  document.addEventListener('DOMContentLoaded', () => {
+    const ctxBar = document.getElementById('sentimentBarChart');
+    if (ctxBar) {
+        const semesterLabels = {{ semester_labels | tojson }};
+        const positiveData = {{ positive_data | tojson }};
+        const negativeData = {{ negative_data | tojson }};
+        const neutralData = {{ neutral_data | tojson }};
+        
+        // Limit the data to the latest 2
+        const maxDataPoints = 2;
+        const limitedSemesterLabels = semesterLabels.slice(-maxDataPoints);
+        const limitedPositiveData = positiveData.slice(-maxDataPoints);
+        const limitedNegativeData = negativeData.slice(-maxDataPoints);
+        const limitedNeutralData = neutralData.slice(-maxDataPoints);
+
+        new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: limitedSemesterLabels,
+                datasets: [
+                    {
+                        label: 'Positive',
+                        data: limitedPositiveData,
+                        backgroundColor: '#004E26',
+                        stack: 'Sentiment',
+                    },
+                    {
+                        label: 'Negative',
+                        data: limitedNegativeData,
+                        backgroundColor: '#B30505',
+                        stack: 'Sentiment',
+                    },
+                    {
+                        label: 'Neutral',
+                        data: limitedNeutralData,
+                        backgroundColor: '#FDC603',
+                        stack: 'Sentiment',
                     }
-                }
-            });
-        }
-    });
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { 
+                        stacked: true,
+                        ticks: {
+                            font: {
+                                size: 12,
+                            }
+                        }
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true
+                    }
+                },
+                barThickness: 80, // Reduce bar width
+                categoryPercentage: 0.5, // Adjusts spacing between bars
+                barPercentage: 0.6 // Shrinks individual bars within their category
+            }
+        });
+    }
+});
+
     </script>
 {% endblock content %}

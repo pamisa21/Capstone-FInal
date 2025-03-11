@@ -19,34 +19,32 @@
 
 
 <div >
-    <div class="header border-b-2 mb-5">
-        <div class="header-content text-center p-4">
-            <h1>ANALYZING AND VISUALIZING COMMENTS IN CMU FACULTY EVALUATION SYSTEM</h1>
-            <p class="primary">Empowering insights for continuous improvement</p>
+    <div class="flex mx-12 mt-4 mb-10">
+        <img src="/static/img/cmulogo.png" alt="CMU Logo" class="w-20 h-20 mr-4">
+        <div class="text-left">
+            <h2 class="text-sm font-semibold">Republic of the Philippines</h2>
+            <h1 class="text-lg font-bold">Central Mindanao University</h1>
+            <p class="text-sm font-semibold">University Town, Musuan, Maramag, Bukidnon</p>
         </div>
+       
     </div>
 
     <div class="content p-2 mb-2">
-        <div class="flex justify-center items-center space-x-2 mb-1 ">
-            <span class="font-bold">Central Mindanao University</span>
+        <div class="flex flex-col justify-center items-center space-y-1 mb-1">
+            <h2 class="font-bold text-lg">Overall Faculty Teaching Performance</h2>
+            <p class="font-bold">{{ default_semester.ay_name }}</p>
         </div>
-        <div class="flex justify-center items-center space-x-2 mb-1  ">
-            
-            <span class="font-bold">{{ college.college_name }}</span>
+        <div class="flex justify-center items-center space-x-2 mb-1">
+            <span class="font-semibold mr-2">Full Name:</span>
+            <span class="">{{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.</span>
         </div>
-        <div class="flex justify-center items-center space-x-2  mb-1 ">               
-            <span class="font-semibold">{{ department.department_name }}</span>
+        <div class="flex justify-center items-center space-x-2 mb-1">
+            <span class="font-semibold mr-2">College:</span>
+            <span class="">{{ college.college_name }}</span>
         </div>
-        <div class="flex justify-center items-center space-x-2 mb-1 ">
-            
-            <span class="font-bold">{{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.</span>
-        </div>
-        <div class="flex justify-center items-center space-x-3  mb-1 ">
-            <span class="font-bold "></span>
-            <span class="font-normal ">{{ default_semester.ay_name }}</span>
-        </div>
-        <div class="flex justify-center items-center space-x-2 mb-1 "> 
-            <span class="font-bold">Faculty Sentiment Results</span>
+        <div class="flex justify-center items-center space-x-2 mb-1">
+            <span class="font-semibold mr-2">Department:</span>
+            <span class="">{{ department.department_name }}</span>
         </div>
         
     </div>
@@ -347,38 +345,62 @@
 
 <!-- Hidden Print Layout -->
 <div id="printLayout" style="display: none;">
-    <div class="header border-b-2 mb-5">
-        <div class="header-content text-center p-4">
-            <h1>ANALYZING AND VISUALIZING COMMENTS IN CMU FACULTY EVALUATION SYSTEM</h1>
-            <p class="primary">Empowering insights for continuous improvement</p>
+    <div class="flex mt-4 mb-10">
+        <img src="/static/img/cmulogo.png" alt="CMU Logo" class="w-20 h-20 mr-2">
+        <div class="text-left mt-2">
+            <h2 class="text-sm font-semibold">Republic of the Philippines</h2>
+            <h1 class="text-m font-bold">Central Mindanao University</h1>
+            <p class="text-sm font-semibold">University Town, Musuan, Maramag, Bukidnon</p>
         </div>
     </div>
-    
+
     <div class="content mb-5 text-sm">
-        <div class="faculty-info text-center mx-auto p-4">
-            <h2 class="mb-2">Overall Results of Faculty Teaching Performance <br> {{ default_semester.ay_name }}</h2>
-            <p class="mb-2">Full Name: {{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.</p>
-            <p class="mb-2">College: {{ college.college_name }}</p>
-            <p class="mb-2">Department: {{ department.department_name }}</p>
-        </div>
-        
-        <div class="faculty-result mb-6 p-2 border-gray-200 rounded-lg shadow-sm primary mt-5 text-sm">
-            <h2 class="text-sm font-semibold primary mb-2">Sentiment Results</h2>
-            <p class="primary mb-2">Total Comments: <span class="font-medium">{{ total_comments }}</span> Comments</p>
-            <p class=" mb-2">Positive: <span class="font-medium">{{ positive_count }}</span> Comments</p>
-            <p class=" mb-2">Negative: <span class="font-medium">{{ negative_count }}</span> Comments</p>
-            <p class=" mb-2">Neutral: <span class="font-medium">{{ neutral_count }}</span> Comments</p>
+        <div class="content p-2 mb-2">
+            <div class="flex flex-col justify-center items-center space-y-1 mb-1">
+                <h2 class="font-bold text-lg">Overall Faculty Teaching Performance</h2>
+                <p class="font-bold">{{ default_semester.ay_name }}</p>
+            </div>
+            <div class="flex justify-center items-center space-x-2 mb-1">
+                <span class="font-semibold mr-2">Full Name:</span>
+                <span class="">{{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.</span>
+            </div>
+            <div class="flex justify-center items-center space-x-2 mb-1">
+                <span class="font-semibold mr-2">College:</span>
+                <span class="">{{ college.college_name }}</span>
+            </div>
+            <div class="flex justify-center items-center space-x-2 mb-1">
+                <span class="font-semibold mr-2">Department:</span>
+                <span class="">{{ department.department_name }}</span>
+            </div>
         </div>
 
+        <div class="faculty-result mb-6 p-2 border-gray-200 rounded-lg shadow-sm mt-5 text-sm">
+            <h2 class="text-lg font-semibold mb-2">Sentiment Results</h2>  
+            <p class="mb-2 font-bold flex space-x-2">
+                <span>Total Comments:</span> 
+                <span class="font-medium">{{ total_comments }} Comments</span>
+            </p>
+            <p class="mb-2 font-bold flex space-x-2">
+                <span>Positive:</span> 
+                <span class="font-medium">{{ positive_count }} Comments</span>
+            </p>
+            <p class="mb-2 font-bold flex space-x-2">
+                <span>Negative:</span> 
+                <span class="font-medium">{{ negative_count }} Comments</span>
+            </p>
+            <p class="mb-2 font-bold flex space-x-2">
+                <span>Neutral:</span> 
+                <span class="font-medium">{{ neutral_count }} Comments</span>
+            </p>
+        </div>
 
         <div class="mt-4 mb-5 text-sm">
-            <h2 class="text-sm font-bold primary mb-2">Student Statistics Overview</h2>
+            <h2 class="text-lg font-semibold mb-2">Student Statistics Overview</h2>
             <div class="overflow-x-auto text-sm">
                 <div class="table-border">
                     <table class="data-table w-full border-collapse text-sm">
                         <thead class="table-header bg-gray-100">
                             <tr>
-                                <!-- <th class="table-cell">No</th> -->
                                 <th class="table-cell px-2 py-1 border border-gray-300">Subject</th>
                                 <th class="table-cell px-2 py-1 border border-gray-300">Total Student</th>
                                 <th class="table-cell px-2 py-1 border border-gray-300">With Comments</th>
@@ -388,7 +410,6 @@
                         <tbody class="table-body">
                             {% for subject in subjects.values() %}
                             <tr class="odd:bg-white even:bg-gray-50">
-                                <!-- <td class="table-cell px-2 py-1">{{ loop.index }}</td> -->
                                 <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.subject_id }}</td>
                                 <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.student_num }}</td>
                                 <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.comments | length }}</td>
@@ -400,15 +421,15 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="mt-4 mb-5">
-            <h2 class="text-lg font-bold primary mb-2">Student Statistics Overview</h2>
+            <h2 class="text-lg font-semibold mb-2">Student Statistics Overview</h2>
             <table class="comments-table">
                 <thead>
                     <tr>
-                        <th class="">No</th>
+                        <th>No</th>
                         <th>Comment</th>
-                        <th>Inpreted</th>
+                        <th>Interpreted</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -432,12 +453,18 @@
             </table>
         </div>
     </div>
+
+    <!-- Footer -->
+    <div class="footer mt-20 text-left text-sm ">
+        <p class="uppercase">
+            <strong>Approved By :</strong>
+        </p>
+        <p class="mt-2">Cherry Mae Balingit</p>
+        <p>Director of Instruction</p>
+        <p>Central Mindanao University</p>
+    </div>
+    
 </div>
-
-
-
-
-
 
 <!-- Bar Graph-->
 <script>
@@ -525,12 +552,14 @@
 <!--Printing -->
 <script>
     function printFacultyResults() {
-      
         const printContent = document.getElementById('printLayout').innerHTML;
-        const originalContent = document.body.innerHTML; 
+        const originalContent = document.body.innerHTML;
+
         document.body.innerHTML = printContent;
         window.print();
-        document.body.innerHTML = originalContent;
+        
+        // Reload the page after print dialog is closed
+        window.location.reload();
     }
 </script>
 

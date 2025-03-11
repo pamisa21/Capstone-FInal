@@ -7,13 +7,22 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 {% endblock css %}
 
+
 {% block content %}
 <!-- Include the sidebar here -->
 <div class="flex flex-col h-screen">
     <header>
         {% include "includes/public/headers.html" %}
     </header>
-    
+    <style>
+        body {
+        font-family: 'Poppins'; 
+        letter-spacing: 0.5px; 
+        background-image: radial-gradient(circle, #ccc 1px, transparent 1px);
+        background-size: 20px 20px; 
+        background-repeat: repeat; 
+    }
+    </style>
     <div class="flex flex-1">
         <div class="absolute md:top-[7%] top-[7%] left-[2%] right-[2%]">
             <div id="home-section" class="mt-4 ">

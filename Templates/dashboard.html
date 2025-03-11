@@ -428,70 +428,78 @@
 
 
 <script>
-  
-  document.addEventListener('DOMContentLoaded', () => {
-    const ctxBar = document.getElementById('sentimentBarChart');
-    if (ctxBar) {
-        const semesterLabels = {{ semester_labels | tojson }};
-        const positiveData = {{ positive_data | tojson }};
-        const negativeData = {{ negative_data | tojson }};
-        const neutralData = {{ neutral_data | tojson }};
-        
-        // Limit the data to the latest 2
-        const maxDataPoints = 2;
-        const limitedSemesterLabels = semesterLabels.slice(-maxDataPoints);
-        const limitedPositiveData = positiveData.slice(-maxDataPoints);
-        const limitedNegativeData = negativeData.slice(-maxDataPoints);
-        const limitedNeutralData = neutralData.slice(-maxDataPoints);
+    document.addEventListener('DOMContentLoaded', () => {
+        const ctxBar = document.getElementById('sentimentBarChart');
+        if (ctxBar) {
+            const semesterLabels = {{ semester_labels | tojson }};
+            const positiveData = {{ positive_data | tojson }};
+            const negativeData = {{ negative_data | tojson }};
+            const neutralData = {{ neutral_data | tojson }};
 
-        new Chart(ctxBar, {
-            type: 'bar',
-            data: {
-                labels: limitedSemesterLabels,
-                datasets: [
-                    {
-                        label: 'Positive',
-                        data: limitedPositiveData,
-                        backgroundColor: '#004E26',
-                        stack: 'Sentiment',
-                    },
-                    {
-                        label: 'Negative',
-                        data: limitedNegativeData,
-                        backgroundColor: '#B30505',
-                        stack: 'Sentiment',
-                    },
-                    {
-                        label: 'Neutral',
-                        data: limitedNeutralData,
-                        backgroundColor: '#FDC603',
-                        stack: 'Sentiment',
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    x: { 
-                        stacked: true,
-                        ticks: {
-                            font: {
-                                size: 12,
-                            }
+            // Combine semester labels and data into an array of objects for sorting
+            const semesterData = semesterLabels.map((label, index) => ({
+                label: label,
+                positive: positiveData[index],
+                negative: negativeData[index],
+                neutral: neutralData[index]
+            }));
+
+            // Sort semesters in descending order (assuming semester format supports proper sorting)
+            semesterData.sort((a, b) => b.label.localeCompare(a.label));
+
+            // Get the latest two semesters
+            const latestSemesters = semesterData.slice(0, 2);
+
+            // Extract sorted labels and data
+            const latestSemesterLabels = latestSemesters.map(item => item.label);
+            const latestPositiveData = latestSemesters.map(item => item.positive);
+            const latestNegativeData = latestSemesters.map(item => item.negative);
+            const latestNeutralData = latestSemesters.map(item => item.neutral);
+
+            new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: latestSemesterLabels,
+                    datasets: [
+                        {
+                            label: 'Positive Sentiment',
+                            data: latestPositiveData,
+                            backgroundColor: '#004E26',
+                        },
+                        {
+                            label: 'Negative Sentiment',
+                            data: latestNegativeData,
+                            backgroundColor: '#B30505',
+                        },
+                        {
+                            label: 'Neutral Sentiment',
+                            data: latestNeutralData,
+                            backgroundColor: '#FDC603',
                         }
-                    },
-                    y: {
-                        stacked: true,
-                        beginAtZero: true
-                    }
+                    ]
                 },
-                barThickness: 80, // Reduce bar width
-                categoryPercentage: 0.5, // Adjusts spacing between bars
-                barPercentage: 0.6 // Shrinks individual bars within their category
-            }
-        });
-    }
-});
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { 
+                            beginAtZero: true,
+                            ticks: {
+                                font: {
+                                    size: 12, // Default font size for better readability
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
 
-    </script>
+
+
+
 {% endblock content %}

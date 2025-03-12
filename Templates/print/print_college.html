@@ -13,7 +13,20 @@
 {% endblock css %}
 
 {% block content %}
-
+<style>
+    #stackbarchart, #sentimentBarChart {
+      width: 1000px !important;
+      height: 300px !important;
+    }
+    
+    @media print {
+      #stackbarchart, #sentimentBarChart {
+        width: 600px !important;
+        height: 300px !important;
+      }
+    }
+    
+    </style>
 <div class=" text-lg font-bold maze ml-5 ">
     
     <div  class="flex flex-col md:flex-row justify-between items-center mb-2">
@@ -23,63 +36,35 @@
             Download as Pdf
         </button>
     </div>
-     <!-- <script>
-        document.getElementById('downloadPdf').addEventListener('click', function () {
-            const element = document.body; 
-
-            const style = document.createElement('style');
-            style.innerHTML = 'body, * { font-family: Arial, sans-serif !important; }';
-            document.head.appendChild(style);
-            const collegeName = document.querySelector('.font-normal').innerText.trim();
-
-            const options = {
-                margin:       [10, 10, 10, 10],
-                filename:     `${collegeName}_Sentiment_Results.pdf`, 
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { dpi: 192, letterRendering: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-        
-            
-            setTimeout(function () {
-                
-                html2pdf().from(element).set(options).save().then(() => {
-                    
-                    setTimeout(() => {
-                        const previousUrl = document.referrer ||  "/dashboard"; 
-                        window.location.href = previousUrl;
-                    }, 1000); 
-                });
-            }, 1000); 
-        });
-
-        
-        window.onload = function() {
-            document.getElementById('downloadPdf').click();
-        };
-
-    </script> -->
+    
 
     
 </div>
 <div id="printLayout">
-    <div class="header border-b-2 mb-5">
-        <div class="header-content text-center p-4">
-            <h1>ANALYZING AND VISUALIZING COMMENTS IN CMU FACULTY EVALUATION SYSTEM</h1>
-            <p class="primary">Empowering insights for continuous improvement</p>
+    <div class="flex mx-12 mt-4 mb-10">
+        <img src="/static/img/cmulogo.png" alt="CMU Logo" class="cmulogo">
+        <div class="text-left">
+            <h2 class="text-sm font-semibold">Republic of the Philippines</h2>
+            <h1 class="text-lg font-bold">Central Mindanao University</h1>
+            <p class="text-sm font-semibold">University Town, Musuan, Maramag, Bukidnon</p>
         </div>
+        
     </div>
     
     
-    <div class="content mb-5">
-        <div class="faculty-info text-center mx-auto p-4">
-            <h2 class="mb-2">Overall Results of Faculty Teaching Performance <br> </h2>
-            <p class="mb-2">Central Mindanao University </p>
-            <div class="flex justify-center items-center mb-2">
-                <span class="font-normal">{{ college_name }}</span>  
-            </div>
-            <div class="flex justify-center items-center mb-2">
-                <span class="font-normal">{{ selected_ay_name }}</span> 
+
+
+        
+    <div class="content p-2 mb-2">
+        <div class="flex flex-col justify-center items-center space-y-1 mb-1">
+            <h2 class="font-bold text-lg">Overall Results of Faculty Teaching Performance</h2>
+            <p class="font-bold">{{ selected_ay_name}}</p>
+        </div>
+        <div class="flex justify-center items-center space-x-2 mb-1">
+            <span class="font-semibold mr-2">Central Mindano University</span>
+        </div>
+        <div class="flex justify-center items-center mb-2">
+            <span class="font-semibold">{{ college_name }}</span>  
         </div>
     </div>
 
@@ -185,11 +170,11 @@
         
     </section>
         
-        
+
         
     <section class="mx-12">
-        <div class="bg-white rounded-lg shadow-md mt-10 border-2 ">
-            <h2 class="text-xl font-semibold text-center m-2 p-2">Faculty Evaluation Sentiment Comparison </h2>
+        <div class="bg-white rounded-lg shadow-md mt-10 border-2 mb-2 ">
+            <h2 class="text-lg font-semibold text-center m-2 p-2 ">Faculty Evaluation Sentiment Comparison </h2>
             <div class="overflow-x-auto">
                 <div class="table-border">
                     <table class="data-table w-full border-collapse text-sm">
@@ -199,7 +184,7 @@
                                 <th class="table-cell px-2 py-1 border border-gray-300">Total Comments</th>
                                 <th class="table-cell px-2 py-1 border border-gray-300">Interpreted Positive</th>
                                 <th class="table-cell px-2 py-1 border border-gray-300">Interpreted Neutral</th>
-                                <th class="table-cell px-2 py-1 border border-gray-300">"Interpreted Negative</th>
+                                <th class="table-cell px-2 py-1 border border-gray-300">Interpreted Negative</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -219,6 +204,16 @@
                 </div>
             </div>
         </div>
+
+        <!-- Footer -->
+        <div class="footer mt-20 text-left text-sm mb-5 ">
+        <p class="uppercase">
+            <strong>Approved By :</strong>
+        </p>
+        <p class="mt-2">Cherry Mae Balingit</p>
+        <p>Director of Instruction</p>
+        <p>Central Mindanao University</p>
+    </div>
     </section>
     
    
@@ -336,4 +331,29 @@
         });
     </script>
 
+
+
+    <!-- printing  -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(() => {
+                const element = document.getElementById('printLayout');
+                element.style.fontFamily = "Arial, sans-serif";
+
+                html2pdf(element, {
+                    margin: 10,
+                    filename: 'Faculty_Evaluation_Report.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { format: 'a4', orientation: 'portrait' }
+                }).then(() => {
+                    console.log("PDF downloaded successfully.");
+
+                    setTimeout(() => {
+                        window.history.back();
+                    }, 3000);
+                });
+            }, 3000); 
+        });
+    </script>
 {% endblock %}

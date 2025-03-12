@@ -16,22 +16,42 @@
 
 {% block content %}
 
+<style>
+    #stackbarchart, #sentimentBarChart {
+  width: 1000px !important;
+  height: 300px !important;
+}
 
+@media print {
+  #stackbarchart, #sentimentBarChart {
+    width: 600px !important;
+    height: 300px !important;
+  }
+}
+
+</style>
 <div id="printLayout" >
-        <div class="header border-b-2 mb-5">
-            <div class="header-content text-center p-4">
-                <h1>ANALYZING AND VISUALIZING COMMENTS IN CMU FACULTY EVALUATION SYSTEM</h1>
-                <p class="primary">Empowering insights for continuous improvement</p>
+        <div class="flex mx-12 mt-4 mb-10">
+            <img src="/static/img/cmulogo.png" alt="CMU Logo" class="cmulogo">
+            <div class="text-left">
+                <h2 class="text-sm font-semibold">Republic of the Philippines</h2>
+                <h1 class="text-lg font-bold">Central Mindanao University</h1>
+                <p class="text-sm font-semibold">University Town, Musuan, Maramag, Bukidnon</p>
             </div>
+            
         </div>
     
-        <div class="content mb-5">
-            <div class="faculty-info text-center mx-auto p-4">
-                <h2 class="mb-2">Overall Results of Faculty Teaching Performance <br> </h2>
-                <p class="mb-2">Central Mindano University </p>
-                <p class="mb-2">{{selected_ay_name}}  </p>
+        <div class="content p-2 mb-2">
+            <div class="flex flex-col justify-center items-center space-y-1 mb-1">
+                <h2 class="font-bold text-lg">Overall Results of Faculty Teaching Performance</h2>
+                <p class="font-bold">{{ selected_ay_name}}</p>
             </div>
+            <div class="flex justify-center items-center space-x-2 mb-1">
+                <span class="font-semibold mr-2">Central Mindano University</span>
+            </div>
+            
         </div>
+    
 
         <section class="mx-10">
             <div class=" text-lg font-bold p-2 ">
@@ -43,42 +63,8 @@
                         Download as Pdf
                     </button>
                 </div>
-                <!-- <script>
-                    document.getElementById('downloadPdf').addEventListener('click', function () {
-                        const element = document.body; 
                 
-                        
-                        const style = document.createElement('style');
-                        style.innerHTML = 'body, * { font-family: Arial, sans-serif !important; }';
-                        document.head.appendChild(style);
-                
-                       
-                        const options = {
-                            margin:       [10, 10, 10, 10],
-                            filename:     'Cmu  Overall Results.pdf',
-                            image:        { type: 'jpeg', quality: 0.98 },
-                            html2canvas:  { dpi: 192, letterRendering: true },
-                            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                        };
-                
-                        
-                        setTimeout(function () {
-                           
-                            html2pdf().from(element).set(options).save().then(() => {
-                               
-                                setTimeout(() => {
-                                    const previousUrl = document.referrer || "/dashboard";
-                                    window.location.href = previousUrl;
-                                }, 2000); 
-                            });
-                        }, 1000); 
-                    });
-                
-
-                    window.onload = function() {
-                        document.getElementById('downloadPdf').click();
-                    };
-                </script> -->
+           
                 
             </div>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 rounded-lg">
@@ -136,7 +122,12 @@
                 <div class="space-y-4">
                     <!-- Positive Sentiment -->
                     <div class="flex items-center space-x-4">
-                        <span class="material-icons text-black text-2xl">thumb_up</span>
+                        <span class="text-2xl">
+                            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="10" fill="#004E26"/> 
+                            </svg>
+                        </span>
+                        
                         <div class="w-full bg-gray-200 rounded-full h-4">
                             <div class="bgprimary h-4 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
                         </div>
@@ -145,7 +136,11 @@
             
                     <!-- Neutral Sentiment -->
                     <div class="flex items-center space-x-4">
-                        <span class="text-2xl">⚫</span>
+                        <span class="text-2xl">
+                            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="10" fill="#FDC603"/>
+                            </svg>
+                        </span>
                         <div class="w-full bg-gray-200 rounded-full h-4">
                             <div class="bgneutral h-4 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
                         </div>
@@ -154,7 +149,11 @@
             
                     <!-- Negative Sentiment -->
                     <div class="flex items-center space-x-4">
-                        <span class="material-icons text-black text-2xl">thumb_down</span>
+                        <span class="text-2xl">
+                            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="10" fill="#B30505"/>
+                            </svg>
+                        </span>
                         <div class="w-full bg-gray-200 rounded-full h-4">
                             <div class="bgnegative h-4 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
                         </div>
@@ -170,8 +169,7 @@
             <div class="bg-white rounded-lg shadow-md mt-5 border-2">
                 <h2 class="text-xl font-semibold text-center m-2 p-2">Latest 5 Semesters Comparison</h2>   
                 <div class="flex justify-center items-center mb-3">
-                    <!-- Adjusted width and height for smaller chart -->
-                    <canvas id="stackbarchart" width="1000" height="200"></canvas>
+                    <canvas id="stackbarchart" ></canvas>
                 </div>
             </div>
             
@@ -208,6 +206,16 @@
                     </div>
                 </div>
             </div>
+
+                <!-- Footer -->
+            <div class="footer mt-20 text-left text-sm mb-5 ">
+                <p class="uppercase">
+                    <strong>Approved By :</strong>
+                </p>
+                <p class="mt-2">Cherry Mae Balingit</p>
+                <p>Director of Instruction</p>
+                <p>Central Mindanao University</p>
+            </div>
         </section>
 </div>
 
@@ -242,26 +250,30 @@
 
 <script>
     // batchart
-    let semesterData = {{ semester_sentiment_counts|tojson }};
+    let semesterData = {{ semester_sentiment_counts | tojson }};
+    semesterData = Object.values(semesterData).slice(-5);
 
-    semesterData = semesterData.slice(-5);
     const labels = semesterData.map(item => item.semester);
+    const positiveData = semesterData.map(item => item.positive);
+    const neutralData = semesterData.map(item => item.neutral);
+    const negativeData = semesterData.map(item => item.negative);
+
     const data = {
         labels: labels,
         datasets: [
             {
                 label: 'Interpreted Positive',
-                data: semesterData.map(item => item.positive),
+                data: positiveData,
                 backgroundColor: '#004E26', 
             },
             {
                 label: 'Interpreted Neutral',
-                data: semesterData.map(item => item.neutral),
+                data: neutralData,
                 backgroundColor: '#FDC603', 
             },
             {
                 label: 'Interpreted Negative',
-                data: semesterData.map(item => item.negative),
+                data: negativeData,
                 backgroundColor: '#B30505',
             },
         ]
@@ -271,13 +283,16 @@
         type: 'bar',
         data: data,
         options: {
+            responsive: true,
             plugins: {
+                legend: {
+                    position: 'top',
+                },
                 title: {
                     display: true,
-                    text: 'Sentiment Analysis (Latest 5 Semesters)', 
+                    text: 'Sentiment Analysis (Latest 5 Semesters)',
                 },
             },
-            responsive: false,
             scales: {
                 x: {
                     stacked: false, 
@@ -291,7 +306,49 @@
     };
 
     const ctx = document.getElementById('stackbarchart').getContext('2d');
-    new Chart(ctx, config);
+    new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: {
+            responsive: false, // Ensure it does not auto-adjust
+            maintainAspectRatio: false, // Prevent unwanted scaling
+            plugins: {
+                legend: { position: 'top' },
+                title: { display: true, text: 'Sentiment Analysis (Latest 5 Semesters)' },
+            },
+            scales: {
+                x: { stacked: false },
+                y: { stacked: false, beginAtZero: true },
+            },
+        },
+    });
+
 </script>
 
-{% endblock %}
+
+<!-- Printing  -->
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(() => {
+            const element = document.getElementById('printLayout');
+            element.style.fontFamily = "Arial, sans-serif";
+
+            html2pdf(element, {
+                margin: 10,
+                filename: 'Faculty_Evaluation_Report.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { format: 'a4', orientation: 'portrait' }
+            }).then(() => {
+                console.log("PDF downloaded successfully.");
+
+                setTimeout(() => {
+                    window.history.back();
+                }, 3000);
+            });
+        }, 3000); 
+    });
+</script>
+
+{% endblock %} 

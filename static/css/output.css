@@ -3952,3 +3952,21 @@ video {
 .bgneutral{
   background-color: var(--neutral);
 }
+
+.cmulogo {
+  width: 5rem;
+  height: 5rem;
+  margin-right: 1rem;
+}
+
+/* #stackbarchart, #sentimentBarChart {
+  width: 1000px !important;
+  height: 300px !important;
+}
+
+@media print {
+  #stackbarchart, #sentimentBarChart {
+    width: 600px !important;
+    height: 300px !important;
+  }
+} */

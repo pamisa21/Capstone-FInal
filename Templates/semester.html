@@ -1,58 +1,73 @@
-{% extends "layout/base.html" %}
-
-{% block css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/variable.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
-{% endblock css %}
-
-{% block content %}
+{% extends "layout/base.html" %} {% block css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/variable.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/style.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/output.css') }}"
+/>
+{% endblock css %} {% block content %}
 
 <div class="flex flex-col h-screen">
-    <header>
-        {% include "includes/navbar.html" %}
-    </header>
+  <header>{% include "includes/navbar.html" %}</header>
 
-    <div class="flex flex-1">
-        {% include "includes/sidebar.html" %}
+  <div class="flex flex-1">
+    {% include "includes/sidebar.html" %}
 
-        <!-- Main Content Container -->
-        <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60">
+    <!-- Main Content Container -->
+    <main class="flex-1 p-5 mx-5 mt-20 ml-2 md:ml-60">
+      <div
+        id="semester"
+        class="w-100 h-100 mx-auto bg-white rounded-lg shadow-lg p-6"
+      >
+        <div class="flex flex-col mb-3 gap-4">
+          <h1 class="text-2xl font-bold">Set Up Default Semester</h1>
 
-            <div id="semester" class="w-100 h-100 mx-auto bg-white rounded-lg shadow-lg p-6">
-                <div class="flex flex-col mb-3 gap-4">
-                    <h1 class="text-2xl font-bold">Set Up Default Semester</h1>
-                    
-                    <!-- Form for Default Semester Setup -->
-                    <div class="space-y-4">
-                        <div class="flex flex-col">
-                            <label for="school_year" class="text-lg font-semibold">Current School Year</label>
-                            <input type="text" id="school_year" name="school_year" required 
-                                class="p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-300" 
-                                placeholder="Enter school year (e.g., 2024-2025)"
-                                value="{{ default_school_year }}" readonly>
-                        </div>
+          <!-- Form for Default Semester Setup -->
+          <div class="space-y-4">
+            <div class="flex flex-col">
+              <label for="school_year" class="text-lg font-semibold"
+                >Current School Year</label
+              >
+              <input
+                type="text"
+                id="school_year"
+                name="school_year"
+                required
+                class="p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-300"
+                placeholder="Enter school year (e.g., 2024-2025)"
+                value="{{ default_school_year }}"
+                readonly
+              />
+            </div>
 
-                        <div class="flex flex-col">
-                            <label for="semester" class="text-lg font-semibold">Semester</label>
-                            <input type="text" id="semester_display" name="semester_display" 
-                                class="p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-300" 
-                                value="{% if default_semester_number == 1 %}1st Semester
+            <div class="flex flex-col">
+              <label for="semester" class="text-lg font-semibold"
+                >Semester</label
+              >
+              <input
+                type="text"
+                id="semester_display"
+                name="semester_display"
+                class="p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-300"
+                value="{% if default_semester_number == 1 %}1st Semester
                                 {% elif default_semester_number == 2 %}2nd Semester
                                 {% elif default_semester_number == 3 %}Mid Year
                                 {% else %}Unknown
-                                {% endif %}" readonly>
-                        </div>
-                        
-                    </div>
-                </div>
+                                {% endif %}"
+                readonly
+              />
             </div>
-            
-         
-
-        </main>
-    </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 </div>
 
-{% endblock content %}
-{% include "includes/public/footers.html" %}
+{% endblock content %} {% include "includes/public/footers.html" %}

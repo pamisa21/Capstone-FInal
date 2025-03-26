@@ -281,32 +281,33 @@
                         </table>
                     </div>
                 </div>
-            </div>
-            <div class="flex items-center justify-between mt-6 p-2">
-                {% if paginated_comments.has_prev %}
-                <a href="{{ url_for('faculty_comments', faculty_id=faculty.faculty_id, page=paginated_comments.prev_num) }}"
-                    class="pagination-link flex items-center px-5 py-2 text-sm text-green-900 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-gray-100"
-                    data-page="{{ paginated_comments.prev_num }}">
-                    <span>Previous</span>
-                </a>
-                {% else %}
-                <span class="flex items-center px-5 py-2 text-sm text-gray-500 bg-gray-200 border rounded-md">Previous</span>
-                {% endif %}
-            
-                <div class="items-center flex gap-x-3 mt-2 md:mt-0">
-                    <span class="text-sm">Page {{ paginated_comments.page }} of {{ paginated_comments.pages }}</span>
+                <div class="flex items-center justify-between m-6 p-2">
+                    {% if paginated_comments.has_prev %}
+                    <a href="{{ url_for('faculty_comments', faculty_id=faculty.faculty_id, page=paginated_comments.prev_num) }}"
+                        class="pagination-link flex items-center px-5 py-2 text-sm text-green-900 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-gray-100"
+                        data-page="{{ paginated_comments.prev_num }}">
+                        <span>Previous</span>
+                    </a>
+                    {% else %}
+                    <span class="flex items-center px-5 py-2 text-sm text-gray-500 bg-gray-200 border rounded-md">Previous</span>
+                    {% endif %}
+                
+                    <div class="items-center flex gap-x-3 mt-2 md:mt-0">
+                        <span class="text-sm">Page {{ paginated_comments.page }} of {{ paginated_comments.pages }}</span>
+                    </div>
+                
+                    {% if paginated_comments.has_next %}
+                    <a href="{{ url_for('faculty_comments', faculty_id=faculty.faculty_id, page=paginated_comments.next_num) }}"
+                        class="pagination-link flex items-center px-5 py-2 mt-2 text-sm text-yellow-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-yellow-400"
+                        data-page="{{ paginated_comments.next_num }}">
+                        <span>Next</span>
+                    </a>
+                    {% else %}
+                    <span class="flex items-center px-5 py-2 mt-2 text-sm text-gray-500 bg-gray-200 border rounded-md">Next</span>
+                    {% endif %}
                 </div>
-            
-                {% if paginated_comments.has_next %}
-                <a href="{{ url_for('faculty_comments', faculty_id=faculty.faculty_id, page=paginated_comments.next_num) }}"
-                    class="pagination-link flex items-center px-5 py-2 mt-2 text-sm text-yellow-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-yellow-400"
-                    data-page="{{ paginated_comments.next_num }}">
-                    <span>Next</span>
-                </a>
-                {% else %}
-                <span class="flex items-center px-5 py-2 mt-2 text-sm text-gray-500 bg-gray-200 border rounded-md">Next</span>
-                {% endif %}
             </div>
+            
         </div>
     </section>    
     <script>
@@ -347,16 +348,16 @@
     <div class="flex mt-4 mb-10">
         <img src="/static/img/cmulogo.png" alt="CMU Logo" class="w-20 h-20 mr-2">
         <div class="text-left mt-2">
-            <h2 class="text-sm font-semibold">Republic of the Philippines</h2>
-            <h1 class="text-m font-bold">Central Mindanao University</h1>
-            <p class="text-sm font-semibold">University Town, Musuan, Maramag, Bukidnon</p>
+            <h2 class="text-xs font-semibold">Republic of the Philippines</h2>
+            <h1 class="text-xs font-bold">Central Mindanao University</h1>
+            <p class="text-xs font-semibold">University Town, Musuan, Maramag, Bukidnon</p>
         </div>
     </div>
 
-    <div class="content mb-5 text-sm">
+    <div class="content mb-5 text-xs">
         <div class="content p-2 mb-2">
             <div class="flex flex-col justify-center items-center space-y-1 mb-1">
-                <h2 class="font-bold text-lg">Overall Faculty Teaching Performance</h2>
+                <h2 class="font-bold text-xs">Overall Faculty Teaching Performance</h2>
                 <p class="font-bold">{{ default_semester.ay_name }}</p>
             </div>
             <div class="flex justify-center items-center  mb-1">
@@ -373,8 +374,8 @@
             </div>
         </div>
 
-        <div class="faculty-result mb-6 p-2 border-gray-200 rounded-lg shadow-sm mt-5 text-sm">
-            <h2 class="text-lg font-semibold mb-2">Sentiment Results</h2>  
+        <div class="faculty-result mb-6 p-2 border-gray-200 rounded-lg shadow-sm mt-5 text-xs">
+            <h2 class="text-xs font-semibold mb-2">Sentiment Results</h2>  
             <p class="mb-2 font-bold flex space-x-2">
                 <span>Total Comments:</span> 
                 <span class="font-medium">{{ total_comments }} Comments</span>
@@ -393,11 +394,12 @@
             </p>
         </div>
 
-        <div class="mt-4 mb-5 text-sm">
-            <h2 class="text-sm font-semibold mb-2">Student Statistics Overview</h2>
-            <div class="overflow-x-auto text-sm">
+        <div class="mt-4 mb-5 text-xs">
+         
+            <h2 class="text-xs font-semibold mb-2">Student Statistics Overview</h2>  
+            <div class="overflow-x-auto text-xs">
                 <div class="table-border">
-                    <table class="data-table w-full border-collapse text-sm">
+                    <table class="data-table w-full border-collapse text-xs">
                         <thead class="table-header bg-gray-100">
                             <tr>
                                 <th class="table-cell px-2 py-1 border border-gray-300">Subject</th>
@@ -454,13 +456,12 @@
     </div>
 
     <!-- Footer -->
-    <div class="footer mt-20 text-left text-sm ">
+    <div class="footer mt-20 text-left text-xs ">
         <p class="uppercase">
             <strong>Approved By :</strong>
         </p>
         <p class="mt-2">Cherry Mae Balingit</p>
         <p>Director of Instruction</p>
-        <p>Central Mindanao University</p>
     </div>
     
 </div>

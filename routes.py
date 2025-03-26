@@ -1182,7 +1182,7 @@ def faculty_comments(faculty_id):
             }
 
         return render_template(
-            'Crud/faculty_comments.html',
+            'print/faculty_comments.html',
             username=username,
             faculty=faculty_member,
             college=college,

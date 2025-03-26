@@ -211,7 +211,7 @@
                     <h2 class="text-xl font-semibold text-center m-2 p-2">Latest 5 Semesters Comparison</h2>   
                     <div class="flex justify-center items-center mb-3">
                         <!-- Adjusted width and height for smaller chart -->
-                        <canvas id="sentimentBarChart" width="1000" height="200"></canvas>
+                        <canvas id="sentimentBarChart" ></canvas>
                     </div>
                 </div>
                 
@@ -256,7 +256,6 @@
                 </p>
                 <p class="mt-2">Cherry Mae Balingit</p>
                 <p>Director of Instruction</p>
-                <p>Central Mindanao University</p>
             </div>
         </section>
 
@@ -379,21 +378,25 @@
     </script>
 
        <!-- printing  -->
-    <script>
+       <script>
         document.addEventListener("DOMContentLoaded", function () {
             setTimeout(() => {
                 const element = document.getElementById('printLayout');
                 element.style.fontFamily = "Arial, sans-serif";
-
+    
+                // Get department name and format it for the filename
+                const departmentName = "{{ department_name | replace(' ', '_') }}";
+                const fileName = `${departmentName}_Faculty_Evaluation_Results.pdf`;
+    
                 html2pdf(element, {
                     margin: 10,
-                    filename: 'Faculty_Evaluation_Report.pdf',
+                    filename: fileName,
                     image: { type: 'jpeg', quality: 0.98 },
                     html2canvas: { scale: 2 },
                     jsPDF: { format: 'a4', orientation: 'portrait' }
                 }).then(() => {
-                    console.log("PDF downloaded successfully.");
-
+                    console.log("PDF downloaded successfully as " + fileName);
+    
                     setTimeout(() => {
                         window.history.back();
                     }, 3000);

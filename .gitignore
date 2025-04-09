@@ -3,3 +3,5 @@ ai_model/twitter_xlm_roberta_fine_tuned_sentiment/
 ai_model/fine_tuned_twitter_xlm-roberta_model_bv2.3/
 myenv/
 .vscode/
+__pycache__/
+pypackages/

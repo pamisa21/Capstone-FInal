@@ -403,32 +403,31 @@
 </script>
 
 <!-- printing  -->
-<!-- <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            setTimeout(() => {
-                const element = document.getElementById('printLayout');
-                element.style.fontFamily = "Arial, sans-serif";
-    
-                // Get department name and format it for the filename
-                const departmentName = "{{ department_name | replace(' ', '_') }}";
-                const fileName = `${departmentName}_Faculty_Evaluation_Results.pdf`;
-    
-                html2pdf(element, {
-                    margin: 10,
-                    filename: fileName,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2 },
-                    jsPDF: { format: 'a4', orientation: 'portrait' }
-                }).then(() => {
-                    console.log("PDF downloaded successfully as " + fileName);
-    
-                    setTimeout(() => {
-                        window.history.back();
-                    }, 3000);
-                });
-            }, 3000); 
-        });
-    </script>
-     -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    setTimeout(() => {
+      const element = document.getElementById("printLayout");
+      element.style.fontFamily = "Arial, sans-serif";
+
+      // Get department name and format it for the filename
+      const departmentName = "{{ department_name | replace(' ', '_') }}";
+      const fileName = `${departmentName}_Faculty_Evaluation_Results.pdf`;
+
+      html2pdf(element, {
+        margin: 10,
+        filename: fileName,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { format: "a4", orientation: "portrait" },
+      }).then(() => {
+        console.log("PDF downloaded successfully as " + fileName);
+
+        setTimeout(() => {
+          window.history.back();
+        }, 3000);
+      });
+    }, 3000);
+  });
+</script>
 
 {% endblock %}

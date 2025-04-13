@@ -1,3 +1,4 @@
+{% extends "layout/base.html" %} {% block css %}
 <link
   rel="stylesheet"
   href="{{ url_for('static', filename='css/variable.css') }}"
@@ -331,7 +332,7 @@
   document.addEventListener("DOMContentLoaded", function () {
     setTimeout(() => {
       const element = document.getElementById("printLayout");
-      element.style.fontFamily = "Arial, sans-serif"
+      element.style.fontFamily = "Arial, sans-serif";
       html2pdf(element, {
         margin: 10,
         filename: "CMU_Overall_Faculty_Results.pdf",

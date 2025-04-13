@@ -42,19 +42,12 @@
         });
       </script>
 
-      <!-- <a
-        class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('evaluate') %}active-link{% endif %}"
-        href="{{ url_for('evaluate') }}"
-      >
-        <i class="ph ph-robot w-5 h-5"></i>
-        <span class="mx-2 text-sm font-medium">Model Performace</span>
-      </a> -->
       <a
         class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('evaluate') %}active-link{% endif %}"
         href="{{ url_for('evaluate') }}"
       >
         <i class="ph ph-robot w-5 h-5"></i>
-        <span class="mx-2 text-sm font-medium">Revise Predection</span>
+        <span class="mx-2 text-sm font-medium">Model Perfomance </span>
       </a>
       <a
         class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('analys') %}active-link{% endif %}"

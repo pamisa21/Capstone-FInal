@@ -1,93 +1,124 @@
+<aside
+  id="sidebar"
+  class="fixed top-20 left-2 flex-col w-55 px-5 py-4 overflow-y-auto h-[calc(100vh-4rem)] hidden md:flex"
+>
+  <div class="flex flex-col justify-between flex-1 mt-1 text-green-900">
+    <div class="flex justify-center">
+      <button id="toggle-button" class="mb-4 focus:outline-none">
+        <i class="ph ph-list w-5 h-5"></i>
+      </button>
+    </div>
 
+    <nav class="flex-1 mx-2 space-y-6">
+      <a
+        class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('dashboard') %}active-link{% endif %}"
+        id="dashboardLink"
+      >
+        <i class="ph ph-house-line w-5 h-5"></i>
+        <span class="mx-2 text-sm font-medium">Dashboard</span>
+      </a>
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const dashboardLink = document.getElementById("dashboardLink");
 
+          // Get the selected values from localStorage or query parameters
+          let selectedSemester =
+            localStorage.getItem("selectedSemester") ||
+            new URLSearchParams(window.location.search).get("ay_id");
+          let selectedCollege =
+            localStorage.getItem("selectedCollege") ||
+            new URLSearchParams(window.location.search).get("college_id");
+          let selectedDepartment =
+            localStorage.getItem("selectedDepartment") ||
+            new URLSearchParams(window.location.search).get("department_id");
 
-    <aside id="sidebar" class="fixed top-20 left-2 flex-col w-55 px-5 py-4 overflow-y-auto h-[calc(100vh-4rem)] hidden md:flex">
-        <div class="flex flex-col justify-between flex-1 mt-1 text-green-900">
-            <div class="flex justify-center">
-                <button id="toggle-button" class="mb-4 focus:outline-none">
-                    <i class="ph ph-list w-5 h-5"></i>
-                </button>
-            </div>
-            
-            <nav class="flex-1 mx-2 space-y-6">
-                <a class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('dashboard') %}active-link{% endif %}" id="dashboardLink">
-                    <i class="ph ph-house-line w-5 h-5"></i>
-                    <span class="mx-2 text-sm font-medium">Dashboard</span>
-                </a>
-                <script>
-                    document.addEventListener("DOMContentLoaded", function() {
-                        const dashboardLink = document.getElementById("dashboardLink");
-                        
-                        // Get the selected values from localStorage or query parameters
-                        let selectedSemester = localStorage.getItem("selectedSemester") || new URLSearchParams(window.location.search).get('ay_id');
-                        let selectedCollege = localStorage.getItem("selectedCollege") || new URLSearchParams(window.location.search).get('college_id');
-                        let selectedDepartment = localStorage.getItem("selectedDepartment") || new URLSearchParams(window.location.search).get('department_id');
-                
-                        // Build the URL with query parameters
-                        let url = `/dashboard?ay_id=${selectedSemester || ''}&college_id=${selectedCollege || ''}&department_id=${selectedDepartment || ''}`;
-                        
-                        // Update the href of the dashboard link
-                        dashboardLink.href = url;
-                    });
-                </script>
-                
-                
-                
-                <a class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('evaluate') %}active-link{% endif %}" href="{{ url_for('evaluate') }}">
-                    <i class="ph ph-clipboard w-5 h-5"></i>
-                    <span class="mx-2 text-sm font-medium">Testing Model </span>
-                </a>
-                <a class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('analys') %}active-link{% endif %}" href="{{ url_for('analys') }}">
-                    <i class="ph ph-graph w-5 h-5"></i>
-                    <span class="mx-2 text-sm font-medium">New Comments</span>
-                </a>
+          // Build the URL with query parameters
+          let url = `/dashboard?ay_id=${selectedSemester || ""}&college_id=${
+            selectedCollege || ""
+          }&department_id=${selectedDepartment || ""}`;
 
-                <a class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('comments') %}active-link{% endif %}" href="{{ url_for('comments') }}">
-                    <i class="ph ph-chat w-5 h-5"></i>
-                    <span class="mx-2 text-sm font-medium">Comments</span>
-                </a>
-                <a class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('faculty') %}active-link{% endif %}" href="{{ url_for('faculty') }}">
-                    <i class="ph ph-users w-5 h-5"></i>
-                    <span class="mx-2 text-sm font-medium">Faculty</span>
-                </a>
-                <a href="/logout" id="signOutLink1" class="flex items-center px-3 py-2 custom-hover">
-                    <i class="ph ph-sign-out w-5 h-5"></i>
-                    <span class="mx-2 text-sm font-medium">Signout</span>
-                </a>
-                
-                <script>
-                    // Function to handle session timeout check
-                    function checkSessionExpiration() {
-                        const currentTime = new Date().getTime();
-                        const sessionExpirationTime = localStorage.getItem('sessionExpirationTime'); // Store session expiration time
-                
-                        // If session has expired, automatically sign out
-                        if (sessionExpirationTime && currentTime > sessionExpirationTime) {
-                            // Trigger logout
-                            document.getElementById('signOutLink1').click();
-                        }
-                    }
-                
-                    // Set session expiration time (e.g., 30 minutes from now)
-                    const expirationTime = new Date().getTime() + (30 * 60 * 1000); // 30 minutes
-                    localStorage.setItem('sessionExpirationTime', expirationTime);
-                
-                    // Check for session expiration every minute
-                    setInterval(checkSessionExpiration, 60000); 
-                
-                    // Logout event listener to clear local storage
-                    document.getElementById('signOutLink1').addEventListener("click", function () {
-                        localStorage.removeItem("selectedCollege");
-                        localStorage.removeItem("selectedDepartment");
-                        localStorage.removeItem("sessionExpirationTime"); // Remove session expiration time
-                    });
-                </script>
-                
-            </nav>
-        </div>
-    </aside>
-    
+          // Update the href of the dashboard link
+          dashboardLink.href = url;
+        });
+      </script>
 
+      <!-- <a
+        class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('evaluate') %}active-link{% endif %}"
+        href="{{ url_for('evaluate') }}"
+      >
+        <i class="ph ph-robot w-5 h-5"></i>
+        <span class="mx-2 text-sm font-medium">Model Performace</span>
+      </a> -->
+      <a
+        class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('evaluate') %}active-link{% endif %}"
+        href="{{ url_for('evaluate') }}"
+      >
+        <i class="ph ph-robot w-5 h-5"></i>
+        <span class="mx-2 text-sm font-medium">Revise Predection</span>
+      </a>
+      <a
+        class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('analys') %}active-link{% endif %}"
+        href="{{ url_for('analys') }}"
+      >
+        <i class="ph ph-graph w-5 h-5"></i>
+        <span class="mx-2 text-sm font-medium">New Comments</span>
+      </a>
 
+      <a
+        class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('comments') %}active-link{% endif %}"
+        href="{{ url_for('comments') }}"
+      >
+        <i class="ph ph-chat w-5 h-5"></i>
+        <span class="mx-2 text-sm font-medium">Comments</span>
+      </a>
+      <a
+        class="flex items-center px-3 py-2 custom-hover {% if request.path == url_for('faculty') %}active-link{% endif %}"
+        href="{{ url_for('faculty') }}"
+      >
+        <i class="ph ph-users w-5 h-5"></i>
+        <span class="mx-2 text-sm font-medium">Faculty</span>
+      </a>
 
-  
+      <a
+        href="/logout"
+        id="signOutLink1"
+        class="flex items-center px-3 py-2 custom-hover"
+      >
+        <i class="ph ph-sign-out w-5 h-5"></i>
+        <span class="mx-2 text-sm font-medium">Signout</span>
+      </a>
+
+      <script>
+        // Function to handle session timeout check
+        function checkSessionExpiration() {
+          const currentTime = new Date().getTime();
+          const sessionExpirationTime = localStorage.getItem(
+            "sessionExpirationTime"
+          ); // Store session expiration time
+
+          // If session has expired, automatically sign out
+          if (sessionExpirationTime && currentTime > sessionExpirationTime) {
+            // Trigger logout
+            document.getElementById("signOutLink1").click();
+          }
+        }
+
+        // Set session expiration time (e.g., 30 minutes from now)
+        const expirationTime = new Date().getTime() + 30 * 60 * 1000; // 30 minutes
+        localStorage.setItem("sessionExpirationTime", expirationTime);
+
+        // Check for session expiration every minute
+        setInterval(checkSessionExpiration, 60000);
+
+        // Logout event listener to clear local storage
+        document
+          .getElementById("signOutLink1")
+          .addEventListener("click", function () {
+            localStorage.removeItem("selectedCollege");
+            localStorage.removeItem("selectedDepartment");
+            localStorage.removeItem("sessionExpirationTime"); // Remove session expiration time
+          });
+      </script>
+    </nav>
+  </div>
+</aside>

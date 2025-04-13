@@ -1,0 +1,79 @@
+{% extends "layout/base.html" %} 
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+{% endblock css %}
+
+{% block content %}
+<div class="flex flex-col h-screen">
+  <header>{% include "includes/navbar.html" %}</header>
+
+  <div class="flex flex-col md:flex-row flex-1">
+    {% include "includes/sidebar.html" %}
+
+    <main class="flex-1 md:p-5 mx-5 mt-20 ml-2 md:ml-60">
+      <div class="w-full bg-white rounded-lg p-5">
+        <h1 class="text-2xl font-bold mb-5">Edit Comment</h1>
+
+        <!-- Display Category Based on the Comment -->
+        
+
+        <div class="mb-4">
+          <label for="comment_text" class="block text-sm font-medium text-gray-700">
+            Comment Text
+          </label>
+          <p id="comment_text" class="w-full p-3 border rounded-md bg-gray-100">
+            {{ comment.comment }}
+          </p>
+        </div>
+
+        <form action="{{ url_for('edit_comment', comment_id=comment.comment_id) }}" method="POST">
+        
+        
+          <!-- Now, the Category will update the edit_result -->
+          <div class="mb-4">
+            <label for="category_display" class="block text-sm font-medium text-gray-700">
+              Comment Category Based on Sentiment Model
+            </label>
+          
+            <!-- Disabled dropdown just for display -->
+            <select id="category_display" class="w-full p-3 border rounded-md bg-gray-100 text-gray-500" disabled>
+              <option value="0" {% if comment.category == 0 %}selected{% endif %}>Negative</option>
+              <option value="1" {% if comment.category == 1 %}selected{% endif %}>Neutral</option>
+              <option value="2" {% if comment.category == 2 %}selected{% endif %}>Positive</option>
+            </select>
+          
+            <!-- Hidden input to pass actual category value to backend -->
+            <input type="hidden" id="category" name="category" value="{{ comment.category }}">
+          </div>
+          
+            <!-- Now, the Edit Result will update the category -->
+          <div class="mb-4">
+            <label for="edit_result" class="block text-sm font-medium text-gray-700">
+              Edit Result
+            </label>
+            <select id="edit_result" name="edit_result" class="w-full p-3 border rounded-md" required>
+              <option value="" disabled selected class="text-gray-300">Select New Result</option>
+              <option value="0" {% if comment.edit_result == 0 %}selected{% endif %}>Negative</option>
+              <option value="1" {% if comment.edit_result == 1 %}selected{% endif %}>Neutral</option>
+              <option value="2" {% if comment.edit_result == 2 %}selected{% endif %}>Positive</option>
+            </select>
+          </div>
+        
+          <div class="flex justify-end mt-10">
+            <button type="button" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 mr-2" onclick="window.history.back();">
+              Cancel
+            </button>
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+              Save Changes
+            </button>
+          </div>
+        </form>
+        
+        
+      </div>
+    </main>
+  </div>
+
+  {% include "includes/public/footers.html" %}
+</div>
+{% endblock content %}

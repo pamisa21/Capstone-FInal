@@ -64,8 +64,8 @@
                         <label for="notification-toggle" class="flex items-center cursor-pointer" title="notification">
                             <i class="ph ph-bell mt-1 h-4 w-4 text-current"></i>
                             <span class="flex absolute -mt-5 ml-4">
-                                <span id="notification-dot" class="animate-ping absolute inline-flex rounded-full bg-green-600 opacity-75 hidden"></span>
-                                <span id="notification-dot-inner" class="relative inline-flex rounded-full h-2 w-2 bg-green-700 hidden"></span>
+                                <span id="notification-dot" class="animate-ping absolute inline-flex rounded-full bg-green-600 opacity-75 "></span>
+                                <span id="notification-dot-inner" class="relative inline-flex rounded-full h-2 w-2 bg-green-700 "></span>
                             </span>
                         </label>
                     
@@ -157,7 +157,7 @@
                                     <a class="hover:text-gray-600 transition-colors duration-200 {% if request.path == url_for('dashboard') %} active-link {% endif %}" href="{{ url_for('dashboard') }}">Dashboard</a>
                                 </li>
                                 <li>
-                                    <a class="hover:text-gray-600 transition-colors duration-200 {% if request.path == url_for('evaluate') %} active-link {% endif %}" href="{{ url_for('evaluate') }}">Test Model</a>
+                                    <a class="hover:text-gray-600 transition-colors duration-200 {% if request.path == url_for('evaluate') %} active-link {% endif %}" href="{{ url_for('evaluate') }}">Revise Predection</a>
                                 </li>
                                 <li>
                                     <a class="hover:text-gray-600 transition-colors duration-200 {% if request.path == url_for('analys') %} active-link {% endif %}" href="{{ url_for('analys') }}">New Comments</a>

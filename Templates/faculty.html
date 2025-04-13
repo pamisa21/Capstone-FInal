@@ -18,7 +18,7 @@
 
         <!-- Main Content Container -->
         <main class="flex-1 p-1  mt-20 ml-2 md:ml-60 md:p-5">
-            <div id="Accounts" class="mx-auto bg-white rounded-lg shadow-lg md:  p-2 md:p-4 h-[99%] max-w-full">
+            <div id="Accounts" class="mx-auto bg-white rounded-lg  md:  p-2 md:p-4 h-[99%] max-w-full">
                 <div class="flex flex-col mb-2 gap-4"> <!-- Changed mb-4 to mb-2 -->
 
                     <!-- Search and Filter Section -->
@@ -110,25 +110,25 @@
                         <table class="data-table w-full border-collapse text-sm p-5 border rounded-lg">
                             <thead>
                                 <tr>
-                                    <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden md:table-cell">Faculty ID</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300 p-10  md:table-cell">Faculty ID</th>
                                     <th class="table-cell px-2 py-1 border border-gray-300 p-10">Complete Name & Email</th>
-                                    <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden md:table-cell">College</th>
-                                    <th class="table-cell px-2 py-1 border border-gray-300 p-10 hidden md:table-cell">Department</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300 p-10  md:table-cell">College</th>
+                                    <th class="table-cell px-2 py-1 border border-gray-300 p-10  md:table-cell">Department</th>
                                     <th class="table-cell px-2 py-1 border border-gray-300 p-10 "> View</th>
                                 </tr>
                             </thead>
                             <tbody class="table-body" id="accountsTableBody">
                                 {% for member in faculty_members.items %}
                                     <tr>
-                                        <td class="table-cell px-2 py-1 border border-gray-300 hidden md:table-cell">{{ member.faculty_id }}</td>
+                                        <td class="table-cell px-2 py-1 border border-gray-300  md:table-cell">{{ member.faculty_id }}</td>
                                         <td class="table-cell px-2 py-1 border border-gray-300">
                                             {{ member.lname }} {{ member.fname }} {{ member.mi }}.<br>
                                             <span class="email">{{ member.email }}</span>
                                         </td>
-                                        <td class="table-cell px-2 py-1 border border-gray-300 hidden md:table-cell">
+                                        <td class="table-cell px-2 py-1 border border-gray-300  md:table-cell">
                                             {{ member.department.college_id }}
                                         </td>
-                                        <td class="table-cell px-2 py-1 border border-gray-300 hidden md:table-cell">
+                                        <td class="table-cell px-2 py-1 border border-gray-300  md:table-cell">
                                             {{ member.department.department_name }}
                                         </td>
                                         <td class="table-cell px-2 py-1 border border-gray-300 text-center">

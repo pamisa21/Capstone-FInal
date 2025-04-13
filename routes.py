@@ -13,7 +13,7 @@ import os
 import emoji
 import string
 import re
-from sqlalchemy import func, case
+from sqlalchemy import func, case,  desc
 from wordcloud import WordCloud
 from matplotlib import pyplot as plt
 from io import BytesIO
@@ -75,6 +75,109 @@ def start_sentiment():
 
     flash('Sentiment analysis completed successfully.', 'success')
     return redirect(url_for('analys'))
+    
+#   Evaluate 
+@app.route('/evaluate', methods=['GET', 'POST'])
+def evaluate():
+    if 'username' not in session:
+        return redirect(url_for('loading_screen', target=url_for('login')))
+
+    sentiment = None
+    comment = None
+
+    if request.method == 'POST':
+        comment = request.form.get('comment')
+        if comment: 
+            predicted_class = predict_sentiment(comment)
+            sentiment = ['Negative', 'Neutral', 'Positive'][predicted_class]
+
+    # Calculate revision stats
+    total_comments = Comment.query.filter(Comment.category != 3).count()
+    total_revisions = Comment.query.filter(Comment.can_edit == 0).count()
+    improvement_percentage = (total_revisions / total_comments) * 100 if total_comments > 0 else 0
+
+    # 🆕 Get the latest updated_at timestamp with time
+    latest_revision = Comment.query.order_by(desc(Comment.updated_at)).first()
+    if latest_revision and latest_revision.updated_at:
+        latest_updated_at = latest_revision.updated_at.strftime('%B %d, %Y %I:%M %p')
+    else:
+        latest_updated_at = "No data"
+
+    return render_template(
+        'evaluate.html',
+        username=session['username'],
+        sentiment=sentiment,
+        comment=comment,
+        total_revisions=total_revisions,
+        improvement_percentage=round(improvement_percentage, 2),
+        latest_updated_at=latest_updated_at
+    )
+
+def get_predefined_sentiment(text):
+    # Clean and normalize the input text
+    cleaned_text = re.sub(r'[^a-zA-Z\s]', '', text)  
+    cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
+
+    # Predefined sentiments with expanded common phrases
+    specific_sentiments = {
+        # Positive comments
+        "thanks": 2,
+        "thank you": 2,
+        "thankyou": 2,
+        "i appreciate it": 2,
+        "good job": 2,
+        "well done": 2,
+        "salamat": 2,
+        "i love you": 2,
+        "mahal kita": 2,
+        "ayos ka": 2,
+        "galing mo": 2,
+        "galing": 2,
+        "very good": 2,
+        "very good sir": 2,
+        "very good maam": 2,
+        "i like you": 2,
+        "i like you maam": 2,
+        "i like you sir": 2,
+        
+        # Neutral comments
+        "ayos lang": 1,
+        "okay lang": 1,
+        "fine": 1,
+        "noted": 1,
+        "sure": 1,
+        "sige": 1,
+        "ok": 1,
+        "wala lang": 1,
+        
+        # Negative comments
+        "tanga": 0,
+        "yawa ka": 0,
+        "yawa ka maam": 0,
+        "bobo ka": 0,
+        "bugo ka": 0,
+        "pangit ka": 0,
+        "i hate you": 0,
+        "walang kwenta": 0,
+        "basura ka": 0,
+        "walang kwenta ka": 0,
+        "inutil ka": 0,
+        "mahina ka": 0,
+    }
+
+    # Check if the cleaned text matches predefined sentiments
+    sentiment = specific_sentiments.get(cleaned_text.lower(), None)
+    if sentiment is not None:
+        return sentiment
+
+    # Additional feature: Check length and positive words
+    positive_words = ["very good", "nice","good job" , "excellent", "awesome"]
+    # Check if the text length is 15 and contains any of the positive words
+    if len(cleaned_text) <= 10 and any(word in cleaned_text.lower() for word in positive_words):
+        return 2  # Positive sentiment
+    
+    return None  # Default to None if no match
+
 
 
 #loading Screen
@@ -587,32 +690,9 @@ def print_department():
  
     return redirect(url_for('login'))
 
+#model Perforamance
 
 
-
-
-
-#   Evaluate 
-@app.route('/evaluate', methods=['GET', 'POST'])
-def evaluate():
-    if 'username' in session:  
-        sentiment = None
-        comment = None  # Initialize comment variable
-        if request.method == 'POST':
-            comment = request.form.get('comment')  # Get the user's input
-            if comment: 
-                predicted_class = predict_sentiment(comment)
-                if predicted_class == 0:
-                    sentiment = 'Negative'
-                elif predicted_class == 1:
-                    sentiment = 'Neutral'
-                elif predicted_class == 2:
-                    sentiment = 'Positive'
-        return render_template('evaluate.html', 
-                               username=session['username'], 
-                               sentiment=sentiment, 
-                               comment=comment)  # Pass comment to the template
-    return redirect(url_for('loading_screen', target=url_for('login')))
 
 
 
@@ -686,256 +766,123 @@ def view_comment(comment_id):
 
 
 
-#   Add Comments 
-# @app.route('/add_comment', methods=['GET', 'POST'])
-# def add_comment():
-#     if request.method == 'POST':
-#         user_id = session.get('user_id')  
-        
-#         if user_id is None:
-#             flash('User is not logged in!', 'error')
-#             return redirect(url_for('login')) 
-
-
-#         content = request.form.get('content')
-#         faculty_id = request.form.get('faculty_id')
-
-
-#         if not content or not faculty_id:
-#             flash('All fields are required!', 'error')
-#             return render_template('Crud/add_comment.html', content=content, faculty_id=faculty_id, faculties=get_faculties())
-
-
-#         current_semester = Semester.query.first()  
-#         if current_semester is None:
-#             flash('No current semester found. Please set the semester first.', 'error')
-#             return redirect(url_for('add_comment'))
-
-#         semester_number = current_semester.semester_number
-#         school_year = current_semester.school_year
-
-
-#         new_comment = Comment(
-#             user_id=user_id, 
-#             content=content,
-#             faculty_id=faculty_id,
-#             semester_number=semester_number,  
-#             school_year=school_year  
-#         )
-#         try:
-#             db.session.add(new_comment)  
-#             db.session.commit()  
-#             flash('Comment added successfully!', 'success')
-#             return redirect(url_for('analys'))  
-#         except Exception as e:
-#             db.session.rollback()  
-#             flash('An error occurred while adding the comment. Please try again.', 'error')
-#             return render_template('Crud/add_comment.html', content=content, faculty_id=faculty_id, faculties=get_faculties())
-#     return render_template('Crud/add_comment.html', faculties=get_faculties())
-
-
-
-
-#  Upload Commnets usign excel file 
-
-# @app.route('/upload_comments', methods=['POST'])
-# def upload_comments():
-#     if 'file' not in request.files:
-#         flash('No file part', 'error')
-#         return redirect(url_for('analys'))
-
-#     file = request.files['file']
-
-#     if file.filename == '':
-#         flash('No selected file', 'error')
-#         return redirect(url_for('analys'))
-
-#     if file and file.filename.endswith('.xlsx'):
-#         filename = secure_filename(file.filename)
-#         file_path = os.path.join('uploads', filename) 
-#         file.save(file_path)
-
-
-#         df = pd.read_excel(file_path)
-
-#         # Process each row and add to the database
-#         for _, row in df.iterrows():
-#             new_comment = Comment(
-#                 user_id=row['user_id'], 
-#                 content=row['content'],  
-#                 faculty_id=row['faculty_id'],  
-#                 semester_number=row['semester_number'],  # Add these as per your Excel structure
-#                 school_year=row['school_year']
-#             )
-#             db.session.add(new_comment)
-
-#         try:
-#             db.session.commit()
-#             flash('Comments added successfully!', 'success')
-#         except Exception as e:
-#             db.session.rollback()
-#             flash('An error occurred while adding the comments.', 'error')
-
-#         return redirect(url_for('analys'))
-
-#     flash('Invalid file format. Please upload an Excel (.xlsx) file.', 'error')
-#     return redirect(url_for('analys'))
-
-
-# History 
-
-# @app.route('/history')
-# def history():
-#     # history view logic here
-#     return render_template('history.html')
-
-# #   Loading  History 
-# @app.route('/loading_history')
-# def loading_history():
-#     return redirect(url_for("loading_screen", target=url_for("history")))
-
-
-# View Coments Sentiment Resutls Routes s
-# @app.route('/semester_comments/<int:semester>/<string:year>')
-# def semester_comments(semester, year):
-#     if 'username' in session:
-#         username = session['username']
-#         page = request.args.get('page', 1, type=int)
-#         filter_category = request.args.get('category')
-#         filter_faculty = request.args.get('faculty')
-#         filter_college = request.args.get('college')
-
-#         faculties_with_comments = (
-#             db.session.query(Faculty)
-#             .join(Comment, Comment.faculty_id == Faculty.faculty_id)
-#             .filter(Comment.semester_number == semester, Comment.school_year == year, Comment.status == 1)
-#             .group_by(Faculty.faculty.faculty_id)
-#             .all()
-#         )
-
-#         # Base query for comments
-#         query = (
-#             db.session.query(Comment, SentimentComment, Faculty.name.label('faculty_name'))
-#             .join(SentimentComment, SentimentComment.comment_id == Comment.comment_id)
-#             .join(Faculty, Comment.faculty_id == Faculty.faculty_id)
-#             .filter(Comment.semester_number == semester, Comment.school_year == year, Comment.status == 1)
-#         )
-
-#         # Apply category filter based on selected value
-#         if filter_category:
-#             if filter_category == "Positive":
-#                 query = query.filter(SentimentComment.category == 2)
-#             elif filter_category == "Negative":
-#                 query = query.filter(SentimentComment.category == 0)
-#             elif filter_category == "Neutral":
-#                 query = query.filter(SentimentComment.category == 1)
-
-#         # Apply faculty name filter if provided
-#         if filter_faculty:
-#             query = query.filter(Faculty.name == filter_faculty)
-#         if filter_college:
-#             query = query.filter(Faculty.college == filter_college)
-
-#         # Paginate the query
-#         comments_data = query.paginate(page=page, per_page=5, error_out=False)
-
-#         return render_template(
-#             'Crud/semester_comments.html',
-#             username=username,
-#             comments_data=comments_data,
-#             semester=semester,
-#             year=year,
-#             filter_category=filter_category,
-#             filter_faculty=filter_faculty,
-#             filter_college=filter_college,
-#             all_faculty=faculties_with_comments
-#         )
-
-#     return redirect(url_for('loading_screen', target=url_for('login')))
-
-
-
-
-
 
 
 @app.route('/comments', methods=['GET'])
 def comments():
-    if 'username' in session:
-        username = session['username']
-        page = request.args.get('page', 1, type=int)
-        per_page = 6
+    if 'username' not in session:
+        return redirect(url_for('loading_screen', target=url_for('comments')))
 
-        # Get selected filters from request args
-        selected_semester = request.args.get('ay_id', None)
-        selected_college = request.args.get('college_id', None)
-        selected_department = request.args.get('department_id', None)
+    username = session['username']
+    page = request.args.get('page', 1, type=int)
+    per_page = 6
 
-        # Default to the first available semester if not selected
-        if not selected_semester:
-            selected_semester = request.cookies.get('selectedSemester')
-        if not selected_semester:
-            # Get the latest semester if no semester is selected
-            latest_semester = AY_SEM.query.order_by(AY_SEM.ay_id.desc()).first()
-            selected_semester = latest_semester.ay_id if latest_semester else None
+    selected_semester = request.args.get('ay_id') or request.cookies.get('selectedSemester')
+    selected_college = request.args.get('college_id')
+    selected_department = request.args.get('department_id')
+    selected_origin = request.args.get('origin')  # 'revision' or 'ai'
 
-        # Retrieve the name of the selected semester
-        selected_semester_name = AY_SEM.query.filter_by(ay_id=selected_semester).first().ay_name if selected_semester else "N/A"
+    if not selected_semester:
+        latest_semester = AY_SEM.query.order_by(AY_SEM.ay_id.desc()).first()
+        selected_semester = latest_semester.ay_id if latest_semester else None
 
-        # Query for comments and related data
-        query = db.session.query(Comment, Faculty, AY_SEM, Department, College) \
-            .join(Faculty, Comment.faculty_id == Faculty.faculty_id) \
-            .join(AY_SEM, Comment.ay_id == AY_SEM.ay_id) \
-            .join(Department, Faculty.department_id == Department.department_id) \
-            .join(College, Department.college_id == College.college_id) \
-            .filter(Comment.category != 3)
+    selected_semester_name = AY_SEM.query.filter_by(ay_id=selected_semester).first().ay_name if selected_semester else "N/A"
 
-        # Apply filters if provided
-        if selected_semester:
-            query = query.filter(Comment.ay_id == selected_semester)
-        if selected_college:
-            query = query.filter(Department.college_id == selected_college)
-        if selected_department:
-            query = query.filter(Faculty.department_id == selected_department)
+    # Base query
+    query = db.session.query(Comment, Faculty, AY_SEM, Department, College) \
+        .join(Faculty, Comment.faculty_id == Faculty.faculty_id) \
+        .join(AY_SEM, Comment.ay_id == AY_SEM.ay_id) \
+        .join(Department, Faculty.department_id == Department.department_id) \
+        .join(College, Department.college_id == College.college_id) \
+        .filter(Comment.category != 3)
 
-        # Paginate the comments
-        comments_pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+    # Filters
+    if selected_semester:
+        query = query.filter(Comment.ay_id == selected_semester)
+    if selected_college:
+        query = query.filter(Department.college_id == selected_college)
+    if selected_department:
+        query = query.filter(Faculty.department_id == selected_department)
 
-        # Calculate pagination numbers
-        max_pages_to_show = 10
-        start_page = max(1, comments_pagination.page - 4)
-        end_page = min(comments_pagination.pages, comments_pagination.page + 5)
+    # 💡 New logic using can_edit
+    if selected_origin == "revision":
+        query = query.filter(Comment.can_edit == 0)
+    elif selected_origin == "ai":
+        query = query.filter(Comment.can_edit == 1)
 
-        # Fetch colleges and departments for the dropdown
-        colleges = College.query.all()
-        selected_departments = Department.query.filter_by(college_id=selected_college).all() if selected_college else []
+    comments_pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+    start_page = max(1, comments_pagination.page - 4)
+    end_page = min(comments_pagination.pages, comments_pagination.page + 5)
 
-        return render_template(
-            'comments.html',
-            username=username,
-            comments=comments_pagination.items,
-            comments_pagination=comments_pagination,
-            start_page=start_page,
-            end_page=end_page,
-            max_pages_to_show=max_pages_to_show,
-            selected_semester=selected_semester,
-            selected_semester_name=selected_semester_name,
-            all_semesters=AY_SEM.query.all(),
-            colleges=colleges,
-            selected_college=selected_college,
-            selected_department=selected_department,
-            selected_departments=selected_departments
-        )
+    colleges = College.query.all()
+    selected_departments = Department.query.filter_by(college_id=selected_college).all() if selected_college else []
+    revision_count = query.filter(Comment.can_edit == 0).count()
+    ai_count = query.filter(Comment.can_edit == 1).count()
+    return render_template(
+        'comments.html',
+        username=username,
+        comments=comments_pagination.items,
+        comments_pagination=comments_pagination,
+        start_page=start_page,
+        end_page=end_page,
+        max_pages_to_show=10,
+        selected_semester=selected_semester,
+        selected_semester_name=selected_semester_name,
+        all_semesters=AY_SEM.query.all(),
+        colleges=colleges,
+        selected_college=selected_college,
+        selected_department=selected_department,
+        selected_departments=selected_departments,
+        selected_origin=selected_origin,
+        revision_count=revision_count,
+        ai_count=ai_count,
 
-    # Redirect to loading screen if user is not logged in
-    return redirect(url_for('loading_screen', target=url_for('comments')))
-
+    )
 
 
 #   Routes for comments with loading screen
 @app.route('/loading_comments')
 def loading_comments():
     return redirect(url_for("loading_screen", target=url_for("comments")))
+
+
+
+#edit By staff
+@app.route('/comments/edit/<int:comment_id>', methods=['GET', 'POST'])
+def edit_comment(comment_id):
+    if 'username' in session:
+        # Get the comment to edit
+        comment = Comment.query.get_or_404(comment_id)
+
+        if request.method == 'POST':
+            # Get the form data for category and edit_result
+            edit_result = request.form.get('edit_result', None)  # This will update the category
+            category = request.form.get('category', None)  # This will update the edit_result
+
+            # Update the comment's category and edit_result (swapping them)
+            if edit_result is not None:
+                comment.category = int(edit_result)  # Save the selected edit_result as category
+            if category is not None:
+                comment.edit_result = int(category)  # Save the selected category as edit_result
+
+            # Automatically set the can_edit field to 0 (disables further editing)
+            comment.can_edit = 0
+
+            # Commit changes to the database
+            db.session.commit()
+
+            # Redirect back to the comments page
+            flash('Comment result updated successfully and editing is now disabled!', 'success')
+            return redirect(url_for('comments'))
+
+        # Render the edit page with the selected comment
+        return render_template('Crud/edit_category.html', comment=comment)
+
+    # Redirect to loading screen if user is not logged in
+    return redirect(url_for('loading_screen', target=url_for('comments')))
+
+
+
 
 
 # View Sentement_Commets 
@@ -1293,67 +1240,3 @@ def new_comment_count():
 
 
 
-def get_predefined_sentiment(text):
-    # Clean and normalize the input text
-    cleaned_text = re.sub(r'[^a-zA-Z\s]', '', text)  
-    cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
-
-    # Predefined sentiments with expanded common phrases
-    specific_sentiments = {
-        # Positive comments
-        "thanks": 2,
-        "thank you": 2,
-        "thankyou": 2,
-        "i appreciate it": 2,
-        "good job": 2,
-        "well done": 2,
-        "salamat": 2,
-        "i love you": 2,
-        "mahal kita": 2,
-        "ayos ka": 2,
-        "galing mo": 2,
-        "galing": 2,
-        "very good": 2,
-        "very good sir": 2,
-        "very good maam": 2,
-        "i like you": 2,
-        "i like you maam": 2,
-        "i like you sir": 2,
-        
-        # Neutral comments
-        "ayos lang": 1,
-        "okay lang": 1,
-        "fine": 1,
-        "noted": 1,
-        "sure": 1,
-        "sige": 1,
-        "ok": 1,
-        "wala lang": 1,
-        
-        # Negative comments
-        "tanga": 0,
-        "yawa ka": 0,
-        "yawa ka maam": 0,
-        "bobo ka": 0,
-        "bugo ka": 0,
-        "pangit ka": 0,
-        "i hate you": 0,
-        "walang kwenta": 0,
-        "basura ka": 0,
-        "walang kwenta ka": 0,
-        "inutil ka": 0,
-        "mahina ka": 0,
-    }
-
-    # Check if the cleaned text matches predefined sentiments
-    sentiment = specific_sentiments.get(cleaned_text.lower(), None)
-    if sentiment is not None:
-        return sentiment
-
-    # Additional feature: Check length and positive words
-    positive_words = ["very good", "nice","good job" , "excellent", "awesome"]
-    # Check if the text length is 15 and contains any of the positive words
-    if len(cleaned_text) <= 10 and any(word in cleaned_text.lower() for word in positive_words):
-        return 2  # Positive sentiment
-    
-    return None  # Default to None if no match

@@ -1,505 +1,671 @@
-{% extends "layout/base.html" %}
-
-{% block css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/variable.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-{% endblock css %}
-
-{% block content %}
+{% extends "layout/base.html" %} {% block css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/variable.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/style.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/output.css') }}"
+/>
+<link
+  href="https://fonts.googleapis.com/icon?family=Material+Icons"
+  rel="stylesheet"
+/>
+{% endblock css %} {% block content %}
 <div class="flex flex-col h-screen">
-    <header>
-        {% include "includes/navbar.html" %}
-    </header>
-    <div class="flex flex-1">
-        {% include "includes/sidebar.html" %}
+  <header>{% include "includes/navbar.html" %}</header>
+  <div class="flex flex-1">
+    {% include "includes/sidebar.html" %}
 
-        <main class="flex-1 md:p-5 p-2 mx-3 mt-20 ml-2 md:ml-60 sm:mx-0 sm:ml-0 sm:mr-0 flex">
-            <div id="dashboard" class="p-1 md:p-4 w-full flex">
-                <div class="grid grid-cols-1 md:grid-cols-[70%,30%] gap-8 w-full">
-                    <!-- Left Column (70%) Scrollable -->
-                    <div class="space-y-5  pr-2" style="max-height: 80vh;">
-                        <div class="flex justify-between items-center mb-5">
-                            <h1 class="text-2xl font-bold">Dashboard <span>{{ selected_semester_name or 'No Semester Selected' }}</span></h1>
-                            <button id="printButton" class="border border-gray-300 px-4 py-2 text-sm focus:outline-none start mt-2 md:mt-0">
-                                <a id="printLink" href="{{ url_for('print_dashboard') }}">Print Results</a>
-                            </button>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0 mb-5">
-                            <div class="flex-col  hidden ">
-                                <select id="dashboardSemesterDropdown" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black">
-                                    {% for semester in all_semesters %}
-                                        <option value="{{ semester.ay_id }}" {% if semester.ay_id == selected_semester %} selected {% endif %}>
-                                            {{ semester.ay_name }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        
-                            <!-- College Dropdown -->
-                            <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0 mb-5">
-                                <!-- College Dropdown -->
-                                <div class="flex items-center">
-                                    <select id="filterCollege" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black" onchange="updateDepartments()">
-                                        <option value="">Display all Colleges</option>
-                                        {% for college in colleges %}
-                                            <option value="{{ college.college_id }}" {% if college.college_id == selected_college %}selected{% endif %}>
-                                                {{ college.college_name }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <!-- Department Dropdown -->
-                                <div class="flex items-center">
-                                    <select id="filterDepartment" class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black">
-                                        <option value="">Display all Departments</option>
-                                        {% for department in selected_departments %}
-                                            <option value="{{ department.department_id }}" data-college-id="{{ department.college_id }}" {% if department.department_id == selected_department %}selected{% endif %}>
-                                                {{ department.department_name }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 rounded-lg">
-                            <div class="bgprimary rounded-lg shadow-md p-6 flex flex-col justify-between border-2">
-                                <div>
-                                    <h2 class="text-lg text-left text-white">Total Comments</h2>
-                                    <h4 class="text-3xl font-extrabold text-left text-white">{{ total_comments }}</h4>
-                                </div>
-                                <p class="text-xs font-light text-white mt-2">Total comments this semester</p>
-                            </div>
-                            <div class="bgwhite rounded-lg shadow-md p-6 flex flex-col justify-between border-2">
-                                <div>
-                                    <h3 class="text-lg text-left">Interpreted Positive</h3>
-                                    <h4 class="text-4xl font-extrabold text-left">{{ positive_count }}</h4>
-                                </div>
-                                <p class="text-xs font-light gray mt-2">Positive comments this semester</p>
-                            </div>
-                            <div class="bgwhite rounded-lg shadow-md p-6 flex flex-col justify-between border-2">
-                                <div>
-                                    <h3 class="text-lg text-left">Interpreted Neutral</h3>
-                                    <h4 class="text-4xl font-extrabold text-left">{{ neutral_count }}</h4>
-                                </div>
-                                <p class="text-xs gray mt-2">Neutral comments this semester</p>
-                            </div>
-                            <div class="bgwhite rounded-lg shadow-md p-6 flex flex-col justify-between border-2">
-                                <div>
-                                    <h3 class="text-lg text-left">Interpreted Negative</h3>
-                                    <h4 class="text-4xl font-extrabold text-left">{{ negative_count }}</h4>
-                                </div>
-                                <p class="text-xs gray mt-2">Negative comments this semester</p>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-lg shadow-md p-6 border-2">
-                            <div class="flex justify-between items-center mb-4">
-                                <h2 class="text-3X1 font-semibold">Sentiment Analysis this Semester</h2>
-                                <div class="flex space-x-4 text-xs gray">
-                                    <span class="flex items-center"><span class="w-3 h-3 bgprimary inline-block rounded-full mr-2"></span> Interpreted Positive</span>
-                                    <span class="flex items-center"><span class="w-3 h-3 bgneutral inline-block rounded-full mr-2"></span> Interpreted Neutral</span>
-                                    <span class="flex items-center"><span class="w-3 h-3 bgnegative inline-block rounded-full mr-2"></span> Interpreted Negative</span>
-                                </div>
-                            </div>
-                            <div class="space-y-4">
-                                <div class="flex items-center space-x-4">
-                                    <span class="material-icons text-black text-2xl">thumb_up</span>
-                                    <div class="w-full bg-gray-200 rounded-full h-4">
-                                        <div class="bgprimary h-4 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                                    </div>
-                                    <p class="text-xl font-bold text-gray-700">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                                </div>
-                                <div class="flex items-center space-x-4">
-                                    <span class="text-2xl">⚫</span>
-                                    <div class="w-full bg-gray-200 rounded-full h-4">
-                                        <div class="bgneutral h-4 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                                    </div>
-                                    <p class="text-xl font-bold text-gray-700">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                                </div>
-                                <div class="flex items-center space-x-4">
-                                    <span class="material-icons text-black text-2xl">thumb_down</span>
-                                    <div class="w-full bg-gray-200 rounded-full h-4">
-                                        <div class="bgnegative h-4 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                                    </div>
-                                    <p class="text-xl font-bold text-gray-700">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <section id="stockbar" class=" mt-5">
-                            <div class="bg-white rounded-lg shadow-md mt-5 border-2 max-w-full mx-auto">
-                                <h2 class="text-sm font-semibold  p-4"> Department Semester Comparison</h2>
-                                <div class="flex justify-center items-center  overflow-x-auto">
-                                    <canvas id="stackbarchart" class="max-w-full p-3" width="900px" height="300px"  ></canvas>
-                                </div>
-                            </div>
-                        </section>
-                        
-                        <div id="faculty-list" class="bg-white rounded-lg shadow-md mt-5 border-2 mb-4" >
-                            <div class="p-1 flex justify-between items-center">
-                                <h2 class="font-semibold p-2 text-sm sm:text-sm">Department Faculty List</h2>
-                                <!-- Search Box on the Right -->
-                                <div class="flex items-center space-x-2 ">
-                                    <input type="text" id="faculty-search" placeholder="Search..." class="p-1 sm:p-2
-                                     border border-gray-300 rounded text-xs sm:text-sm text-black">
-                                </div>
-                            </div>
-                            <div >
-                                <div class="table-wrapper">
-                                    <div class="table-border max-h-[500px] overflow-y-auto">
-                                        <table class="data-table w-full border-collapse text-sm p-5">
-                                            <thead class="table-header bg-gray-100">
-                                                <tr>
-                                                    <th class=" px-2 py-1 border border-gray-300 p-10 hidden sm:table-cell">&nbsp;</th>
-                                                    <th class=" px-2 py-1 border border-gray-300 p-10 hidden sm:table-cell">ID</th>
-                                                    <th class=" px-2 py-1 border border-gray-300 p-10 text-xs sm:text-sm">Complete Name & Email</th>
-                                                
-                                                    <th class=" px-2 py-1 border border-gray-300 p-10 hidden lg:table-cell text-xs sm:text-sm">Status</th>
-                                                    <th class=" px-2 py-1 border border-gray-300 p-10 text-xs sm:text-sm">Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="table-body ">
-                                                {% for faculty in filtered_faculty %}
-                                                    <tr class="border-t faculty-row p-2">
-                                                        <td class=" p-2 text-left hidden sm:table-cell text-xs sm:text-sm">{{ loop.index }}</td>
-                                                        <td class="  p-2  border border-gray-300 hidden sm:table-cell text-xs sm:text-sm">{{ faculty.faculty_id }}</td>
-                                                        <td class=" p-2 border border-gray-300 text-xs sm:text-sm">
-                                                            {{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.<br>
-                                                            <span class="email text-xs sm:text-sm text-gray-600">{{ faculty.email }}</span>
-                                                        </td>
-                                                   
-                                                     
-                                                        <td class=" px-2 py-1 border border-gray-300 lg:table-cell hidden text-xs sm:text-sm  text-center">
-                                                            {{ "Active" if faculty.status == 1 else "Not Active" }}
-                                                        </td>
-                                                        
-                                                        <td class="px-4 py-4 text-xs sm:text-sm whitespace-nowrap">
-                                                            <div class="flex space-x-2">
-                                                                <!-- <a href="{{ url_for('view_faculty', faculty_id=faculty.faculty_id) }}" title="View" class="primary hidden sm:inline">View</a> -->
-                                                                <a href="{{ url_for('faculty_comments', faculty_id=faculty.faculty_id) }}" title="Comments" class="yellow  hidden sm:inline">View Results</a>
-    
-                                                                <!-- <a href="{{ url_for('view_faculty', faculty_id=faculty.faculty_id) }}" title="View" class="primary sm:hidden">
-                                                                    <i class="ph ph-eye"></i>
-                                                                </a> -->
-                                                                <a href="{{ url_for('faculty_comments', faculty_id=faculty.zfaculty_id) }}" title="Comments" class="secondary sm:hidden">
-                                                                    <i class="ph ph-chart-bar"></i>
-                                                                </a>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                {% else %}
-                                                    <tr>
-                                                        <td colspan="6" class="text-center px-4 py-2 text-xs sm:text-sm">No Faculty Found</td>
-                                                    </tr>
-                                           
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    <main
+      class="flex-1 md:p-5 p-2 mx-3 mt-20 ml-2 md:ml-60 sm:mx-0 sm:ml-0 sm:mr-0 flex"
+    >
+      <div id="dashboard" class="p-1 md:p-4 w-full flex">
+        <div class="grid grid-cols-1 md:grid-cols-[70%,30%] gap-8 w-full">
+          <!-- Left Column (70%) Scrollable -->
+          <div class="space-y-5 pr-2" style="max-height: 80vh">
+            <div class="flex justify-between items-center mb-5 flex-wrap gap-2">
+              <h1 class="text-2xl font-bold">
+                Dashboard
+                <span class="text-sm">
+                  {{ selected_semester_name or 'No Semester Selected' }}
+                </span>
+              </h1>
+              <button
+                id="printButton"
+                class="border border-gray-300 px-4 py-2 text-sm focus:outline-none  start mt-2 md:mt-0"
+              >
+                <a id="printLink" href="{{ url_for('print_dashboard') }}">
+                  <span class="md:inline hidden">Print Results</span>
+                  <span class="inline md:hidden">Print</span>
+                </a>
+              </button>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0 mb-5">
+                <!-- Semester Dropdown -->
+                <div class="flex-col hidden">
+                    <select id="dashboardSemesterDropdown"
+                            class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black">
+                        {% for semester in all_semesters %}
+                            <option value="{{ semester.ay_id }}"
+                                    {% if semester.ay_id == selected_semester %}selected{% endif %}>
+                                {{ semester.ay_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            
+                <!-- College & Department Dropdowns -->
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0 mb-5">
+                    <!-- College Dropdown -->
+                    <div class="flex items-center">
+                        <select id="filterCollege"
+                                class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black"
+                                onchange="updateDepartments()">
+                            <option value="">Display all Colleges</option>
+                            {% for college in colleges %}
+                                <option value="{{ college.college_id }}"
+                                        {% if college.college_id == selected_college %}selected{% endif %}>
+                                    {{ college.college_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
                     </div>
-                    
-                    <!-- Right Column (30%) Fixed Position -->
-                    <div class="w-full  shadow-md border-2  rounded-lg md:w-auto md:sticky top-20 pr-2 self-start h-auto ">
-
-                        <div class="bg-white   p-3">
-                            <h2 id="overviewTitle" class="text-3X1 font-semibold text-left mx-auto">
-                                CMU Overall Sentiment
-                            </h2>
-                            <p class="text-xs gray ">
-                                Summary of sentiment across semesters
-                            </p>
-                            <div class="flex justify-center items-center p-3">
-                                <canvas id="sentimentDoughnutChart" ></canvas>
-                            </div>
-                        </div>
-                        <div class="bg-white rounded-lg  mt-2">
-                            <h2 class="text-3X1 font-semibold p-2 text-left mx-auto">
-                                CMU Sentiment: Previous vs. Current
-                            </h2>
-                            <p class="text-xs gray pl-2 ">
-                                Comparison of sentiment between last semester and now
-                            </p>
-
-                            <div class="flex justify-center items-center">
-                                <canvas id="sentimentBarChart" width="200px" height="200px" class="pb-3"></canvas>
-                            </div>
-                        </div>
+            
+                    <!-- Department Dropdown -->
+                    <div class="flex items-center">
+                        <select id="filterDepartment"
+                                class="border rounded-md px-4 py-2 text-sm w-full shadow-lg bg-white text-black">
+                            <option value="">Display all Departments</option>
+                            {% for department in selected_departments %}
+                                <option value="{{ department.department_id }}"
+                                        data-college-id="{{ department.college_id }}"
+                                        {% if department.department_id == selected_department %}selected{% endif %}>
+                                    {{ department.department_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
+            
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 rounded-lg">
+              <div
+                class="bgprimary rounded-lg shadow-md p-6 flex flex-col justify-between border-2"
+              >
+                <div>
+                  <h2 class="text-lg text-left text-white">Total Comments</h2>
+                  <h4 class="text-3xl font-extrabold text-left text-white">
+                    {{ total_comments }}
+                  </h4>
+                </div>
+                <p class="text-xs font-light text-white mt-2">
+                  Total comments this semester
+                </p>
+              </div>
+              <div
+                class="bgwhite rounded-lg shadow-md p-6 flex flex-col justify-between border-2"
+              >
+                <div>
+                  <h3 class="text-lg text-left">Interpreted Positive</h3>
+                  <h4 class="text-4xl font-extrabold text-left">
+                    {{ positive_count }}
+                  </h4>
+                </div>
+                <p class="text-xs font-light gray mt-2">
+                  Positive comments this semester
+                </p>
+              </div>
+              <div
+                class="bgwhite rounded-lg shadow-md p-6 flex flex-col justify-between border-2"
+              >
+                <div>
+                  <h3 class="text-lg text-left">Interpreted Neutral</h3>
+                  <h4 class="text-4xl font-extrabold text-left">
+                    {{ neutral_count }}
+                  </h4>
+                </div>
+                <p class="text-xs gray mt-2">Neutral comments this semester</p>
+              </div>
+              <div
+                class="bgwhite rounded-lg shadow-md p-6 flex flex-col justify-between border-2"
+              >
+                <div>
+                  <h3 class="text-lg text-left">Interpreted Negative</h3>
+                  <h4 class="text-4xl font-extrabold text-left">
+                    {{ negative_count }}
+                  </h4>
+                </div>
+                <p class="text-xs gray mt-2">Negative comments this semester</p>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6 border-2">
+              <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
+                <!-- Title -->
+                <h2 class="text-sm font-semibold mb-4 sm:mb-0 md:text-md">
+                  Sentiment Analysis this Semester
+                </h2>
+              
+                <!-- Legend -->
+                <div class="flex flex-wrap gap-4 text-xs text-gray-600">
+                  <span class="flex items-center">
+                    <span class="w-3 h-3 bgprimary inline-block rounded-full mr-2"></span>
+                    Interpreted Positive
+                  </span>
+                  <span class="flex items-center">
+                    <span class="w-3 h-3 bgneutral inline-block rounded-full mr-2"></span>
+                    Interpreted Neutral
+                  </span>
+                  <span class="flex items-center">
+                    <span class="w-3 h-3 bgnegative inline-block rounded-full mr-2"></span>
+                    Interpreted Negative
+                  </span>
+                </div>
+              </div>
+              
+              <div class="space-y-4">
+                <div class="flex items-center space-x-4">
+                  <span class="material-icons text-black text-2xl"
+                    >thumb_up</span
+                  >
+                  <div class="w-full bg-gray-200 rounded-full h-4">
+                    <div
+                      class="bgprimary h-4 rounded-full"
+                      style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"
+                    ></div>
+                  </div>
+                  <p class="text-xl font-bold text-gray-700">
+                    {{ (positive_count / total_comments * 100) | round(2) if
+                    total_comments > 0 else 0 }}%
+                  </p>
+                </div>
+                <div class="flex items-center space-x-4">
+                  <span class="text-2xl">⚫</span>
+                  <div class="w-full bg-gray-200 rounded-full h-4">
+                    <div
+                      class="bgneutral h-4 rounded-full"
+                      style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"
+                    ></div>
+                  </div>
+                  <p class="text-xl font-bold text-gray-700">
+                    {{ (neutral_count / total_comments * 100) | round(2) if
+                    total_comments > 0 else 0 }}%
+                  </p>
+                </div>
+                <div class="flex items-center space-x-4">
+                  <span class="material-icons text-black text-2xl"
+                    >thumb_down</span
+                  >
+                  <div class="w-full bg-gray-200 rounded-full h-4">
+                    <div
+                      class="bgnegative h-4 rounded-full"
+                      style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"
+                    ></div>
+                  </div>
+                  <p class="text-xl font-bold text-gray-700">
+                    {{ (negative_count / total_comments * 100) | round(2) if
+                    total_comments > 0 else 0 }}%
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <section id="stockbar" class="mt-5">
+              <div
+                class="bg-white rounded-lg shadow-md mt-5 border-2 max-w-full mx-auto"
+              >
+                <h2 class="text-sm font-semibold p-4">
+                  Department Semester Comparison
+                </h2>
+                <div class="flex justify-center items-center overflow-x-auto">
+                  <canvas
+                    id="stackbarchart"
+                    class="max-w-full p-3"
+                    width="900px"
+                    height="300px"
+                  ></canvas>
+                </div>
+              </div>
+            </section>
+
+            <div
+              id="faculty-list"
+              class="bg-white rounded-lg shadow-md mt-5 border-2 mb-4"
+            >
+              <div class="p-1 flex justify-between items-center">
+                <h2 class="font-semibold p-2 text-sm sm:text-sm">
+                  Department Faculty List
+                </h2>
+                <!-- Search Box on the Right -->
+                <div class="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    id="faculty-search"
+                    placeholder="Search..."
+                    class="p-1 sm:p-2 border border-gray-300 rounded text-xs sm:text-sm text-black"
+                  />
+                </div>
+              </div>
+              <div>
+                <div class="table-wrapper">
+                  <div class="table-border max-h-[500px] overflow-y-auto">
+                    <table
+                      class="data-table w-full border-collapse text-sm p-5"
+                    >
+                      <thead class="table-header bg-gray-100">
+                        <tr>
+                          <th
+                            class="px-2 py-1 border border-gray-300 p-10 hidden sm:table-cell"
+                          >
+                            &nbsp;
+                          </th>
+                          <th
+                            class="px-2 py-1 border border-gray-300 p-10 hidden sm:table-cell"
+                          >
+                            ID
+                          </th>
+                          <th
+                            class="px-2 py-1 border border-gray-300 p-10 text-xs sm:text-sm"
+                          >
+                            Complete Name & Email
+                          </th>
+
+                          <th
+                            class="px-2 py-1 border border-gray-300 p-10 hidden lg:table-cell text-xs sm:text-sm"
+                          >
+                            Status
+                          </th>
+                          <th
+                            class="px-2 py-1 border border-gray-300 p-10 text-xs sm:text-sm"
+                          >
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody class="table-body">
+                        {% for faculty in filtered_faculty %}
+                        <tr class="border-t faculty-row p-2">
+                          <td
+                            class="p-2 text-left hidden sm:table-cell text-xs sm:text-sm"
+                          >
+                            {{ loop.index }}
+                          </td>
+                          <td
+                            class="p-2 border border-gray-300 hidden sm:table-cell text-xs sm:text-sm"
+                          >
+                            {{ faculty.faculty_id }}
+                          </td>
+                          <td
+                            class="p-2 border border-gray-300 text-xs sm:text-sm"
+                          >
+                            {{ faculty.lname }} {{ faculty.fname }} {{
+                            faculty.mi }}.<br />
+                            <span class="email text-xs sm:text-sm text-gray-600"
+                              >{{ faculty.email }}</span
+                            >
+                          </td>
+
+                          <td
+                            class="px-2 py-1 border border-gray-300 lg:table-cell hidden text-xs sm:text-sm text-center"
+                          >
+                            {{ "Active" if faculty.status == 1 else "Not Active"
+                            }}
+                          </td>
+
+                          <td
+                            class="px-4 py-4 text-xs sm:text-sm whitespace-nowrap"
+                          >
+                            <div class="flex space-x-2">
+                              <!-- <a href="{{ url_for('view_faculty', faculty_id=faculty.faculty_id) }}" title="View" class="primary hidden sm:inline">View</a> -->
+                              <a
+                                href="{{ url_for('faculty_comments', faculty_id=faculty.faculty_id) }}"
+                                title="Comments"
+                                class="yellow hidden sm:inline"
+                                >View Results</a
+                              >
+
+                              <!-- <a href="{{ url_for('view_faculty', faculty_id=faculty.faculty_id) }}" title="View" class="primary sm:hidden">
+                                                                    <i class="ph ph-eye"></i>
+                                                                </a> -->
+                              <a
+                                href="{{ url_for('faculty_comments', faculty_id=faculty.zfaculty_id) }}"
+                                title="Comments"
+                                class="secondary sm:hidden"
+                              >
+                                <i class="ph ph-chart-bar"></i>
+                              </a>
+                            </div>
+                          </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                          <td
+                            colspan="6"
+                            class="text-center px-4 py-2 text-xs sm:text-sm"
+                          >
+                            No Faculty Found
+                          </td>
+                        </tr>
+
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column (30%) Fixed Position -->
+          <div class="hidden md:block w-full shadow-md border-2 rounded-lg md:w-auto md:sticky top-20 pr-2 self-start h-auto">
+            <div class="bg-white p-3">
+              <h2
+                id="overviewTitle"
+                class="text-3X1 font-semibold text-left mx-auto"
+              >
+                CMU Overall Sentiment
+              </h2>
+              <p class="text-xs gray">Summary of sentiment across semesters</p>
+              <div class="flex justify-center items-center p-3">
+                <canvas id="sentimentDoughnutChart"></canvas>
+              </div>
+            </div>
+            <div class="bg-white rounded-lg mt-2">
+              <h2 class="text-3X1 font-semibold p-2 text-left mx-auto">
+                CMU Sentiment: Previous vs. Current
+              </h2>
+              <p class="text-xs gray pl-2">
+                Comparison of sentiment between last semester and now
+              </p>
+
+              <div class="flex justify-center items-center">
+                <canvas
+                  id="sentimentBarChart"
+                  width="200px"
+                  height="200px"
+                  class="pb-3"
+                ></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 </div>
 
 <!-- JavaScript to filter faculty list by Name or Email -->
 <script>
-    document.getElementById('faculty-search').addEventListener('input', function() {
-        let searchTerm = this.value.toLowerCase();
-        let rows = document.querySelectorAll('.faculty-row'); // Select all rows
-        rows.forEach(function(row) {
-            let name = row.querySelector('td:nth-child(3)').textContent.toLowerCase(); // Name and Email column
-            let email = row.querySelector('td:nth-child(3) .email').textContent.toLowerCase(); // Email inside the third column
-            if (name.includes(searchTerm) || email.includes(searchTerm)) {
-                row.style.display = ''; // Show the row if match is found
-            } else {
-                row.style.display = 'none'; // Hide the row if no match is found
-            }
-        });
+  document
+    .getElementById("faculty-search")
+    .addEventListener("input", function () {
+      let searchTerm = this.value.toLowerCase();
+      let rows = document.querySelectorAll(".faculty-row"); // Select all rows
+      rows.forEach(function (row) {
+        let name = row
+          .querySelector("td:nth-child(3)")
+          .textContent.toLowerCase(); // Name and Email column
+        let email = row
+          .querySelector("td:nth-child(3) .email")
+          .textContent.toLowerCase(); // Email inside the third column
+        if (name.includes(searchTerm) || email.includes(searchTerm)) {
+          row.style.display = ""; // Show the row if match is found
+        } else {
+          row.style.display = "none"; // Hide the row if no match is found
+        }
+      });
     });
 </script>
-
-
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const ctx = document.getElementById('sentimentPieChart');
-        if (ctx) {
-            // Check if there are any comments
-            const totalComments = {{ total_comments }};
-            let chartData, chartColors, chartLabels;
+  document.addEventListener('DOMContentLoaded', () => {
+      const ctx = document.getElementById('sentimentPieChart');
+      if (ctx) {
+          // Check if there are any comments
+          const totalComments = {{ total_comments }};
+          let chartData, chartColors, chartLabels;
 
-            if (totalComments === 0) {
-                // Show "No Data" message in blue
-                chartData = [1]; // single segment for "No Data"
-                chartColors = ['#00B4D8']; // blue color
-                chartLabels = ['No Data'];
-            } else {
-                // Use actual sentiment data
-                chartData = [
-                    {{ positive_count }},
-                    {{ neutral_count }},
-                    {{ negative_count }}
-                ];
-                chartColors = ['#004E26', '#FDC603', '#B30505'];
-                chartLabels = ['Positive', 'Neutral', 'Negative'];
-            }
+          if (totalComments === 0) {
+              // Show "No Data" message in blue
+              chartData = [1]; // single segment for "No Data"
+              chartColors = ['#00B4D8']; // blue color
+              chartLabels = ['No Data'];
+          } else {
+              // Use actual sentiment data
+              chartData = [
+                  {{ positive_count }},
+                  {{ neutral_count }},
+                  {{ negative_count }}
+              ];
+              chartColors = ['#004E26', '#FDC603', '#B30505'];
+              chartLabels = ['Positive', 'Neutral', 'Negative'];
+          }
 
-            // Initialize Chart.js pie chart with the computed data
-            new Chart(ctx.getContext('2d'), {
-                type: 'pie',
-                data: {
-                    labels: chartLabels,
-                    datasets: [{
-                        data: chartData,
-                        backgroundColor: chartColors,
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top',
-                        }
-                    }
-                }
-            });
-        }
-    });
+          // Initialize Chart.js pie chart with the computed data
+          new Chart(ctx.getContext('2d'), {
+              type: 'pie',
+              data: {
+                  labels: chartLabels,
+                  datasets: [{
+                      data: chartData,
+                      backgroundColor: chartColors,
+                      hoverOffset: 4
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                      legend: {
+                          display: true,
+                          position: 'top',
+                      }
+                  }
+              }
+          });
+      }
+  });
 </script>
 
-    <script>
-       document.addEventListener('DOMContentLoaded', () => {
-    const ctxBar = document.getElementById('stackbarchart').getContext('2d');
+<script>
+         document.addEventListener('DOMContentLoaded', () => {
+      const ctxBar = document.getElementById('stackbarchart').getContext('2d');
 
-    const labels = {{ semester_labels|tojson }};
-    const positiveData = {{ positive_data|tojson }};
-    const neutralData = {{ neutral_data|tojson }};
-    const negativeData = {{ negative_data|tojson }};
+      const labels = {{ semester_labels|tojson }};
+      const positiveData = {{ positive_data|tojson }};
+      const neutralData = {{ neutral_data|tojson }};
+      const negativeData = {{ negative_data|tojson }};
 
-    const data = {
-        labels: labels,
+      const data = {
+          labels: labels,
+          datasets: [
+              {
+                  label: 'Positive',
+                  data: positiveData,
+                  backgroundColor: '#004E26',
+              },
+              {
+                  label: 'Neutral',
+                  data: neutralData,
+                  backgroundColor: '#FDC603',
+              },
+              {
+                  label: 'Negative',
+                  data: negativeData,
+                  backgroundColor: '#B30505',
+              }
+          ]
+      };
+
+      const config = {
+          type: 'bar',
+          data: data,
+          options: {
+              plugins: {
+                  title: {
+                      display: true,
+                  },
+              },
+              responsive: false,
+              scales: {
+                  x: {
+                      stacked: true
+                  },
+                  y: {
+                      beginAtZero: true,
+                      stacked: true
+                  }
+              },
+              barThickness: 70, // Reduce bar width
+              categoryPercentage: 0.5, // Adjust spacing between bars
+              barPercentage: 0.6 // Adjust individual bar width
+          }
+      };
+
+      new Chart(ctxBar, config);
+  });
+</script>
+
+<script>
+  const newCommentsChart = new Chart(
+    document.getElementById("newCommentsChart"),
+    {
+      type: "doughnut", // You can change this to 'pie', 'bar', etc.
+      data: {
+        labels: ["Positive", "Negative"],
         datasets: [
-            {
-                label: 'Positive',
-                data: positiveData,
-                backgroundColor: '#004E26',
-            },
-            {
-                label: 'Neutral',
-                data: neutralData,
-                backgroundColor: '#FDC603',
-            },
-            {
-                label: 'Negative',
-                data: negativeData,
-                backgroundColor: '#B30505',
-            }
-        ]
-    };
-
-    const config = {
-        type: 'bar',
-        data: data,
-        options: {
-            plugins: {
-                title: {
-                    display: true,
-                },
-            },
-            responsive: false,
-            scales: {
-                x: { 
-                    stacked: true 
-                },
-                y: { 
-                    beginAtZero: true, 
-                    stacked: true 
-                }
-            },
-            barThickness: 70, // Reduce bar width
-            categoryPercentage: 0.5, // Adjust spacing between bars
-            barPercentage: 0.6 // Adjust individual bar width
-        }
-    };
-
-    new Chart(ctxBar, config);
-});
-
-    </script>   
-
-
-<script>
-    const newCommentsChart = new Chart(document.getElementById("newCommentsChart"), {
-        type: 'doughnut',  // You can change this to 'pie', 'bar', etc.
-        data: {
-            labels: ['Positive', 'Negative'],
-            datasets: [{
-                data: [60, 40],  // Adjust data as needed
-                backgroundColor: ['#4CAF50', '#F44336'],  // Color for positive and negative
-            }]
+          {
+            data: [60, 40], // Adjust data as needed
+            backgroundColor: ["#4CAF50", "#F44336"], // Color for positive and negative
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "top",
+          },
         },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-            },
-        }
-    });
+      },
+    }
+  );
 </script>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const ctx = document.getElementById('sentimentDoughnutChart').getContext('2d');
-        
-        // Get the overall sentiment data from Flask template variables
-        const overallPositiveCount = {{ overall_positive_count | tojson }};
-        const overallNegativeCount = {{ overall_negative_count | tojson }};
-        const overallNeutralCount = {{ overall_neutral_count | tojson }};
-        
-        // Doughnut chart data
-        const data = {
-            labels: ['Int. Positive', ' Int. Negative', ' Interpreted. Neutral'],
-            datasets: [{
-                label: 'Sentiment Breakdown',
-                data: [overallPositiveCount, overallNegativeCount, overallNeutralCount],
-                backgroundColor: [
-                    '#004E26',    
-                    '#B30505',   
-                    '#FDC603',     
-                ],
-                hoverOffset: 4
-            }]
-        };
+  document.addEventListener('DOMContentLoaded', () => {
+      const ctx = document.getElementById('sentimentDoughnutChart').getContext('2d');
 
-        // Configuration for the doughnut chart
-        const config = {
-            type: 'doughnut',
-            data: data,
-            options: {
-                responsive: false, // Disable responsiveness to keep the specified size
-            }
-        };
+      // Get the overall sentiment data from Flask template variables
+      const overallPositiveCount = {{ overall_positive_count | tojson }};
+      const overallNegativeCount = {{ overall_negative_count | tojson }};
+      const overallNeutralCount = {{ overall_neutral_count | tojson }};
 
-        // Render the doughnut chart
-        new Chart(ctx, config);
-    });
+      // Doughnut chart data
+      const data = {
+          labels: ['Int. Positive', ' Int. Negative', ' Interpreted. Neutral'],
+          datasets: [{
+              label: 'Sentiment Breakdown',
+              data: [overallPositiveCount, overallNegativeCount, overallNeutralCount],
+              backgroundColor: [
+                  '#004E26',
+                  '#B30505',
+                  '#FDC603',
+              ],
+              hoverOffset: 4
+          }]
+      };
+
+      // Configuration for the doughnut chart
+      const config = {
+          type: 'doughnut',
+          data: data,
+          options: {
+              responsive: false, // Disable responsiveness to keep the specified size
+          }
+      };
+
+      // Render the doughnut chart
+      new Chart(ctx, config);
+  });
 </script>
-
-
-
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const ctxBar = document.getElementById('sentimentBarChart');
-        if (ctxBar) {
-            const semesterLabels = {{ semester_labels | tojson }};
-            const positiveData = {{ positive_data | tojson }};
-            const negativeData = {{ negative_data | tojson }};
-            const neutralData = {{ neutral_data | tojson }};
+  document.addEventListener('DOMContentLoaded', () => {
+      const ctxBar = document.getElementById('sentimentBarChart');
+      if (ctxBar) {
+          const semesterLabels = {{ semester_labels | tojson }};
+          const positiveData = {{ positive_data | tojson }};
+          const negativeData = {{ negative_data | tojson }};
+          const neutralData = {{ neutral_data | tojson }};
 
-            // Combine semester labels and data into an array of objects for sorting
-            const semesterData = semesterLabels.map((label, index) => ({
-                label: label,
-                positive: positiveData[index],
-                negative: negativeData[index],
-                neutral: neutralData[index]
-            }));
+          // Combine semester labels and data into an array of objects for sorting
+          const semesterData = semesterLabels.map((label, index) => ({
+              label: label,
+              positive: positiveData[index],
+              negative: negativeData[index],
+              neutral: neutralData[index]
+          }));
 
-            // Sort semesters in descending order (assuming semester format supports proper sorting)
-            semesterData.sort((a, b) => b.label.localeCompare(a.label));
+          // Sort semesters in descending order (assuming semester format supports proper sorting)
+          semesterData.sort((a, b) => b.label.localeCompare(a.label));
 
-            // Get the latest two semesters
-            const latestSemesters = semesterData.slice(0, 2);
+          // Get the latest two semesters
+          const latestSemesters = semesterData.slice(0, 2);
 
-            // Extract sorted labels and data
-            const latestSemesterLabels = latestSemesters.map(item => item.label);
-            const latestPositiveData = latestSemesters.map(item => item.positive);
-            const latestNegativeData = latestSemesters.map(item => item.negative);
-            const latestNeutralData = latestSemesters.map(item => item.neutral);
+          // Extract sorted labels and data
+          const latestSemesterLabels = latestSemesters.map(item => item.label);
+          const latestPositiveData = latestSemesters.map(item => item.positive);
+          const latestNegativeData = latestSemesters.map(item => item.negative);
+          const latestNeutralData = latestSemesters.map(item => item.neutral);
 
-            new Chart(ctxBar, {
-                type: 'bar',
-                data: {
-                    labels: latestSemesterLabels,
-                    datasets: [
-                        {
-                            label: 'Positive Sentiment',
-                            data: latestPositiveData,
-                            backgroundColor: '#004E26',
-                        },
-                        {
-                            label: 'Negative Sentiment',
-                            data: latestNegativeData,
-                            backgroundColor: '#B30505',
-                        },
-                        {
-                            label: 'Neutral Sentiment',
-                            data: latestNeutralData,
-                            backgroundColor: '#FDC603',
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        x: { 
-                            beginAtZero: true,
-                            ticks: {
-                                font: {
-                                    size: 12, // Default font size for better readability
-                                }
-                            }
-                        },
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
-    });
+          new Chart(ctxBar, {
+              type: 'bar',
+              data: {
+                  labels: latestSemesterLabels,
+                  datasets: [
+                      {
+                          label: 'Positive Sentiment',
+                          data: latestPositiveData,
+                          backgroundColor: '#004E26',
+                      },
+                      {
+                          label: 'Negative Sentiment',
+                          data: latestNegativeData,
+                          backgroundColor: '#B30505',
+                      },
+                      {
+                          label: 'Neutral Sentiment',
+                          data: latestNeutralData,
+                          backgroundColor: '#FDC603',
+                      }
+                  ]
+              },
+              options: {
+                  responsive: true,
+                  scales: {
+                      x: {
+                          beginAtZero: true,
+                          ticks: {
+                              font: {
+                                  size: 12, // Default font size for better readability
+                              }
+                          }
+                      },
+                      y: {
+                          beginAtZero: true
+                      }
+                  }
+              }
+          });
+      }
+  });
 </script>
-
-
-
 
 {% endblock content %}

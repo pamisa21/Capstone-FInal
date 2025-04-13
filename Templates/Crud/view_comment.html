@@ -1,77 +1,110 @@
-{% extends "layout/base.html" %}
-
-{% block css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/variable.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
-{% endblock css %}
-
-{% block content %}
+{% extends "layout/base.html" %} {% block css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/variable.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/style.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/output.css') }}"
+/>
+{% endblock css %} {% block content %}
 <div class="flex flex-col h-screen">
-    <header>
-        {% include "includes/navbar.html" %}
-    </header>
+  <header>{% include "includes/navbar.html" %}</header>
 
-    <div class="flex flex-1">
-        {% include "includes/sidebar.html" %}
+  <div class="flex flex-1">
+    {% include "includes/sidebar.html" %}
 
-        <!-- Main Content Container -->
-        {% include "includes/container.html" %}
+    <!-- Main Content Container -->
+    {% include "includes/container.html" %}
 
-        <div class="p-4">
-            <h1 class="text-2xl font-bold">View Comment Details</h1>
-            <form class="space-y-4 mt-4">
-
-                <!-- Read-only Comment Content -->
-                <div class="flex flex-col">
-                    <label for="content" class="text-lg font-semibold">Comment</label>
-                    <textarea id="content" name="content" rows="5" readonly 
-                              class="p-2 border border-gray-300 rounded bg-gray-100">{{ comment.comment }}</textarea>
-                </div>
-                <div class="flex flex-col">
-                    <label class="text-lg font-semibold">Remarks</label>
-                    <p class="p-2 border border-gray-300 rounded bg-gray-100">
-                        {% if comment.category == 0 %}
-                            Interpreted as Negative
-                        {% elif comment.category == 1 %}
-                            Interpreted as Neutral
-                        {% elif comment.category == 2 %}
-                            Interpreted as Positive
-                        {% elif comment.category == 3 %}
-                            Not Yet Sentiment
-                        {% else %}
-                            Unknown Category
-                        {% endif %}
-                    </p>
-                </div>
-                
-                <!-- Faculty Name (non-editable) -->
-                <div class="flex flex-col">
-                    <label class="text-lg font-semibold">Faculty</label>
-                    <p class="p-2 border border-gray-300 rounded bg-gray-100">{{ faculty_firstname }} {{ faculty_name }} {{ faculty_mi }}</p> <!-- Correct variable usage -->
-                </div>
-
-                <!-- Semester and School Year (read-only together) -->
-                <div class="flex flex-col">
-                    <label class="text-lg font-semibold">Semester & School Year</label>
-                    <p class="p-2 border border-gray-300 rounded bg-gray-100">{{ ay_sem.ay_name }}</p> <!-- Access ay_sem correctly -->
-                </div>
-
-                <!-- Date Added (non-editable) -->
-                <div class="flex flex-col">
-                    <label class="text-lg font-semibold">Comments Submitted</label>
-                    <p class="p-2 border border-gray-300 rounded bg-gray-100">{{ comment.date_added.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-                </div>
-
-                <!-- Back Button -->
-                <div class="text-right mt-4">
-                    <a href="javascript:history.back()" class="font-semibold primary hover:underline">Back to Comments List</a>
-                </div>
-                
-            </form>
+    <div class="p-4">
+      <h1 class="text-2xl font-bold">View Comment Details</h1>
+      <form class="space-y-4 mt-4">
+        <!-- Read-only Comment Content -->
+        <div class="flex flex-col">
+          <label for="content" class="text-lg font-semibold">Comment</label>
+          <textarea
+            id="content"
+            name="content"
+            rows="5"
+            readonly
+            class="p-2 border border-gray-300 rounded bg-gray-100"
+          >
+            {{ comment.comment }}</textarea
+          >
         </div>
-    </div>
+        <div class="flex flex-col">
+          <label class="text-lg font-semibold">Latest Remarks</label>
+          <p class="p-2 border border-gray-300 rounded bg-gray-100">
+            {% if comment.category == 0 %} Interpreted as Negative {% elif
+            comment.category == 1 %} Interpreted as Neutral {% elif
+            comment.category == 2 %} Interpreted as Positive {% elif
+            comment.category == 3 %} Not Yet Sentiment {% else %} Unknown
+            Category {% endif %}
+          </p>
+        </div>
+        {% if comment.edit_result is not none %}
+        <div class="flex flex-col">
+          <label class="text-lg font-semibold">Previous Remarks</label>
+          <p class="p-2 border border-gray-300 rounded bg-gray-100">
+            {% if comment.edit_result == '0' %} Suggested as Negative {% elif
+            comment.edit_result == '1' %} Suggested as Neutral {% elif
+            comment.edit_result == '2' %} Suggested as Positive {% elif
+            comment.edit_result == '3' %} Not Yet Processed {% else %} No
+            Revision {% endif %}
+          </p>
+        </div>
+        {% endif %}
+        <!-- Faculty Name (non-editable) -->
+        <div class="flex flex-col">
+          <label class="text-lg font-semibold">Faculty</label>
+          <p class="p-2 border border-gray-300 rounded bg-gray-100">
+            {{ faculty_firstname }} {{ faculty_name }} {{ faculty_mi }}
+          </p>
+          <!-- Correct variable usage -->
+        </div>
 
-    {% include "includes/footer_container.html" %}
+        <!-- Semester and School Year (read-only together) -->
+        <div class="flex flex-col">
+          <label class="text-lg font-semibold">Semester & School Year</label>
+          <p class="p-2 border border-gray-300 rounded bg-gray-100">
+            {{ ay_sem.ay_name }}
+          </p>
+          <!-- Access ay_sem correctly -->
+        </div>
+
+        <!-- Date Added (non-editable) -->
+        <div class="flex flex-col">
+          <label class="text-lg font-semibold">Comments Submitted</label>
+          <p class="p-2 border border-gray-300 rounded bg-gray-100">
+            {{ comment.date_added.strftime('%Y-%m-%d %H:%M:%S') }}
+          </p>
+        </div>
+        <!-- Revision Date -->
+        <div class="flex flex-col">
+          <label class="text-lg font-semibold">Revision Date</label>
+          <p class="p-2 border border-gray-300 rounded bg-gray-100">
+            {% if comment.updated_at %} {{ comment.updated_at.strftime('%Y-%m-%d
+            %H:%M:%S') }} {% else %} Not Yet Revised {% endif %}
+          </p>
+        </div>
+
+        <!-- Back Button -->
+        <div class="text-right mt-4">
+          <a
+            href="javascript:history.back()"
+            class="font-semibold primary hover:underline"
+            >Back to Comments List</a
+          >
+        </div>
+      </form>
+    </div>
+  </div>
+
+  {% include "includes/footer_container.html" %}
 </div>
 {% endblock content %}

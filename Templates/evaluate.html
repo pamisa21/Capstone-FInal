@@ -21,41 +21,95 @@
     {% include "includes/sidebar.html" %}
 
     <main class="flex-1 mt-20 md:ml-60 md:p-4 p-2">
-      <div
-        id="evaluate"
-        class="w-100 h-[100%] bg-white rounded-lg shadow-lg md:p-5 p-2"
-      >
-        <h2 class="text-xl font-semibold text-center mb-4">
-          Sentiment Analysis <br />
+      <div id="evaluate" class="w-100 h-[100%] bg-white rounded-lg md:p-5 p-2">
+        <div class="flex flex-col md:flex-row justify-between - mb-5">
+          <h1 class="text-2xl font-bold">Model Performance</h1>
+        </div>
+        <!-- Cards Section -->
+        <div class="mt-8">
+          <!-- Row 1: 4 Cards -->
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
+          >
+            <div class="bg-gray-100 p-4 rounded-lg shadow">
+              <h4 class="text-sm text-black font-semibold">Model Name</h4>
+              <p class="text-sm p-1 font-bold text-gray-500">
+                Twitter XLM-RoBERTa
+              </p>
+            </div>
+            <div
+              class="bg-gray-100 text-black font-semibold p-4 rounded-lg shadow"
+            >
+              <h4 class="text-sm font-semibold text-black">Model Accuracy</h4>
+              <p class="text-sm p-1 font-bold text-gray-500">92.5%</p>
+            </div>
+            <div class="bg-gray-100 p-4 rounded-lg shadow">
+              <h4 class="text-sm font-semibold text-black">Labels</h4>
+              <p class="text-sm p-1 font-bold text-gray-500">
+                Positive, Neutral, Negative
+              </p>
+            </div>
+            <div class="bg-gray-100 p-4 rounded-lg shadow">
+              <h4 class="text-sm font-semibold text-black">Languages</h4>
+              <p class="text-sm p-1 font-bold text-gray-500">
+                English, Tagalog, Bisaya
+              </p>
+            </div>
+          </div>
+
+          <!-- Row 2: 3 Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="bg-white p-4 rounded-lg shadow">
+              <h4 class="text-sm font-semibold text-black">Total Revisions</h4>
+              <p class="text-sm p-1 font-bold text-gray-500">
+                {{ total_revisions }}
+              </p>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+              <h4 class="text-sm font-semibold text-black">Last Revised</h4>
+              <p class="text-sm p-1 font-bold text-gray-500">
+                {{ latest_updated_at }}
+              </p>
+            </div>
+
+            <div class="bg-white p-4 rounded-lg shadow">
+              <h4 class="text-sm font-semibold text-black">Improvement %</h4>
+              <p class="text-sm p-1 font-bold text-gray-500">
+                {{ improvement_percentage }}%
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- End Cards Section -->
+        <h2 class="text-lg mt-10 font-semibold mb-1">
+          Test Sentiment Analysis Model <br />
         </h2>
-        <p class="mb-2">
-          <span class="text-xs text-gray-400"
-            >This page is for testing the sentiment analysis model only. The
-            model is designed to understand comments in English, Tagalog,
-            Bisaya, or a mix of these languages. Please note that the results
-            provided are estimates or probabilities and may not always perfectly
-            reflect the true sentiment of the input.</span
-          >
-        </p>
-        <form method="POST" class="space-y-4">
-          <label for="comment" class="block text-sm font-medium label"
-            >Enter your comment:</label
-          >
+        <div>
+          <p class="mb-2">
+            <span class="text-xs text-gray-400">
+              The model is designed to understand comments in English, Tagalog,
+              Bisaya, or a mix of these languages. Please note that the results
+              provided are estimates or probabilities and may not always
+              perfectly reflect the true sentiment of the input.</span
+            >
+          </p>
+        </div>
+        <form method="POST" class="space-y-4 mt-4">
           <textarea
             id="comment"
             name="comment"
             rows="4"
-            class="w-full md:h-[60%] h-[40%] p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-150 ease-in-out"
+            class="w-full md:h-[25%] h-[30%] p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-150 ease-in-out"
             placeholder="Type your comment here..."
             required
           ></textarea>
 
-          <div class="flex justify-between">
+          <div class="flex justify-end mt-4">
             <button
               type="submit"
-              class="w-full font-semibold py-2 rounded-md bg-green-500 text-white hover:bg-green-600 transition"
+              class="w-50 p-2 font-semibold py-2 rounded-md bg-green-500 text-white hover:bg-green-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Analyze Sentiment
+              Predict Comment
             </button>
           </div>
         </form>
@@ -120,6 +174,25 @@
           modal.style.display = "none";
         }
       });
+    }
+  });
+
+  // handle the text required
+
+  const commentInput = document.getElementById("comment");
+  const predictBtn = document.querySelector("button[type='submit']");
+
+  // Initially disable the button
+  predictBtn.disabled = true;
+  predictBtn.classList.add("opacity-50", "cursor-not-allowed");
+
+  commentInput.addEventListener("input", () => {
+    if (commentInput.value.trim().length > 0) {
+      predictBtn.disabled = false;
+      predictBtn.classList.remove("opacity-50", "cursor-not-allowed");
+    } else {
+      predictBtn.disabled = true;
+      predictBtn.classList.add("opacity-50", "cursor-not-allowed");
     }
   });
 </script>

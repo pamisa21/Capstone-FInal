@@ -46,33 +46,35 @@
     </button>
   </div>
 </div>
-<div id="printLayout">
-  <div class="flex mx-12 mt-4 mb-10">
-    <img src="/static/img/cmulogo.png" alt="CMU Logo" class="cmulogo" />
+<div id="printLayout" class="bg-gray-50 text-gray-900">
+  <!-- University Header -->
+  <div class="flex mx-12 mt-4 mb-10 items-center space-x-4">
+    <img
+      src="/static/img/cmulogo.png"
+      alt="CMU Logo"
+      class="w-20 h-20 object-contain"
+    />
     <div class="text-left">
       <h2 class="text-sm font-semibold">Republic of the Philippines</h2>
-      <h1 class="text-lg font-bold">Central Mindanao University</h1>
+      <h1 class="text-sm font-bold">Central Mindanao University</h1>
       <p class="text-sm font-semibold">
         University Town, Musuan, Maramag, Bukidnon
       </p>
     </div>
   </div>
-
-  <div class="content p-2 mb-2">
-    <div class="flex flex-col justify-center items-center space-y-1 mb-1">
-      <h2 class="font-bold text-lg">
-        Overall Results of Faculty Teaching Performance
-      </h2>
-      <p class="font-bold">{{ selected_ay_name}}</p>
-    </div>
-    <div class="flex justify-center items-center space-x-2 mb-1">
-      <span class="font-semibold mr-2">Central Mindano University</span>
-    </div>
-    <div class="flex justify-center items-center mb-2">
-      <span class="font-semibold">{{ college_name }}</span>
-    </div>
+  <!-- Page Title -->
+  <div class="content text-sm text-center">
+    <h2 class="font-base">Overall Results of Faculty Teaching Performance</h2>
+    <p class="font-bold">{{ selected_ay_name}}</p>
+  </div>
+  <div class="flex justify-center items-center space-x-2 mb-1">
+    <span class="font-semibold mr-2">Central Mindano University</span>
+  </div>
+  <div class="flex justify-center items-center mb-2">
+    <span class="font-semibold">{{ college_name }}</span>
   </div>
 
+  <!-- Sentiment Overview Cards -->
   <section class="mx-10">
     <div class="text-lg font-bold p-2">
       <h2 class="ml-1 mt-5">Sentiment Overview</h2>
@@ -204,9 +206,9 @@
       </div>
     </div>
   </section>
-
+  <!-- Comparison Chart -->
   <section id="stockbar" class="mt-10 mb-2 mx-12">
-    <div class="bg-white rounded-lg shadow-md mt-5 border-2">
+    <div class="bg-white rounded-lg shadow-md mt-5 border-2 text-black">
       <h2 class="text-xl font-semibold text-center m-2 p-2">
         Latest 5 Semesters Comparison
       </h2>
@@ -356,7 +358,7 @@
     });
   </script>
 
-  <!-- printing  -->
+  <!-- printing -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       setTimeout(() => {

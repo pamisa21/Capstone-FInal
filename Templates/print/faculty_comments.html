@@ -23,7 +23,7 @@
         <img src="/static/img/cmulogo.png" alt="CMU Logo" class="cmulogo">
         <div class="text-left">
             <h2 class="text-sm font-semibold">Republic of the Philippines</h2>
-            <h1 class="text-lg font-bold">Central Mindanao University</h1>
+            <h1 class="text-sm font-bold">Central Mindanao University</h1>
             <p class="text-sm font-semibold">University Town, Musuan, Maramag, Bukidnon</p>
         </div>
        
@@ -146,59 +146,7 @@
         
     </section>
 
-    <!-- <section >
-        <div id="stockbar" class="mt-10 mb-2 flex flex-wrap mx-12 gap-6 items-start">
-            Sentiment Analysis Section
-            <div class="bg-white rounded-lg shadow-lg p-8 flex-1 border-2">
-                <h2 class="text-2xl font-semibold mb-6 text-gray-800">Sentiment Analysis This Semester</h2>
-                
-           
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center">
-                        <span class="material-icons text-[#32de84]">thumb_up</span>
-                        <span class="ml-2 text-gray-700 font-medium">Positive</span>
-                    </div>
-                    <p class="text-3xl font-bold text-gray-800">{{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-[#32de84] h-2 rounded-full" style="width: {{ (positive_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                </div>
-        
-           
-                <div class="flex items-center justify-between mb-4 mt-6">
-                    <div class="flex items-center">
-                        <span class="material-icons text-[#FFEB3B]">thumbs_up_down</span>
-                        <span class="ml-2 text-gray-700 font-medium">Neutral</span>
-                    </div>
-                    <p class="text-3xl font-bold text-gray-800">{{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-[#FFEB3B] h-2 rounded-full" style="width: {{ (neutral_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                </div>
-        
-          
-                <div class="flex items-center justify-between mb-4 mt-6">
-                    <div class="flex items-center">
-                        <span class="material-icons text-[#EF5350]">thumb_down</span>
-                        <span class="ml-2 text-gray-700 font-medium">Negative</span>
-                    </div>
-                    <p class="text-3xl font-bold text-gray-800">{{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%</p>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-[#EF5350] h-2 rounded-full" style="width: {{ (negative_count / total_comments * 100) | round(2) if total_comments > 0 else 0 }}%;"></div>
-                
-            </div>
-           
-            <div class="bg-white rounded-lg shadow-lg p-4 flex items-center justify-center flex-1 border-2">
-                <div class="text-center">
-                    <h2 class="text-2xl font-semibold mb-2 text-gray-800">Semester Comparison</h2>
-                    <canvas id="stackbarchart" width="500" height="300"></canvas>
-                </div>
-            </div>
-            
-        </div>
-
-    </section> -->
+    
 
             
  
@@ -348,34 +296,34 @@
     <div class="flex mt-4 mb-10">
         <img src="/static/img/cmulogo.png" alt="CMU Logo" class="w-20 h-20 mr-2">
         <div class="text-left mt-2">
-            <h2 class="text-xs font-semibold">Republic of the Philippines</h2>
-            <h1 class="text-xs font-bold">Central Mindanao University</h1>
-            <p class="text-xs font-semibold">University Town, Musuan, Maramag, Bukidnon</p>
+            <h2 class="text-[10px] font-semibold">Republic of the Philippines</h2>
+            <h1 class="text-[10px] font-bold">Central Mindanao University</h1>
+            <p class="text-[10px] font-semibold">University Town, Musuan, Maramag, Bukidnon</p>
         </div>
     </div>
 
-    <div class="content mb-5 text-xs">
+    <div class="content mb-5 text-[10px]">
         <div class="content p-2 mb-2">
             <div class="flex flex-col justify-center items-center space-y-1 mb-1">
-                <h2 class="font-bold text-xs">Overall Faculty Teaching Performance</h2>
+                <h2 class="font-bold text-[10px]">Overall Faculty Teaching Performance</h2>
                 <p class="font-bold">{{ default_semester.ay_name }}</p>
             </div>
-            <div class="flex justify-center items-center  mb-1">
+            <div class="flex justify-center items-center mb-1">
                 <span class="font-semibold mr-1">Full Name :</span>
-                <span class="">{{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.</span>
+                <span>{{ faculty.lname }} {{ faculty.fname }} {{ faculty.mi }}.</span>
             </div>
-            <div class="flex justify-center items-center  mb-1">
+            <div class="flex justify-center items-center mb-1">
                 <span class="font-semibold mr-1">College :</span>
-                <span class="">{{ college.college_name }}</span>
+                <span>{{ college.college_name }}</span>
             </div>
-            <div class="flex justify-center items-center  mb-1">
+            <div class="flex justify-center items-center mb-1">
                 <span class="font-semibold mr-1">Department :</span>
-                <span class="">{{ department.department_name }}</span>
+                <span>{{ department.department_name }}</span>
             </div>
         </div>
 
-        <div class="faculty-result mb-6 p-2 border-gray-200 rounded-lg shadow-sm mt-5 text-xs">
-            <h2 class="text-xs font-semibold mb-2">Sentiment Results</h2>  
+        <div class="faculty-result mb-6 p-2 border-gray-200 rounded-lg shadow-sm mt-5 text-[10px]">
+            <h2 class="text-[10px] font-semibold mb-2">Sentiment Results</h2>  
             <p class="mb-2 font-bold flex space-x-2">
                 <span>Total Comments:</span> 
                 <span class="font-medium">{{ total_comments }} Comments</span>
@@ -394,27 +342,26 @@
             </p>
         </div>
 
-        <div class="mt-4 mb-5 text-xs">
-         
-            <h2 class="text-xs font-semibold mb-2">Student Statistics Overview</h2>  
-            <div class="overflow-x-auto text-xs">
+        <div class="mt-4 mb-5 text-[10px]">
+            <h2 class="text-[10px] font-semibold mb-2">Student Statistics Overview</h2>  
+            <div class="overflow-x-auto text-[10px]">
                 <div class="table-border">
-                    <table class="data-table w-full border-collapse text-xs">
-                        <thead class="table-header bg-gray-100">
-                            <tr>
-                                <th class="table-cell px-2 py-1 border border-gray-300">Subject</th>
-                                <th class="table-cell px-2 py-1 border border-gray-300">Total Student</th>
-                                <th class="table-cell px-2 py-1 border border-gray-300">With Comments</th>
-                                <th class="table-cell px-2 py-1 border border-gray-300">Without Comments</th>
+                    <table class="w-full border-collapse text-[10px]">
+                        <thead class=" bg-gray-100 ">
+                            <tr >
+                                <th class="table-cell px-2 py-1 border border-gray-300 text-[10px] ">Subject</th>
+                                <th class="table-cell px-2 py-1 border border-gray-300 text-[10px] ">Total Student</th>
+                                <th class="table-cell px-2 py-1 border border-gray-300 text-[10px] ">With Comments</th>
+                                <th class="table-cell px-2 py-1 border border-gray-300 text-[10px] ">Without Comments</th>
                             </tr>
                         </thead>
                         <tbody class="table-body">
                             {% for subject in subjects.values() %}
                             <tr class="odd:bg-white even:bg-gray-50">
-                                <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.subject_id }}</td>
-                                <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.student_num }}</td>
-                                <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.comments | length }}</td>
-                                <td class="table-cell px-2 py-1 border border-gray-300">{{ subject.student_num - (subject.comments | length) }}</td>
+                                <td class="table-cell px-2 py-1 border border-gray-300 text-[10px] ">{{ subject.subject_id }}</td>
+                                <td class="table-cell px-2 py-1 border border-gray-300 text-[10px] ">{{ subject.student_num }}</td>
+                                <td class="table-cell px-2 py-1 border border-gray-300 text-[10px] ">{{ subject.comments | length }}</td>
+                                <td class="table-cell px-2 py-1 border border-gray-300 text-[10px] ">{{ subject.student_num - (subject.comments | length) }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -424,8 +371,8 @@
         </div>
 
         <div class="mt-4 mb-5">
-            <h2 class="text-sm font-semibold mb-2">Student Statistics Overview</h2>
-            <table class="comments-table text-xs"> 
+            <h2 class="text-[10px] font-semibold mb-2">Student Statistics Overview</h2>
+            <table class="comments-table text-[10px]"> 
                 <thead>
                     <tr>
                         <th>No</th>
@@ -456,15 +403,15 @@
     </div>
 
     <!-- Footer -->
-    <div class="footer mt-20 text-left text-xs ">
+    <div class="footer mt-20 text-left text-[10px]">
         <p class="uppercase">
             <strong>Approved By :</strong>
         </p>
         <p class="mt-2">Cherry Mae Balingit</p>
         <p>Director of Instruction</p>
     </div>
-    
 </div>
+
 
 <!-- Bar Graph-->
  

@@ -213,30 +213,31 @@
                                     <td class="table-cell hidden md:table-cell px-2 py-1 border border-gray-300">{{ loop.index }}</td>
                                     <td class="table-cell hidden md:table-cell px-2 py-1 border border-gray-300">{{ item.comment.subject_id }}</td>
                                     <td class="table-cell px-2 py-1 border border-gray-300">{{ item.comment.comment }}</td>
-                                   <td class="table-cell px-2 py-1 border border-gray-300">
-                                        {% if item.comment.ai_old_result is not none %}
-                                        {% if item.comment.category == 1 %}
-                                            <span class="neutral">Neutral (Revised)</span>
-                                        {% elif item.comment.category == 0 %}
+                                    <td class="table-cell px-2 py-1 border border-gray-300">
+                                        {% if item.comment.edit_status == 0 %}
+                                            {% if item.comment.category == 0 %}
                                             <span class="negative">Negative (Revised)</span>
-                                        {% elif item.comment.category == 2 %}
+                                            {% elif item.comment.category == 1 %}
+                                            <span class="neutral">Neutral (Revised)</span>
+                                            {% elif item.comment.category == 2 %}
                                             <span class="positive">Positive (Revised)</span>
-                                        {% else %}
+                                            {% else %}
                                             <span class="text-gray-500 font-semibold text-sm">Unknown (Revised)</span>
-                                        {% endif %}
-                                        {% else %}
-                                        {% if item.comment.category == 1 %}
-                                            <span class="neutral">  Interpreted Neutral (AI Generated)</span>
-                                        {% elif item.comment.category == 0 %}
-                                            <span class="negative"> Interpreted Negative (AI Generated)</span>
-                                        {% elif item.comment.category == 2 %}
-                                            <span class="positive"> Interpreted Positive (AI Generated)</span>
-                                        {% else %}
+                                            {% endif %}
+                                        {% elif item.comment.edit_status == 1 %}
+                                            {% if item.comment.category == 0 %}
+                                            <span class="negative">Interpreted Negative (AI Generated)</span>
+                                            {% elif item.comment.category == 1 %}
+                                            <span class="neutral">Interpreted Neutral (AI Generated)</span>
+                                            {% elif item.comment.category == 2 %}
+                                            <span class="positive">Interpreted Positive (AI Generated)</span>
+                                            {% else %}
                                             <span class="text-gray-500 font-semibold text-sm">Unknown (AI Generated)</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="text-gray-500 font-semibold text-sm">Status Unknown</span>
                                         {% endif %}
-                                        {% endif %}
-                                    </td>
-
+                                        </td>
                                      <td class="table-cell px-2 py-1 border border-gray-300">
                                         <div class="flex space-x-2">
                                         <a href="{{ url_for('view_comment', comment_id=item.comment.comment_id) }}"
@@ -418,29 +419,31 @@
                     <tr>
                         <td>{{ loop.index }}</td>
                         <td>{{ item.comment.comment }}</td>
-                        <td class="table-cell px-2 py-1 border border-gray-300">
-                                        {% if item.comment.ai_old_result is not none %}
-                                        {% if item.comment.category == 1 %}
-                                            <span class="neutral">Neutral (Revised)</span>
-                                        {% elif item.comment.category == 0 %}
-                                            <span class="negative">Negative (Revised)</span>
-                                        {% elif item.comment.category == 2 %}
-                                            <span class="positive">Positive (Revised)</span>
-                                        {% else %}
-                                            <span class="text-gray-500 font-semibold text-sm">Unknown (Revised)</span>
-                                        {% endif %}
-                                        {% else %}
-                                        {% if item.comment.category == 1 %}
-                                            <span class="neutral">   Neutral</span>
-                                        {% elif item.comment.category == 0 %}
-                                            <span class="negative">  Negative </span>
-                                        {% elif item.comment.category == 2 %}
-                                            <span class="positive">  Positive </span>
-                                        {% else %}
-                                            <span class="text-gray-500 font-semibold text-sm">Unknown </span>
-                                        {% endif %}
-                                        {% endif %}
-                                    </td>
+                          <td class="table-cell px-2 py-1 border border-gray-300">
+                      {% if item.comment.edit_status == 0 %}
+                        {% if item.comment.category == 0 %}
+                          <span class="negative">Negative (Revised)</span>
+                        {% elif item.comment.category == 1 %}
+                          <span class="neutral">Neutral (Revised)</span>
+                        {% elif item.comment.category == 2 %}
+                          <span class="positive">Positive (Revised)</span>
+                        {% else %}
+                          <span class="text-gray-500 font-semibold text-sm">Unknown (Revised)</span>
+                        {% endif %}
+                      {% elif item.comment.edit_status == 1 %}
+                        {% if item.comment.category == 0 %}
+                          <span class="negative"> Negative</span>
+                        {% elif item.comment.category == 1 %}
+                          <span class="neutral"> Neutral</span>
+                        {% elif item.comment.category == 2 %}
+                          <span class="positive"> Positive </span>
+                        {% else %}
+                          <span class="text-gray-500 font-semibold text-sm">Unknown (AI Generated)</span>
+                        {% endif %}
+                      {% else %}
+                        <span class="text-gray-500 font-semibold text-sm">Status Unknown</span>
+                      {% endif %}
+                    </td>
                     </tr>
                     {% else %}
                     <tr>

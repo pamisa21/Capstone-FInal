@@ -70,12 +70,14 @@ def start_sentiment():
         return redirect(url_for('analys'))
     for comment in comments:
         sentiment = predict_sentiment(comment.comment)           
-        comment.category = sentiment
+        comment.category = sentiment,
+        comment.ai_old_result = sentiment 
     db.session.commit()
 
     flash('Sentiment analysis completed successfully.', 'success')
     return redirect(url_for('analys'))
     
+
 @app.route('/evaluate', methods=['GET', 'POST'])
 def evaluate():
     if 'username' not in session:
@@ -125,6 +127,11 @@ def evaluate():
         selected_semester_name=selected_semester_name,
         all_semesters=AY_SEM.query.all()
     )
+
+
+
+
+
 
 
 def get_predefined_sentiment(text):
@@ -270,7 +277,7 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
-        session['username'] = new_user.name
+        session['username'] = new_user.fname
         session['user_id'] = new_user.id
 
         flash("Registration successful!", "success")
@@ -868,22 +875,25 @@ def edit_comment(comment_id):
 
         if request.method == 'POST':
             new_result = request.form.get('edit_result')
-            current_category = comment.category
 
             if new_result is not None:
                 new_result = int(new_result)
 
-                # If it's the first edit, store original AI category
+                # Save current category to ai_old_result only on first edit
                 if comment.edit_status == 1:
-                    comment.ai_old_result = current_category
+                    comment.ai_old_result = comment.category
 
-                # Update category with staff's decision
+                # Always update category to new selection
                 comment.category = new_result
 
-                comment.edit_status = 0
+                # If same as AI result, it's like no change
+                if new_result == comment.ai_old_result:
+                    comment.edit_status = 1  # not changed
+                else:
+                    comment.edit_status = 0  # changed by staff
 
                 db.session.commit()
-                flash('Comment result updated successfully and editing is now disabled!', 'success')
+                flash('Comment result updated successfully!', 'success')
                 return redirect(url_for('comments'))
 
         return render_template('Crud/edit_category.html', comment=comment)

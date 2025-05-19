@@ -150,29 +150,32 @@
                       {{ faculty.lname }} {{ faculty.fname }}
                     </td>
 
-              <td class="table-cell px-2 py-1 border border-gray-300">
-                    {% if comment.ai_old_result is not none %}
-                      {% if comment.category == 1 %}
-                        <span class="neutral">Neutral (Revised)</span>
-                      {% elif comment.category == 0 %}
-                        <span class="negative">Negative (Revised)</span>
-                      {% elif comment.category == 2 %}
-                        <span class="positive">Positive (Revised)</span>
+                    <td class="table-cell px-2 py-1 border border-gray-300">
+                      {% if comment.edit_status == 0 %}
+                        {% if comment.category == 0 %}
+                          <span class="negative">Negative (Revised)</span>
+                        {% elif comment.category == 1 %}
+                          <span class="neutral">Neutral (Revised)</span>
+                        {% elif comment.category == 2 %}
+                          <span class="positive">Positive (Revised)</span>
+                        {% else %}
+                          <span class="text-gray-500 font-semibold text-sm">Unknown (Revised)</span>
+                        {% endif %}
+                      {% elif comment.edit_status == 1 %}
+                        {% if comment.category == 0 %}
+                          <span class="negative">Interpreted Negative (AI Generated)</span>
+                        {% elif comment.category == 1 %}
+                          <span class="neutral">Interpreted Neutral (AI Generated)</span>
+                        {% elif comment.category == 2 %}
+                          <span class="positive">Interpreted Positive (AI Generated)</span>
+                        {% else %}
+                          <span class="text-gray-500 font-semibold text-sm">Unknown (AI Generated)</span>
+                        {% endif %}
                       {% else %}
-                        <span class="text-gray-500 font-semibold text-sm">Unknown (Revised)</span>
+                        <span class="text-gray-500 font-semibold text-sm">Status Unknown</span>
                       {% endif %}
-                    {% else %}
-                      {% if comment.category == 1 %}
-                        <span class="neutral">  Interpreted Neutral (AI Generated)</span>
-                      {% elif comment.category == 0 %}
-                        <span class="negative"> Interpreted Negative (AI Generated)</span>
-                      {% elif comment.category == 2 %}
-                        <span class="positive"> Interpreted Positive (AI Generated)</span>
-                      {% else %}
-                        <span class="text-gray-500 font-semibold text-sm">Unknown (AI Generated)</span>
-                      {% endif %}
-                    {% endif %}
-                  </td>
+                    </td>
+
 
 
 

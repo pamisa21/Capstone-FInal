@@ -14,7 +14,7 @@ class Comment(db.Model):
     updated_at = db.Column(db.DateTime, nullable=True, default=None, onupdate=datetime.utcnow)
 
     edit_status = db.Column(db.Integer, default=1)
-    ai_old_result = db.Column(db.Integer, nullable=True)
+    ai_old_result = db.Column(db.Integer, default=3, nullable=True)
 
     # Relationships
     student = db.relationship('Student', back_populates='comments')

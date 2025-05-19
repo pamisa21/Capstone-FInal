@@ -1,4 +1,5 @@
 {% extends "layout/base.html" %} 
+
 {% block css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 {% endblock css %}
@@ -8,15 +9,13 @@
   <header>{% include "includes/navbar.html" %}</header>
 
   <div class="flex flex-col md:flex-row flex-1">
-    {% include "includes/sidebar.html" %}
+   
 
-    <main class="flex-1 md:p-5 mx-5 mt-20 ml-2 md:ml-60">
+    <main class="flex-1 md:p-5 mx-5 mt-20">
       <div class="w-full bg-white rounded-lg p-5">
         <h1 class="text-2xl font-bold mb-5">Edit Comment</h1>
 
-        <!-- Display Category Based on the Comment -->
-        
-
+        <!-- Display original comment -->
         <div class="mb-4">
           <label for="comment_text" class="block text-sm font-medium text-gray-700">
             Comment Text
@@ -27,49 +26,60 @@
         </div>
 
         <form action="{{ url_for('edit_comment', comment_id=comment.comment_id) }}" method="POST">
-        
-        
-          <!-- Now, the Category will update the edit_result -->
+          <!-- Sentiment category (display only) -->
           <div class="mb-4">
             <label for="category_display" class="block text-sm font-medium text-gray-700">
-              Comment Category Based on Sentiment Model
+            Latest  Comments Category 
             </label>
-          
-            <!-- Disabled dropdown just for display -->
             <select id="category_display" class="w-full p-3 border rounded-md bg-gray-100 text-gray-500" disabled>
               <option value="0" {% if comment.category == 0 %}selected{% endif %}>Negative</option>
               <option value="1" {% if comment.category == 1 %}selected{% endif %}>Neutral</option>
               <option value="2" {% if comment.category == 2 %}selected{% endif %}>Positive</option>
             </select>
-          
-            <!-- Hidden input to pass actual category value to backend -->
             <input type="hidden" id="category" name="category" value="{{ comment.category }}">
           </div>
-          
-            <!-- Now, the Edit Result will update the category -->
+
+          <!-- Edit Result -->
           <div class="mb-4">
             <label for="edit_result" class="block text-sm font-medium text-gray-700">
               Edit Result
             </label>
             <select id="edit_result" name="edit_result" class="w-full p-3 border rounded-md" required>
-              <option value="" disabled selected class="text-gray-300">Select New Result</option>
-              <option value="0" {% if comment.edit_result == 0 %}selected{% endif %}>Negative</option>
-              <option value="1" {% if comment.edit_result == 1 %}selected{% endif %}>Neutral</option>
-              <option value="2" {% if comment.edit_result == 2 %}selected{% endif %}>Positive</option>
+              <option value="" selected class="text-gray-400" disabled>Select New Result</option>
+
+              {% set ai_result = comment.ai_old_result if comment.edit_status == 0 else comment.category %}
+
+              {% for val, label in [(0, 'Negative'), (1, 'Neutral'), (2, 'Positive')] %}
+                {% if val == ai_result %}
+                  {% if comment.edit_status == 0 %}
+                    <option value="{{ val }}" disabled selected>{{ label }} (AI Generated)</option>
+                  {% else %}
+                    <option value="{{ val }}" {% if comment.edit_result == val %}selected{% endif %}>{{ label }} (AI Generated)</option>
+                  {% endif %}
+                {% else %}
+                  <option value="{{ val }}" {% if comment.edit_result == val %}selected{% endif %}>{{ label }}</option>
+                {% endif %}
+              {% endfor %}
             </select>
           </div>
-        
-          <div class="flex justify-end mt-10">
-            <button type="button" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 mr-2" onclick="window.history.back();">
+
+          <!-- Action Buttons -->
+          <div class="flex justify-end mt-10 gap-2">
+            <button type="button" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700" onclick="window.history.back();">
               Cancel
             </button>
+
+            {% if comment.edit_status == 0 and comment.ai_old_result is not none %}
+              <button type="submit" name="action" value="revert" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                Revert to AI Result
+              </button>
+            {% endif %}
+
             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
               Save Changes
             </button>
           </div>
         </form>
-        
-        
       </div>
     </main>
   </div>

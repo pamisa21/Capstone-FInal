@@ -82,13 +82,13 @@
               </a>
               <a
                 href="{{ url_for('comments', origin='revision', ay_id=selected_semester, college_id=selected_college, department_id=selected_department) }}"
-                class="flex items-center {{ 'font-bold underline text-green-600' if selected_origin == 'revision' }}"
+                class="flex items-center {{ 'font-bold underline text-orange-600' if selected_origin == 'revision' }}"
               >
                 <span
-                  class="w-3 h-3 bg-green-500 inline-block rounded-full mr-2"
+                  class="w-3 h-3 bg-orange-500 inline-block rounded-full mr-2"
                 ></span>
                 Revision
-                <span class="ml-1 text-xs text-green-700"
+                <span class="ml-1 text-xs text-orange-700"
                   >({{ revision_count }})</span
                 >
               </a>
@@ -150,34 +150,31 @@
                       {{ faculty.lname }} {{ faculty.fname }}
                     </td>
 
-                    <td class="table-cell px-2 py-1 border border-gray-300">
-                      {% if comment.edit_result %} {% if comment.category == 1
-                      %}
-                      <span class="text-green-500">Neutral (Revised)</span>
+              <td class="table-cell px-2 py-1 border border-gray-300">
+                    {% if comment.ai_old_result is not none %}
+                      {% if comment.category == 1 %}
+                        <span class="neutral">Neutral (Revised)</span>
                       {% elif comment.category == 0 %}
-                      <span class="text-green-500">Negative (Revised)</span>
+                        <span class="negative">Negative (Revised)</span>
                       {% elif comment.category == 2 %}
-                      <span class="text-green-500">Positive (Revised)</span>
+                        <span class="positive">Positive (Revised)</span>
                       {% else %}
-                      <span class="text-gray-500 font-semibold text-sm"
-                        >Unknown (Revised)</span
-                      >
-                      {% endif %} {% else %} {% if comment.category == 1 %}
-                      <span class="text-blue-500"
-                        >Interpreted Neutral (AI Generated)</span
-                      >
+                        <span class="text-gray-500 font-semibold text-sm">Unknown (Revised)</span>
+                      {% endif %}
+                    {% else %}
+                      {% if comment.category == 1 %}
+                        <span class="neutral">  Interpreted Neutral (AI Generated)</span>
                       {% elif comment.category == 0 %}
-                      <span class="text-blue-500"
-                        >Interpreted Negative (AI Generated)</span
-                      >
+                        <span class="negative"> Interpreted Negative (AI Generated)</span>
                       {% elif comment.category == 2 %}
-                      <span class="text-blue-500"
-                        >Interpreted Positive (AI Generated)</span
-                      >
+                        <span class="positive"> Interpreted Positive (AI Generated)</span>
                       {% else %}
-                      <span class="text-blue-500">Unknown (AI Generated)</span>
-                      {% endif %} {% endif %}
-                    </td>
+                        <span class="text-gray-500 font-semibold text-sm">Unknown (AI Generated)</span>
+                      {% endif %}
+                    {% endif %}
+                  </td>
+
+
 
                     <td class="table-cell px-2 py-1 border border-gray-300">
                       {{ ay_sem.ay_name }}
@@ -191,14 +188,14 @@
                           class="secondary hover:text-green-800"
                           >View</a
                         >
-                        {% if comment.can_edit == 1 %}
+                     
                         <a
                           href="{{ url_for('edit_comment', comment_id=comment.comment_id) }}"
                           title="Edit"
                           class="text-blue-600 hover:text-blue-800"
                           >Edit</a
                         >
-                        {% endif %}
+                      
                       </div>
                     </td>
                   </tr>

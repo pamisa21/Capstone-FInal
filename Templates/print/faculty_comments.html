@@ -204,28 +204,61 @@
                                     <th class="table-cell hidden md:table-cell  px-2 py-1 border border-gray-300">Subject </th>
                                     <th class="table-cell  px-2 py-1 border border-gray-300" >Comment</th>
                                     <th class="table-cell  px-2 py-1 border border-gray-300">Interpreted</th>
+                                    <th class="table-cell  px-2 py-1 border border-gray-300">&nbsp;</th>
                                 </tr>
                             </thead>
                             <tbody class="table-body">
-                                {% for item in comments %}
+                            {% for item  in comments %}
                                 <tr>
-                                    <td class="table-cell hidden md:table-cell  px-2 py-1 border border-gray-300">{{ loop.index }}</td>
+                                    <td class="table-cell hidden md:table-cell px-2 py-1 border border-gray-300">{{ loop.index }}</td>
                                     <td class="table-cell hidden md:table-cell px-2 py-1 border border-gray-300">{{ item.comment.subject_id }}</td>
-                                    <td class="table-cell  px-2 py-1 border border-gray-300">{{ item.comment.comment }}</td>
-                                    <td class="table-cell  px-2 py-1 border border-gray-300">
-                                        {% if item.comment.category == 1 %} Neutral
-                                        {% elif item.comment.category == 2 %} Positive
-                                        {% elif item.comment.category == 0 %} Negative
-                                        {% else %} Unknown {% endif %}
+                                    <td class="table-cell px-2 py-1 border border-gray-300">{{ item.comment.comment }}</td>
+                                   <td class="table-cell px-2 py-1 border border-gray-300">
+                                        {% if item.comment.ai_old_result is not none %}
+                                        {% if item.comment.category == 1 %}
+                                            <span class="neutral">Neutral (Revised)</span>
+                                        {% elif item.comment.category == 0 %}
+                                            <span class="negative">Negative (Revised)</span>
+                                        {% elif item.comment.category == 2 %}
+                                            <span class="positive">Positive (Revised)</span>
+                                        {% else %}
+                                            <span class="text-gray-500 font-semibold text-sm">Unknown (Revised)</span>
+                                        {% endif %}
+                                        {% else %}
+                                        {% if item.comment.category == 1 %}
+                                            <span class="neutral">  Interpreted Neutral (AI Generated)</span>
+                                        {% elif item.comment.category == 0 %}
+                                            <span class="negative"> Interpreted Negative (AI Generated)</span>
+                                        {% elif item.comment.category == 2 %}
+                                            <span class="positive"> Interpreted Positive (AI Generated)</span>
+                                        {% else %}
+                                            <span class="text-gray-500 font-semibold text-sm">Unknown (AI Generated)</span>
+                                        {% endif %}
+                                        {% endif %}
+                                    </td>
+
+                                     <td class="table-cell px-2 py-1 border border-gray-300">
+                                        <div class="flex space-x-2">
+                                        <a href="{{ url_for('view_comment', comment_id=item.comment.comment_id) }}"
+                                            title="View"
+                                            class="text-green-600 hover:text-green-800">
+                                            View
+                                        </a>
+                                        <a href="{{ url_for('edit_comment', comment_id=item.comment.comment_id) }}"
+                                            title="Edit"
+                                            class="text-blue-600 hover:text-blue-800">
+                                            Edit
+                                        </a>
+                                        </div>
                                     </td>
                                 </tr>
-                                
                                 {% else %}
                                 <tr>
                                     <td colspan="5" class="table-cell text-center">No comments available for this semester.</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
+
                         </table>
                     </div>
                 </div>
@@ -385,12 +418,29 @@
                     <tr>
                         <td>{{ loop.index }}</td>
                         <td>{{ item.comment.comment }}</td>
-                        <td>
-                            {% if item.comment.category == 1 %} Neutral
-                            {% elif item.comment.category == 2 %} Positive
-                            {% elif item.comment.category == 0 %} Negative
-                            {% else %} Unknown {% endif %}
-                        </td>
+                        <td class="table-cell px-2 py-1 border border-gray-300">
+                                        {% if item.comment.ai_old_result is not none %}
+                                        {% if item.comment.category == 1 %}
+                                            <span class="neutral">Neutral (Revised)</span>
+                                        {% elif item.comment.category == 0 %}
+                                            <span class="negative">Negative (Revised)</span>
+                                        {% elif item.comment.category == 2 %}
+                                            <span class="positive">Positive (Revised)</span>
+                                        {% else %}
+                                            <span class="text-gray-500 font-semibold text-sm">Unknown (Revised)</span>
+                                        {% endif %}
+                                        {% else %}
+                                        {% if item.comment.category == 1 %}
+                                            <span class="neutral">   Neutral</span>
+                                        {% elif item.comment.category == 0 %}
+                                            <span class="negative">  Negative </span>
+                                        {% elif item.comment.category == 2 %}
+                                            <span class="positive">  Positive </span>
+                                        {% else %}
+                                            <span class="text-gray-500 font-semibold text-sm">Unknown </span>
+                                        {% endif %}
+                                        {% endif %}
+                                    </td>
                     </tr>
                     {% else %}
                     <tr>

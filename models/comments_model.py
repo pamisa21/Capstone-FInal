@@ -10,12 +10,11 @@ class Comment(db.Model):
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
     ay_id = db.Column(db.String(20), db.ForeignKey('AY_SEM.ay_id'), nullable=False)
     student_id = db.Column(db.String(20), db.ForeignKey('students.student_id'), nullable=True)  
-    status = db.Column(db.Integer, default=0)
     category = db.Column(db.Integer, default=3, nullable=False)
     updated_at = db.Column(db.DateTime, nullable=True, default=None, onupdate=datetime.utcnow)
 
-    can_edit = db.Column(db.Integer, default=1)
-    edit_result = db.Column(db.String(255), nullable=True)  
+    edit_status = db.Column(db.Integer, default=1)
+    ai_old_result = db.Column(db.Integer, nullable=True)
 
     # Relationships
     student = db.relationship('Student', back_populates='comments')

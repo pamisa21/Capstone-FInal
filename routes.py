@@ -76,7 +76,6 @@ def start_sentiment():
     flash('Sentiment analysis completed successfully.', 'success')
     return redirect(url_for('analys'))
     
-#   Evaluate 
 @app.route('/evaluate', methods=['GET', 'POST'])
 def evaluate():
     if 'username' not in session:
@@ -85,23 +84,34 @@ def evaluate():
     sentiment = None
     comment = None
 
+    # Get semester from args or cookie
+    selected_semester = request.args.get('ay_id') or request.cookies.get('selectedSemester')
+
+    # Default to latest semester if none selected
+    if not selected_semester:
+        latest_semester = AY_SEM.query.order_by(AY_SEM.ay_id.desc()).first()
+        selected_semester = latest_semester.ay_id if latest_semester else None
+
+    selected_semester_name = AY_SEM.query.filter_by(ay_id=selected_semester).first().ay_name if selected_semester else "N/A"
+
     if request.method == 'POST':
         comment = request.form.get('comment')
         if comment: 
             predicted_class = predict_sentiment(comment)
             sentiment = ['Negative', 'Neutral', 'Positive'][predicted_class]
 
-    # Calculate revision stats
-    total_comments = Comment.query.filter(Comment.category != 3).count()
-    total_revisions = Comment.query.filter(Comment.can_edit == 0).count()
+    # Filter comments by semester
+    base_query = Comment.query.filter(Comment.category != 3)
+    if selected_semester:
+        base_query = base_query.filter(Comment.ay_id == selected_semester)
+
+    total_comments = base_query.count()
+    total_revisions = base_query.filter(Comment.edit_status == 0).count()
     improvement_percentage = (total_revisions / total_comments) * 100 if total_comments > 0 else 0
 
-    # 🆕 Get the latest updated_at timestamp with time
-    latest_revision = Comment.query.order_by(desc(Comment.updated_at)).first()
-    if latest_revision and latest_revision.updated_at:
-        latest_updated_at = latest_revision.updated_at.strftime('%B %d, %Y %I:%M %p')
-    else:
-        latest_updated_at = "No data"
+    # Latest revision timestamp
+    latest_revision = base_query.order_by(desc(Comment.updated_at)).first()
+    latest_updated_at = latest_revision.updated_at.strftime('%B %d, %Y %I:%M %p') if latest_revision and latest_revision.updated_at else "No data"
 
     return render_template(
         'evaluate.html',
@@ -110,8 +120,12 @@ def evaluate():
         comment=comment,
         total_revisions=total_revisions,
         improvement_percentage=round(improvement_percentage, 2),
-        latest_updated_at=latest_updated_at
+        latest_updated_at=latest_updated_at,
+        selected_semester=selected_semester,
+        selected_semester_name=selected_semester_name,
+        all_semesters=AY_SEM.query.all()
     )
+
 
 def get_predefined_sentiment(text):
     # Clean and normalize the input text
@@ -804,11 +818,11 @@ def comments():
     if selected_department:
         query = query.filter(Faculty.department_id == selected_department)
 
-    # 💡 New logic using can_edit
+    # 💡 New logic using edit_status
     if selected_origin == "revision":
-        query = query.filter(Comment.can_edit == 0)
+        query = query.filter(Comment.edit_status == 0)
     elif selected_origin == "ai":
-        query = query.filter(Comment.can_edit == 1)
+        query = query.filter(Comment.edit_status == 1)
 
     comments_pagination = query.paginate(page=page, per_page=per_page, error_out=False)
     start_page = max(1, comments_pagination.page - 4)
@@ -816,8 +830,8 @@ def comments():
 
     colleges = College.query.all()
     selected_departments = Department.query.filter_by(college_id=selected_college).all() if selected_college else []
-    revision_count = query.filter(Comment.can_edit == 0).count()
-    ai_count = query.filter(Comment.can_edit == 1).count()
+    revision_count = query.filter(Comment.edit_status == 0).count()
+    ai_count = query.filter(Comment.edit_status == 1).count()
     return render_template(
         'comments.html',
         username=username,
@@ -847,40 +861,34 @@ def loading_comments():
 
 
 
-#edit By staff
 @app.route('/comments/edit/<int:comment_id>', methods=['GET', 'POST'])
 def edit_comment(comment_id):
     if 'username' in session:
-        # Get the comment to edit
         comment = Comment.query.get_or_404(comment_id)
 
         if request.method == 'POST':
-            # Get the form data for category and edit_result
-            edit_result = request.form.get('edit_result', None)  # This will update the category
-            category = request.form.get('category', None)  # This will update the edit_result
+            new_result = request.form.get('edit_result')
+            current_category = comment.category
 
-            # Update the comment's category and edit_result (swapping them)
-            if edit_result is not None:
-                comment.category = int(edit_result)  # Save the selected edit_result as category
-            if category is not None:
-                comment.edit_result = int(category)  # Save the selected category as edit_result
+            if new_result is not None:
+                new_result = int(new_result)
 
-            # Automatically set the can_edit field to 0 (disables further editing)
-            comment.can_edit = 0
+                # If it's the first edit, store original AI category
+                if comment.edit_status == 1:
+                    comment.ai_old_result = current_category
 
-            # Commit changes to the database
-            db.session.commit()
+                # Update category with staff's decision
+                comment.category = new_result
 
-            # Redirect back to the comments page
-            flash('Comment result updated successfully and editing is now disabled!', 'success')
-            return redirect(url_for('comments'))
+                comment.edit_status = 0
 
-        # Render the edit page with the selected comment
+                db.session.commit()
+                flash('Comment result updated successfully and editing is now disabled!', 'success')
+                return redirect(url_for('comments'))
+
         return render_template('Crud/edit_category.html', comment=comment)
 
-    # Redirect to loading screen if user is not logged in
     return redirect(url_for('loading_screen', target=url_for('comments')))
-
 
 
 
@@ -1147,6 +1155,7 @@ def faculty_comments(faculty_id):
         )
 
     return redirect(url_for('loading_screen', target=url_for('login')))
+
 
 
 # Profile 

@@ -1168,6 +1168,44 @@ def faculty_comments(faculty_id):
 
 
 
+@app.route('/comments/edits/<int:comment_id>', methods=['GET', 'POST'])
+def edit_faculty_comment(comment_id):
+    if 'username' in session:
+        comment = Comment.query.get_or_404(comment_id)
+
+        if request.method == 'POST':
+            new_result = request.form.get('edit_result')
+
+            if new_result is not None:
+                new_result = int(new_result)
+
+                # Save current category to ai_old_result only on first edit
+                if comment.edit_status == 1:
+                    comment.ai_old_result = comment.category
+
+                # Update category to new value
+                comment.category = new_result
+
+                # Update edit status
+                if new_result == comment.ai_old_result:
+                    comment.edit_status = 1
+                else:
+                    comment.edit_status = 0
+
+                db.session.commit()
+                flash('Comment result updated successfully!', 'success')
+
+                # Redirect with semester param so faculty_comments loads properly
+                return redirect(url_for(
+                    'faculty_comments',
+                    faculty_id=comment.faculty_id,
+                    semester=comment.ay_id  # Pass semester to avoid undefined semester issues
+                ))
+
+        return render_template('Crud/edit_faculty_comment.html', comment=comment)
+
+    return redirect(url_for('loading_screen', target=url_for('faculty_comments')))
+
 # Profile 
 
 @app.route('/loading_profile')
